@@ -86,12 +86,57 @@ const Projects = ({ data, isEditing, setUserData }) => {
                         )}
 
                         <div className="project-tags">
-                            {project.tags.map((tag, tIndex) => (
-                                <span key={tIndex} className="tag">{tag}</span>
-                            ))}
+                            {isEditing ? (
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                                    {project.tags.map((tag, tIndex) => (
+                                        <div key={tIndex} style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-secondary)', padding: '2px 5px', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+                                            <input
+                                                value={tag}
+                                                onChange={(e) => {
+                                                    const newTags = [...project.tags];
+                                                    newTags[tIndex] = e.target.value;
+                                                    handleUpdate(index, 'tags', newTags);
+                                                }}
+                                                style={{ border: 'none', background: 'transparent', color: 'inherit', width: '80px', fontSize: '0.8rem' }}
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    const newTags = project.tags.filter((_, i) => i !== tIndex);
+                                                    handleUpdate(index, 'tags', newTags);
+                                                }}
+                                                style={{ marginLeft: '5px', background: 'none', border: 'none', color: '#ff4444', cursor: 'pointer', fontWeight: 'bold' }}
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <button
+                                        onClick={() => handleUpdate(index, 'tags', [...project.tags, "New Tag"])}
+                                        style={{ fontSize: '0.8rem', padding: '2px 8px', borderRadius: '4px', border: '1px dashed var(--border-color)', background: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}
+                                    >
+                                        + Add Tag
+                                    </button>
+                                </div>
+                            ) : (
+                                project.tags.map((tag, tIndex) => (
+                                    <span key={tIndex} className="tag">{tag}</span>
+                                ))
+                            )}
                         </div>
 
-                        <a href={project.link} className="project-link">View Project ↗</a>
+                        {isEditing ? (
+                            <div style={{ marginTop: '1rem' }}>
+                                <label style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '2px' }}>Project Link</label>
+                                <input
+                                    value={project.link}
+                                    onChange={(e) => handleUpdate(index, 'link', e.target.value)}
+                                    placeholder="https://..."
+                                    style={{ width: '100%', padding: '0.5rem', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', borderRadius: '4px' }}
+                                />
+                            </div>
+                        ) : (
+                            <a href={project.link} className="project-link" target="_blank" rel="noopener noreferrer">View Project ↗</a>
+                        )}
                     </div>
                 </article>
             ))}

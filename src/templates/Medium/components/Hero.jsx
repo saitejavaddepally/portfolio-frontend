@@ -36,20 +36,47 @@ const Hero = ({ data, isEditing, onUpdate, onArrayUpdate }) => {
                     <div className="role-badges">
                         {data.roles.map((role, index) => (
                             isEditing ? (
-                                <input
-                                    key={index}
-                                    value={role}
-                                    onChange={(e) => onArrayUpdate('roles', index, e.target.value)}
-                                    className="role-badge"
-                                    style={{ border: '1px dashed var(--border-color)', width: '200px', background: 'transparent', color: 'inherit' }}
-                                />
+                                <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                    <input
+                                        value={role}
+                                        onChange={(e) => {
+                                            const newRoles = [...data.roles];
+                                            newRoles[index] = e.target.value;
+                                            onUpdate('roles', newRoles);
+                                        }}
+                                        className="role-badge"
+                                        style={{ border: '1px dashed var(--border-color)', width: '200px', background: 'transparent', color: 'inherit' }}
+                                    />
+                                    <button
+                                        onClick={() => {
+                                            const newRoles = data.roles.filter((_, i) => i !== index);
+                                            onUpdate('roles', newRoles);
+                                        }}
+                                        style={{
+                                            background: '#ff4444',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '50%',
+                                            width: '20px',
+                                            height: '20px',
+                                            fontSize: '12px',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                        }}
+                                        title="Remove role"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
                             ) : (
                                 <span key={index} className="role-badge">{role}</span>
                             )
                         ))}
                         {isEditing && (
                             <button
-                                onClick={() => onArrayUpdate('roles', data.roles.length, "New Role")}
+                                onClick={() => onUpdate('roles', [...data.roles, "New Role"])}
                                 style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem', marginLeft: '0.5rem', background: 'var(--bg-color)', color: 'var(--text-main)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
                             >
                                 + Add Role

@@ -160,7 +160,15 @@ const Footer = ({ data, isEditing, updateData }) => {
                 )}
 
                 <div className="copyright">
-                    © {new Date().getFullYear()} Saiteja Vaddepalli. All rights reserved.
+                    {isEditing ? (
+                        <input
+                            value={data.copyright !== undefined ? data.copyright : `© ${new Date().getFullYear()} Your Name. All rights reserved.`}
+                            onChange={(e) => updateData('footer', 'copyright', e.target.value)}
+                            style={{ width: '100%', textAlign: 'center', background: 'transparent', border: '1px dashed var(--border-color)', color: 'inherit', padding: '5px' }}
+                        />
+                    ) : (
+                        data.copyright || `© ${new Date().getFullYear()} Your Name. All rights reserved.`
+                    )}
                 </div>
             </div>
         </footer>

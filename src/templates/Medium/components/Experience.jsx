@@ -1,4 +1,5 @@
 import React from 'react';
+import CompanySelector from '../../../components/CompanySelector';
 
 const Experience = ({ data, isEditing, setUserData }) => {
 
@@ -6,6 +7,18 @@ const Experience = ({ data, isEditing, setUserData }) => {
         setUserData(prev => {
             const newData = [...prev.experience];
             newData[index] = { ...newData[index], [field]: value };
+            return { ...prev, experience: newData };
+        });
+    };
+
+    const handleCompanyChange = (index, name, logo) => {
+        setUserData(prev => {
+            const newData = [...prev.experience];
+            newData[index] = {
+                ...newData[index],
+                company: name,
+                logo: logo
+            };
             return { ...prev, experience: newData };
         });
     };
@@ -81,21 +94,22 @@ const Experience = ({ data, isEditing, setUserData }) => {
                         </button>
                     )}
                     <div className="job-logo">
-                        <img src={job.logo} alt={job.company} />
+                        {job.logo && <img src={job.logo} alt={job.company} />}
                     </div>
                     <div className="job-content">
                         <div className="job-header">
                             {isEditing ? (
-                                <div style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '0.2rem' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '0.5rem' }}>
                                     <input
                                         value={job.role}
                                         onChange={(e) => handleUpdate(index, 'role', e.target.value)}
                                         style={{ fontFamily: 'var(--font-heading)', fontSize: '1.4rem', fontWeight: 'bold', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', width: '100%' }}
+                                        placeholder="Role / Job Title"
                                     />
-                                    <input
+                                    <CompanySelector
                                         value={job.company}
-                                        onChange={(e) => handleUpdate(index, 'company', e.target.value)}
-                                        style={{ fontSize: '1rem', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', width: '100%' }}
+                                        onChange={(name, logo) => handleCompanyChange(index, name, logo)}
+                                        placeholder="Company Name"
                                     />
                                 </div>
                             ) : (
@@ -121,7 +135,7 @@ const Experience = ({ data, isEditing, setUserData }) => {
                                         key={i}
                                         value={desc}
                                         onChange={(e) => handleDescUpdate(index, i, e.target.value)}
-                                        style={{ width: '100%', marginBottom: '0.5rem', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit' }}
+                                        style={{ width: '100%', marginBottom: '0.5rem', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'vertical' }}
                                         rows={2}
                                     />
                                 ) : (

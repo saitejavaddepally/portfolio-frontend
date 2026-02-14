@@ -1,5 +1,6 @@
 import React from 'react';
 import '../../css/Modern.css';
+import CompanySelector from '../../components/CompanySelector';
 
 // A completely different layout to prove the concept
 const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData }) => {
@@ -55,20 +56,48 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                                 <div className="timeline-marker"></div>
                                 <div className="timeline-content modern-card">
                                     <div className="job-header-modern">
-                                        <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
+                                        <div style={{ flex: 1 }}>
+                                            <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
+                                                {isEditing ? (
+                                                    <input
+                                                        value={job.role}
+                                                        onChange={(e) => {
+                                                            const newExp = [...data.experience];
+                                                            newExp[index].role = e.target.value;
+                                                            setUserData(prev => ({ ...prev, experience: newExp }));
+                                                        }}
+                                                        style={{ background: 'transparent', border: 'none', color: 'inherit', fontSize: 'inherit', fontWeight: 'bold', width: '100%' }}
+                                                        placeholder="Role"
+                                                    />
+                                                ) : job.role}
+                                            </h3>
+
                                             {isEditing ? (
-                                                <input
-                                                    value={job.role}
-                                                    onChange={(e) => {
-                                                        const newExp = [...data.experience];
-                                                        newExp[index].role = e.target.value;
-                                                        setUserData(prev => ({ ...prev, experience: newExp }));
-                                                    }}
-                                                    style={{ background: 'transparent', border: 'none', color: 'inherit', fontSize: 'inherit', fontWeight: 'bold', width: '100%' }}
-                                                />
-                                            ) : job.role}
-                                        </h3>
-                                        <span className="modern-company">{job.company}</span>
+                                                <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    {job.logo && <img src={job.logo} alt={job.company} style={{ width: '24px', height: '24px', objectFit: 'contain', borderRadius: '4px' }} />}
+                                                    <div style={{ flex: 1 }}>
+                                                        <CompanySelector
+                                                            value={job.company}
+                                                            onChange={(name, logo) => {
+                                                                const newExp = [...data.experience];
+                                                                newExp[index] = {
+                                                                    ...newExp[index],
+                                                                    company: name,
+                                                                    logo: logo
+                                                                };
+                                                                setUserData(prev => ({ ...prev, experience: newExp }));
+                                                            }}
+                                                            placeholder="Company Name"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                                                    {job.logo && <img src={job.logo} alt={job.company} style={{ width: '20px', height: '20px', objectFit: 'contain', borderRadius: '4px' }} />}
+                                                    <span className="modern-company">{job.company}</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                     <span className="modern-dates">{job.dates}</span>
                                     <ul className="modern-job-desc">
