@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import MediumTemplate from './templates/Medium';
 import ModernTemplate from './templates/Modern';
@@ -21,6 +21,7 @@ const AppContent = () => {
   const [userData, setUserData] = useState(null);
   const [dataLoading, setDataLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const isFetchingRef = useRef(false);
 
   // UX State
   const [isSaving, setIsSaving] = useState(false);
@@ -54,7 +55,9 @@ const AppContent = () => {
   // Data Fetching Effect
   useEffect(() => {
     const fetchPortfolio = async () => {
-      if (user && !userData && !dataLoading) {
+      // Use ref to prevent double-fetching in StrictMode or rapid re-renders
+      if (user && !userData && !dataLoading && !isFetchingRef.current) {
+        isFetchingRef.current = true;
         setDataLoading(true);
         try {
           const responseData = await getPortfolio();
@@ -78,6 +81,7 @@ const AppContent = () => {
           }
         } finally {
           setDataLoading(false);
+          isFetchingRef.current = false;
         }
       }
     };

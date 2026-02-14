@@ -5,22 +5,23 @@ import '../css/Components.css';
 
 const SharedLayout = ({ children, showUserInfo = false, theme, toggleTheme }) => {
     const { user, logout } = useAuth();
+    const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false);
 
     return (
         <div className="shared-layout">
             {/* Common Header */}
-            <header className="shared-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 2rem', position: 'relative' }}>
+            <header className="shared-header">
 
-                {/* Empty left side to balance right side for centering, or just absolute center the title */}
-                <div style={{ width: '150px' }}></div>
+                {/* Left Spacer for centering balance */}
+                <div className="header-spacer"></div>
 
-                <Link to="/" className="header-logo-link" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
-                    <div className="header-logo-text" style={{ fontSize: '1.8rem', fontWeight: '800', letterSpacing: '-1px' }}>
+                <Link to="/" className="header-logo-container">
+                    <div className="header-logo-text">
                         PortHire
                     </div>
                 </Link>
 
-                <div className="header-actions" style={{ width: '150px', display: 'flex', justifyContent: 'flex-end' }}>
+                <div className="header-actions">
                     <button
                         onClick={toggleTheme}
                         className="theme-toggle-btn"
@@ -36,15 +37,44 @@ const SharedLayout = ({ children, showUserInfo = false, theme, toggleTheme }) =>
                     {showUserInfo && user && (
                         <div className="user-info-container">
                             <button
-                                onClick={logout}
+                                onClick={() => setShowLogoutConfirm(true)}
                                 className="logout-btn"
+                                title="Logout"
                             >
-                                Logout
+                                <span className="logout-text">Logout</span>
+                                <svg className="logout-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                             </button>
                         </div>
                     )}
                 </div>
             </header>
+
+            {/* Logout Confirmation Modal */}
+            {showLogoutConfirm && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h3>Confirm Logout</h3>
+                        <p>Are you sure you want to log out?</p>
+                        <div className="modal-actions">
+                            <button
+                                onClick={() => setShowLogoutConfirm(false)}
+                                className="modal-cancel-btn"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    logout();
+                                    setShowLogoutConfirm(false);
+                                }}
+                                className="modal-confirm-btn"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Main Content */}
             <main className="shared-main">

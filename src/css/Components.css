@@ -79,6 +79,16 @@
     color: #fff;
 }
 
+.logout-text {
+    display: inline;
+}
+
+.logout-icon {
+    display: none;
+    width: 20px;
+    height: 20px;
+}
+
 .shared-main {
     flex: 1;
     display: flex;
@@ -454,4 +464,150 @@
     background: #fff;
     /* Ensure logo is visible on dark mode */
     padding: 2px;
+}
+
+
+/* Mobile Header Fix Results */
+.header-spacer {
+    width: 150px;
+}
+
+.header-logo-container {
+    text-decoration: none;
+    color: var(--text-primary);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.header-logo-text {
+    font-weight: 800;
+    font-size: 1.8rem;
+    letter-spacing: -1px;
+}
+
+.header-actions {
+    width: 150px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+/* Logout Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(2px);
+}
+
+.modal-content {
+    background: var(--bg-primary);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+}
+
+.modal-content p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.modal-cancel-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.modal-cancel-btn:hover {
+    background: var(--bg-hover);
+}
+
+.modal-confirm-btn {
+    padding: 0.75rem 1.5rem;
+    background: #e11d48;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.modal-confirm-btn:hover {
+    background: #be123c;
+}
+
+@media (max-width: 900px) {
+    .shared-header {
+        padding: 1rem 1.5rem;
+        /* Increased side padding slightly for aesthetics, ensuring full width usage */
+        justify-content: space-between;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .header-spacer {
+        display: none;
+    }
+
+    .header-logo-container {
+        position: static;
+        transform: none;
+    }
+
+    .header-actions {
+        width: auto;
+        gap: 1.5rem;
+        /* Increased spacing between theme icon and logout button */
+    }
+
+    .header-logo-text {
+        font-size: 1.5rem;
+    }
+
+    .logout-text {
+        display: none;
+    }
+
+    .logout-icon {
+        display: block;
+    }
+
+    .logout-btn {
+        padding: 0.6rem;
+        /* Slightly larger targets */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 }

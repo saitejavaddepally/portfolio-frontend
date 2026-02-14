@@ -93,14 +93,14 @@ export const AuthProvider = ({ children }) => {
         return response.data;
     };
 
-    const value = {
+    const value = React.useMemo(() => ({
         user,
         accessToken,
         loading,
         login,
         register,
         logout
-    };
+    }), [user, accessToken, loading]);
 
     return (
         <AuthContext.Provider value={value}>

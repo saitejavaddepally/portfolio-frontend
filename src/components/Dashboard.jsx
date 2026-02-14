@@ -62,22 +62,16 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
 
     return (
         <div className="dashboard-container">
-            <header className="dashboard-header" style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '1rem',
-                gap: '2rem',
-                flexWrap: 'wrap-reverse'
-            }}>
-                <div style={{ flex: '1 1 400px', textAlign: 'left' }}>
-                    <h1 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>Dashboard</h1>
-                    <p className="dashboard-subtitle" style={{ fontSize: '1.1rem', maxWidth: '500px', margin: '0 0 1.5rem 0', lineHeight: '1.5', textAlign: 'left', color: 'var(--text-secondary)' }}>
+
+            <header className="dashboard-header">
+                <div className="dashboard-header-content">
+                    <h1 className="dashboard-title">Dashboard</h1>
+                    <p className="dashboard-subtitle">
                         Select a professional template and deploy your portfolio in seconds.
                     </p>
 
                     {/* Global Publish Status/Action */}
-                    <div className="publish-actions" style={{ marginTop: '0', display: 'flex', justifyContent: 'flex-start' }}>
+                    <div className="publish-actions">
                         {publicUrl && (
                             <div className="public-link-container">
                                 <span className="status-dot live"></span>
@@ -107,11 +101,11 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                     </div>
                 </div>
 
-                <div style={{ flex: '1 1 300px', display: 'flex', justifyContent: 'flex-end' }}>
+                <div className="dashboard-header-image-container">
                     <img
                         src="/assets/projects.svg"
                         alt="Dashboard Hero"
-                        style={{ maxWidth: '100%', width: '300px', height: 'auto' }}
+                        className="dashboard-header-image"
                     />
                 </div>
             </header>

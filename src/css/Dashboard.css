@@ -5,23 +5,87 @@
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
+    box-sizing: border-box;
+    /* Ensure padding doesn't overflow width */
 }
 
 .dashboard-header {
     margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.dashboard-header-content {
+    flex: 1 1 400px;
+    text-align: left;
+}
+
+.dashboard-header-image-container {
+    flex: 1 1 300px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.dashboard-header-image {
+    max-width: 100%;
+    width: 300px;
+    height: auto;
 }
 
 .dashboard-title {
-    font-size: 2rem;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
     color: var(--text-primary);
     font-family: "Source Serif Pro", serif;
-    margin: 0 0 0.5rem 0;
+    margin-top: 0;
 }
 
 .dashboard-subtitle {
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: var(--text-secondary);
-    margin: 0;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.5;
+    max-width: 500px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+
+    .dashboard-header {
+        /* Stack: Content below, Image above? Or maybe column for Content Top. Let's start with Content Top as requested/planned */
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .dashboard-header-content {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+
+    .dashboard-header-image-container {
+        flex: 1 1 auto;
+        justify-content: center;
+        /* Center image on mobile */
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .dashboard-header-image {
+        width: 80%;
+        /* Slightly smaller on mobile to fit nicely */
+        max-width: 250px;
+    }
+
+    .dashboard-title {
+        font-size: 2rem;
+    }
 }
 
 .publish-actions {
