@@ -106,7 +106,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
 
             <div className="dashboard-grid">
                 {templates.map(template => {
-                    const isDeployed = activeTemplate === template.id;
+                    const isDeployed = activeTemplate === template.id && isPublished;
                     const isDeploying = deployingId === template.id;
 
                     return (
