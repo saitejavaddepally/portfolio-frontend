@@ -1,0 +1,44 @@
+/* DashboardPage.css */
+
+.recruiter-container {
+    padding: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.recruiter-card {
+    background: var(--bg-primary);
+    padding: 3rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    color: var(--text-primary);
+}
+
+.recruiter-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-family: "Source Serif Pro", serif;
+}
+
+.recruiter-subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.placeholder-search-area {
+    padding: 4rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px dashed var(--border-color);
+    color: var(--text-secondary);
+}
+
+.search-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}

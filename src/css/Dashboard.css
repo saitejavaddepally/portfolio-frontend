@@ -1,0 +1,310 @@
+/* Dashboard.css */
+
+.dashboard-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+.dashboard-title {
+    font-size: 2rem;
+    color: var(--text-primary);
+    font-family: "Source Serif Pro", serif;
+    margin: 0 0 0.5rem 0;
+}
+
+.dashboard-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.publish-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.public-link-container {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: var(--bg-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+}
+
+.status-dot.live {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+.live-text {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-right: 0.5rem;
+}
+
+.link-wrapper {
+    display: flex;
+    align-items: center;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.public-link-input {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    width: 180px;
+    outline: none;
+}
+
+.copy-btn {
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    cursor: pointer;
+    min-width: 45px;
+}
+
+.copy-btn:hover {
+    background: var(--bg-hover);
+}
+
+.open-link-icon {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.open-link-icon:hover {
+    color: var(--text-primary);
+}
+
+.publish-live-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.publish-live-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.publish-live-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.template-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.template-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.template-card.deployed {
+    border: 2px solid #10b981;
+    box-shadow: 0 0 0 1px #10b981, 0 8px 24px rgba(16, 185, 129, 0.1);
+}
+
+.deployed-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #10b981;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.preview-area {
+    height: 200px;
+    background: #f1f5f9;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    padding: 1rem;
+}
+
+.preview-medium {
+    width: 80%;
+    height: 80%;
+    background: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+}
+
+.preview-modern {
+    width: 80%;
+    height: 80%;
+    background: #1e293b;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+}
+
+.preview-modern-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #38bdf8, #818cf8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.preview-default {
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.content-area {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.template-name {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.template-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0 0 1.5rem 0;
+    flex: 1;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.button-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+}
+
+.outline-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.6rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.outline-btn:hover {
+    border-color: var(--text-secondary);
+    background: var(--bg-hover);
+}
+
+.deploy-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.deploy-btn.active {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.deploy-btn.active:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    box-shadow: 0 8px 15px rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+}
+
+.deploy-btn.inactive {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+}
+
+.deploy-btn.inactive:hover {
+    background: var(--text-secondary);
+}
+
+.deploy-btn:disabled {
+    opacity: 0.8;
+}
