@@ -99,7 +99,8 @@ const LoginPage = ({ theme, toggleTheme }) => {
                 {/* Right Side: Visuals */}
                 <AuthSidePanel
                     title="Design Your Future"
-                    subtitle="Join thousands of professionals showcasing their work with our premium portfolio builder."
+                    subtitle="Join thousands of professionals showcasing their work."
+                    image="/assets/contact.svg"
                 />
             </div>
         </SharedLayout>

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Components.css';
-import '../css/Dashboard.css'; // Import the new CSS
-import { publishPortfolio } from '../services/portfolioService';
+import '../css/Dashboard.css';
+import Loader from './Loader';
+import { useToast } from '../context/ToastContext';
 
 const templates = [
     {
@@ -23,26 +24,24 @@ const templates = [
 
 const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, onPublishUpdate, onPublish, onDeployTemplate }) => {
     const navigate = useNavigate();
+    const { addToast } = useToast();
     const [deployingId, setDeployingId] = useState(null);
     const [copySuccess, setCopySuccess] = useState('');
-
-    // activeTemplate is the DEPLOYED template (at root)
 
     const handleDeploy = async (templateId) => {
         if (onDeployTemplate) {
             try {
                 setDeployingId(templateId);
                 await onDeployTemplate(templateId);
-                alert(`Successfully deployed ${templateId} template live!`);
+                addToast(`Successfully deployed ${templateId} template live!`, 'success');
             } catch (error) {
                 console.error("Deploy error:", error);
                 const msg = error.response?.data?.message || error.message || "Unknown error";
-                alert(`Failed to deploy template: ${msg}`);
+                addToast(`Failed to deploy template: ${msg}`, 'error');
             } finally {
                 setDeployingId(null);
             }
         } else {
-            // Fallback for older usage if any
             onSelectTemplate(templateId);
         }
     };
@@ -50,13 +49,11 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
     const copyToClipboard = () => {
         if (!publicUrl) return;
 
-        // Ensure we copy the absolute URL
-        // If publicUrl is relative path from backend (e.g., /p/slug), prepend origin
-        // If it's absolute, use as is.
         const fullUrl = publicUrl.startsWith('http') ? publicUrl : `${window.location.origin}${publicUrl}`;
 
         navigator.clipboard.writeText(fullUrl).then(() => {
             setCopySuccess('Copied!');
+            addToast('Link copied to clipboard', 'info', 2000);
             setTimeout(() => setCopySuccess(''), 2000);
         }, (err) => {
             console.error('Could not copy text: ', err);
@@ -65,15 +62,22 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
 
     return (
         <div className="dashboard-container">
-            <header className="dashboard-header">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                    <div>
-                        <h1 className="dashboard-title">Portfolio Builder</h1>
-                        <p className="dashboard-subtitle">Select and deploy a template for your portfolio</p>
-                    </div>
+            <header className="dashboard-header" style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '1rem',
+                gap: '2rem',
+                flexWrap: 'wrap-reverse'
+            }}>
+                <div style={{ flex: '1 1 400px', textAlign: 'left' }}>
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>Dashboard</h1>
+                    <p className="dashboard-subtitle" style={{ fontSize: '1.1rem', maxWidth: '500px', margin: '0 0 1.5rem 0', lineHeight: '1.5', textAlign: 'left', color: 'var(--text-secondary)' }}>
+                        Select a professional template and deploy your portfolio in seconds.
+                    </p>
 
                     {/* Global Publish Status/Action */}
-                    <div className="publish-actions">
+                    <div className="publish-actions" style={{ marginTop: '0', display: 'flex', justifyContent: 'flex-start' }}>
                         {publicUrl && (
                             <div className="public-link-container">
                                 <span className="status-dot live"></span>
@@ -102,6 +106,14 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                         )}
                     </div>
                 </div>
+
+                <div style={{ flex: '1 1 300px', display: 'flex', justifyContent: 'flex-end' }}>
+                    <img
+                        src="/assets/projects.svg"
+                        alt="Dashboard Hero"
+                        style={{ maxWidth: '100%', width: '300px', height: 'auto' }}
+                    />
+                </div>
             </header>
 
             <div className="dashboard-grid">
@@ -122,13 +134,13 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                             <div className="preview-area">
                                 {template.id === 'medium' ? (
                                     <div className="preview-medium">
-                                        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Saiteja V.</div>
+                                        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Your Name</div>
                                         <div style={{ fontSize: '0.8rem', lineHeight: '1.4', color: '#444' }}>Passionate about building scalable applications...</div>
                                         <div style={{ marginTop: '1.5rem', width: '30px', height: '2px', background: '#000' }}></div>
                                     </div>
                                 ) : template.id === 'modern' ? (
                                     <div className="preview-modern">
-                                        <div className="preview-modern-title">Saiteja V.</div>
+                                        <div className="preview-modern-title">Your Name</div>
                                         <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>AI Engineer & Full Stack Dev</div>
                                         <div style={{ marginTop: '1.5rem', display: 'flex', gap: '8px' }}>
                                             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#38bdf8' }}></div>
@@ -161,7 +173,12 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                                             Preview
                                         </button>
                                         <button
-                                            onClick={() => navigate(`/?portfolioStyle=${template.id}&edit=true`)}
+                                            onClick={() => {
+                                                if (template.id !== 'medium') {
+                                                    addToast("Opening Standard Editor. Changes apply to all templates.", "info", 4000);
+                                                }
+                                                navigate(`/?portfolioStyle=medium&edit=true`);
+                                            }}
                                             className="outline-btn"
                                         >
                                             Edit
@@ -196,7 +213,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                     );
                 })}
             </div>
-        </div>
+        </div >
     );
 };
 export default Dashboard;

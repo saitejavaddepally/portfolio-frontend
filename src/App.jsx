@@ -5,20 +5,27 @@ import ModernTemplate from './templates/Modern';
 import Dashboard from './components/Dashboard';
 import EditControl from './components/EditControl';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider, useToast } from './context/ToastContext';
 import PrivateRoute from './routes/PrivateRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import PublicPortfolioPage from './pages/PublicPortfolioPage';
-import { savePortfolio, getPortfolio } from './services/portfolioService';
+import { savePortfolio, getPortfolio, publishPortfolio } from './services/portfolioService';
 import { initialData as defaultTemplate } from './data/initialData';
 
 // AppContent handles the main logic requiring AuthContext
 const AppContent = () => {
   const { user, loading: authLoading } = useAuth();
+  const { addToast } = useToast();
   const [userData, setUserData] = useState(null);
   const [dataLoading, setDataLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  // UX State
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeploying, setIsDeploying] = useState(false);
+
   const location = useLocation();
 
   // Theme State
@@ -47,43 +54,28 @@ const AppContent = () => {
   // Data Fetching Effect
   useEffect(() => {
     const fetchPortfolio = async () => {
-      // If user is logged in (specifically a professional) and we don't have data, fetch it.
-      // Recruiters don't have portfolios yet, so maybe skip?
-      // For now, let's treat "Professional" as the only one with data.
       if (user && !userData && !dataLoading) {
-        // Only fetch if role suggests they have a portfolio. 
-        // Or just fetch and handle 404 (handled by portfolioService/Dashboard logic previously).
-        // Let's adopt the logic: Try fetch. If 404/Empty -> Default.
-
         setDataLoading(true);
         try {
           const responseData = await getPortfolio();
 
-          // Handle various response structures
-          // 1. { data: null } -> No portfolio, use default
           if (responseData && responseData.data === null) {
             setUserData(defaultTemplate);
           }
-          // 2. { data: {...} } -> Wrapped portfolio
           else if (responseData && responseData.data) {
             setUserData(responseData.data);
           }
-          // 3. {...} -> Direct portfolio object (check for a known key like hero)
           else if (responseData && responseData.hero) {
             setUserData(responseData);
           }
-          // 4. Default fallback
           else {
             setUserData(defaultTemplate);
           }
         } catch (err) {
           console.error("Global fetch failed", err);
-          // If 404, default template. Else, maybe keep null and let page handle error?
           if (err.response?.status === 404) {
             setUserData(defaultTemplate);
           }
-          // If other error, we might leave userData as null 
-          // and the page will show empty or we can rely on DashboardPage to show retry.
         } finally {
           setDataLoading(false);
         }
@@ -112,13 +104,53 @@ const AppContent = () => {
 
   const saveToSource = async () => {
     if (!userData) return;
+    setIsSaving(true);
     try {
       await savePortfolio(userData);
-      alert("Portfolio saved successfully!");
+      addToast("Portfolio saved successfully!", "success");
     } catch (error) {
       console.error("Error saving portfolio:", error);
       const msg = error.response?.data?.errorMessage || error.message || "Failed to save portfolio.";
-      alert(msg);
+      addToast(msg, "error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeploy = async () => {
+    if (!userData) return;
+    setIsDeploying(true);
+    // 1. Auto-save first
+    try {
+      await savePortfolio(userData);
+    } catch (err) {
+      addToast("Failed to save before deploying.", "error");
+      setIsDeploying(false);
+      return;
+    }
+
+    // 2. Publish
+    try {
+      const result = await publishPortfolio();
+
+      let slug = result.slug;
+      if (!slug && result.publicUrl) {
+        const parts = result.publicUrl.split('/');
+        slug = parts[parts.length - 1] || parts[parts.length - 2];
+      }
+
+      setUserData(prev => ({
+        ...prev,
+        slug: slug,
+        isPublished: true
+      }));
+
+      addToast("Portfolio deployed successfully!", "success");
+    } catch (error) {
+      console.error("Deploy failed", error);
+      addToast("Failed to deploy portfolio.", "error");
+    } finally {
+      setIsDeploying(false);
     }
   };
 
@@ -132,13 +164,10 @@ const AppContent = () => {
         }
       };
 
-      // Sync header.name and hero.name
-      // If we update header name, also update hero name
       if (section === 'header' && field === 'name') {
         if (newData.hero) newData.hero.name = value;
       }
 
-      // If we update hero name, also update header name
       if (section === 'hero' && field === 'name') {
         if (newData.header) newData.header.name = value;
       }
@@ -179,6 +208,10 @@ const AppContent = () => {
           toggleTheme={toggleTheme}
           theme={theme}
           onExitEdit={toggleEditMode}
+          isSaving={isSaving}
+          isDeploying={isDeploying}
+          onDeploy={handleDeploy}
+          publicUrl={userData.slug ? `/p/${userData.slug}` : null}
         />
       )}
 
@@ -220,13 +253,8 @@ const AppContent = () => {
             />
           ) : (
             user ? (
-              // If logged in but no userData (and not loading), maybe failed to load?
-              // Or user is a recruiter?
-              // Redirect to dashboard to handle "No Portfolio" state or Recruiter view
               <Navigate to="/dashboard" replace />
             ) : (
-              // Guest: Should show a landing page or login. 
-              // Per requirements, we assume auth-centric for now.
               <Navigate to="/login" replace />
             )
           )
@@ -241,7 +269,9 @@ const AppContent = () => {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
     </AuthProvider>
   );
 }

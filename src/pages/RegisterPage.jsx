@@ -113,7 +113,8 @@ const RegisterPage = ({ theme, toggleTheme }) => {
                 {/* Right Side: Visuals */}
                 <AuthSidePanel
                     title="Scale Your Team"
-                    subtitle="Connect with top-tier developers and designers who are verified and ready to work."
+                    subtitle="Connect with top-tier developers and designers."
+                    image="/assets/education.svg"
                 />
             </div>
         </SharedLayout>

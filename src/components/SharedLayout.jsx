@@ -9,14 +9,18 @@ const SharedLayout = ({ children, showUserInfo = false, theme, toggleTheme }) =>
     return (
         <div className="shared-layout">
             {/* Common Header */}
-            <header className="shared-header">
-                <Link to="/" className="header-logo-link">
-                    <div className="header-logo-text">
-                        Portfolio Builder
+            <header className="shared-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 2rem', position: 'relative' }}>
+
+                {/* Empty left side to balance right side for centering, or just absolute center the title */}
+                <div style={{ width: '150px' }}></div>
+
+                <Link to="/" className="header-logo-link" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+                    <div className="header-logo-text" style={{ fontSize: '1.8rem', fontWeight: '800', letterSpacing: '-1px' }}>
+                        PortHire
                     </div>
                 </Link>
 
-                <div className="header-actions">
+                <div className="header-actions" style={{ width: '150px', display: 'flex', justifyContent: 'flex-end' }}>
                     <button
                         onClick={toggleTheme}
                         className="theme-toggle-btn"
@@ -31,9 +35,6 @@ const SharedLayout = ({ children, showUserInfo = false, theme, toggleTheme }) =>
 
                     {showUserInfo && user && (
                         <div className="user-info-container">
-                            <span className="user-info-text">
-                                {user.email} <span className="user-role">({user.role})</span>
-                            </span>
                             <button
                                 onClick={logout}
                                 className="logout-btn"
@@ -52,7 +53,7 @@ const SharedLayout = ({ children, showUserInfo = false, theme, toggleTheme }) =>
 
             {/* Simple Footer */}
             <footer className="shared-footer">
-                &copy; {new Date().getFullYear()} Portfolio Builder. All rights reserved.
+                &copy; {new Date().getFullYear()} PortHire. All rights reserved.
             </footer>
         </div>
     );
