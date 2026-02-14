@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 // Dedicated Axios instance for public (unauthenticated) requests
-// Uses the same relative path strategy to go through Vite proxy
 const publicApi = axios.create({
+    baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },
