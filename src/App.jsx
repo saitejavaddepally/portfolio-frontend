@@ -9,10 +9,12 @@ import { ToastProvider, useToast } from './context/ToastContext';
 import PrivateRoute from './routes/PrivateRoute';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import VerifyOtpPage from './pages/VerifyOtpPage';
 import DashboardPage from './pages/DashboardPage';
 import PublicPortfolioPage from './pages/PublicPortfolioPage';
 import { savePortfolio, getPortfolio, publishPortfolio } from './services/portfolioService';
 import { initialData as defaultTemplate } from './data/initialData';
+import Loader from './components/Loader';
 
 // AppContent handles the main logic requiring AuthContext
 const AppContent = () => {
@@ -20,6 +22,7 @@ const AppContent = () => {
   const { addToast } = useToast();
   const [userData, setUserData] = useState(null);
   const [dataLoading, setDataLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null); // Stop infinite loops
   const [isEditing, setIsEditing] = useState(false);
   const isFetchingRef = useRef(false);
 
@@ -56,7 +59,7 @@ const AppContent = () => {
   useEffect(() => {
     const fetchPortfolio = async () => {
       // Use ref to prevent double-fetching in StrictMode or rapid re-renders
-      if (user && !userData && !dataLoading && !isFetchingRef.current) {
+      if (user && !userData && !dataLoading && !isFetchingRef.current && !fetchError) {
         isFetchingRef.current = true;
         setDataLoading(true);
         try {
@@ -78,6 +81,8 @@ const AppContent = () => {
           console.error("Global fetch failed", err);
           if (err.response?.status === 404) {
             setUserData(defaultTemplate);
+          } else {
+            setFetchError(err); // Stop further retries
           }
         } finally {
           setDataLoading(false);
@@ -89,7 +94,7 @@ const AppContent = () => {
     if (!authLoading && user) {
       fetchPortfolio();
     }
-  }, [user, authLoading, userData, dataLoading]);
+  }, [user, authLoading, userData, dataLoading, fetchError]);
 
 
   const toggleEditMode = () => {
@@ -195,12 +200,12 @@ const AppContent = () => {
 
   // Global Loading State
   if (authLoading) {
-    return <div style={{ display: 'flex', justifyContent: 'center', padding: '50px' }}>Loading Auth...</div>;
+    return <Loader fullScreen={true} size="large" />;
   }
 
   // If fetching initial data
   if (user && dataLoading && !userData) {
-    return <div style={{ display: 'flex', justifyContent: 'center', padding: '50px' }}>Loading Portfolio...</div>;
+    return <Loader fullScreen={true} size="large" />;
   }
 
   return (
@@ -223,6 +228,7 @@ const AppContent = () => {
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage theme={theme} toggleTheme={toggleTheme} />} />
         <Route path="/register" element={<RegisterPage theme={theme} toggleTheme={toggleTheme} />} />
+        <Route path="/verify-otp" element={<VerifyOtpPage theme={theme} toggleTheme={toggleTheme} />} />
 
         {/* Protected Dashboard */}
         <Route
@@ -270,13 +276,50 @@ const AppContent = () => {
   );
 };
 
+import React from 'react';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("ErrorBoundary caught error", error, errorInfo);
+    this.setState({ errorInfo });
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '20px', color: 'red', whiteSpace: 'pre-wrap' }}>
+          <h1>Something went wrong.</h1>
+          <details style={{ whiteSpace: 'pre-wrap' }}>
+            {this.state.error && this.state.error.toString()}
+            <br />
+            {this.state.errorInfo && this.state.errorInfo.componentStack}
+          </details>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <AppContent />
-      </ToastProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

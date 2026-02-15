@@ -1,10 +1,19 @@
 import React from 'react';
 import '../css/Loader.css';
 
-const Loader = ({ size = 'medium', color = 'currentColor' }) => {
+const Loader = ({ size = 'medium', color = 'var(--accent-color)', fullScreen = false }) => {
+    const containerClass = fullScreen ? 'spinner-container fullscreen' : 'spinner-container';
+
     return (
-        <div className={`loader loader-${size}`} style={{ borderColor: `${color} transparent transparent transparent` }}>
-            <div></div><div></div><div></div><div></div>
+        <div className={containerClass}>
+            <div
+                className={`spinner spinner-${size}`}
+                style={{
+                    borderTopColor: color,
+                    borderRightColor: color,
+                    borderBottomColor: color
+                }}
+            ></div>
         </div>
     );
 };

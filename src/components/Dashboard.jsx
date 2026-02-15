@@ -116,7 +116,18 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                     const isDeploying = deployingId === template.id;
 
                     return (
-                        <div key={template.id} className={`template-card ${isDeployed ? 'deployed' : 'not-deployed'}`}>
+                        <div
+                            key={template.id}
+                            className={`template-card ${isDeployed ? 'deployed' : 'not-deployed'}`}
+                            onClick={() => {
+                                // Generic navigation for all templates
+                                if (template.id !== 'medium') {
+                                    addToast("Opening Standard Editor. Changes apply to all templates.", "info", 4000);
+                                }
+                                navigate(`/?portfolioStyle=${template.id}&edit=true`);
+                            }}
+                            style={{ cursor: 'pointer' }}
+                        >
                             {/* Deployed Badge */}
                             {isDeployed && (
                                 <div className="deployed-badge">
@@ -161,13 +172,17 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                                     {/* Row 1: Preview & Edit */}
                                     <div className="button-row">
                                         <button
-                                            onClick={() => navigate(`/?portfolioStyle=${template.id}`)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate(`/?portfolioStyle=${template.id}`);
+                                            }}
                                             className="outline-btn"
                                         >
                                             Preview
                                         </button>
                                         <button
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.stopPropagation();
                                                 if (template.id !== 'medium') {
                                                     addToast("Opening Standard Editor. Changes apply to all templates.", "info", 4000);
                                                 }
@@ -182,7 +197,8 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                                     {/* Row 2: Select/Active */}
                                     {isDeployed ? (
                                         <button
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.stopPropagation();
                                                 if (publicUrl) {
                                                     const url = publicUrl.startsWith('http') ? publicUrl : `${window.location.origin}${publicUrl}`;
                                                     window.open(url, '_blank');
@@ -194,7 +210,10 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                                         </button>
                                     ) : (
                                         <button
-                                            onClick={() => handleDeploy(template.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeploy(template.id);
+                                            }}
                                             disabled={isDeploying}
                                             className="deploy-btn inactive"
                                         >

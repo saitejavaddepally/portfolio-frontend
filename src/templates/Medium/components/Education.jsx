@@ -60,7 +60,7 @@ const Education = ({ data, isEditing, setUserData }) => {
             )}
 
             {data && data.map((edu, index) => (
-                <article className="job-item" key={index} style={{ position: 'relative' }}>
+                <article className="job-item" key={index} style={{ position: 'relative', gridTemplateColumns: '1fr' }}>
                     {isEditing && (
                         <button
                             onClick={() => removeEducation(index)}

@@ -4,12 +4,13 @@ import { useAuth } from '../context/AuthContext';
 import SharedLayout from '../components/SharedLayout';
 import AuthSidePanel from '../components/AuthSidePanel';
 import ErrorAlert from '../components/ErrorAlert';
+import Loader from '../components/Loader';
 import '../css/Auth.css';
 
 const RegisterPage = ({ theme, toggleTheme }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState('PROFESSIONAL');
+    const [role, setRole] = useState('PROFESSIONAL'); // Default role
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -23,9 +24,8 @@ const RegisterPage = ({ theme, toggleTheme }) => {
 
         try {
             await register(email, password, role);
-            // Registration now auto-logs in the user.
-            // Redirect immediately to dashboard without showing "success" message.
-            navigate('/dashboard');
+            // Redirect to OTP verification page with email in state
+            navigate('/verify-otp', { state: { email } });
         } catch (err) {
             console.error("Registration failed", err);
             if (err.response?.data) {
@@ -33,7 +33,7 @@ const RegisterPage = ({ theme, toggleTheme }) => {
             } else if (err.message) {
                 setError(err.message);
             } else {
-                setError("Failed to register. Please try again.");
+                setError("Failed to create account. Please try again.");
             }
         } finally {
             setLoading(false);
@@ -47,10 +47,10 @@ const RegisterPage = ({ theme, toggleTheme }) => {
                 <div className="auth-form-side">
                     <div className="auth-card">
                         <h2 className="auth-title">
-                            Get Started
+                            Create Account
                         </h2>
                         <p className="auth-subtitle">
-                            Create your account to start showcasing your work
+                            Start building your professional portfolio today
                         </p>
 
                         <ErrorAlert error={error} />
@@ -64,6 +64,7 @@ const RegisterPage = ({ theme, toggleTheme }) => {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="auth-input"
+                                    placeholder="you@example.com"
                                 />
                             </div>
 
@@ -75,24 +76,21 @@ const RegisterPage = ({ theme, toggleTheme }) => {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="auth-input"
+                                    placeholder="••••••••"
+                                    minLength="6"
                                 />
                             </div>
 
-                            <div style={{ marginBottom: '2rem' }}>
-                                <label className="auth-label">I am a</label>
-                                <div className="auth-select-wrapper">
-                                    <select
-                                        value={role}
-                                        onChange={(e) => setRole(e.target.value)}
-                                        className="auth-input auth-select"
-                                    >
-                                        <option value="PROFESSIONAL">Professional (I want to build a portfolio)</option>
-                                        <option value="RECRUITER">Recruiter (I want to hire)</option>
-                                    </select>
-                                    <div className="auth-select-arrow">
-                                        ▼
-                                    </div>
-                                </div>
+                            <div className="auth-input-group">
+                                <label className="auth-label">I am a...</label>
+                                <select
+                                    value={role}
+                                    onChange={(e) => setRole(e.target.value)}
+                                    className="auth-input"
+                                >
+                                    <option value="PROFESSIONAL">Professional (Job Seeker)</option>
+                                    <option value="RECRUITER">Recruiter (Hiring)</option>
+                                </select>
                             </div>
 
                             <button
@@ -100,21 +98,21 @@ const RegisterPage = ({ theme, toggleTheme }) => {
                                 disabled={loading}
                                 className="auth-button"
                             >
-                                {loading ? 'Creating Account...' : 'Create Account'}
+                                {loading ? <Loader size="small" color="#ffffff" /> : 'Get Started'}
                             </button>
                         </form>
 
                         <div className="auth-footer">
-                            Already have an account? <Link to="/login">Sign in here</Link>
+                            Already have an account? <Link to="/login">Sign in</Link>
                         </div>
                     </div>
                 </div>
 
                 {/* Right Side: Visuals */}
                 <AuthSidePanel
-                    title="Scale Your Team"
-                    subtitle="Connect with top-tier developers and designers."
-                    image="/assets/education.svg"
+                    title="Join the Community"
+                    subtitle="Connect with top companies and showcase your best work."
+                    image="/assets/contact.svg"
                 />
             </div>
         </SharedLayout>

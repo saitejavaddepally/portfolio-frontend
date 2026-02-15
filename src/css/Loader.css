@@ -1,30 +1,55 @@
-.loader {
+/* Modern Spinner */
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.spinner-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+[data-theme='dark'] .spinner-container.fullscreen {
+    background: rgba(18, 18, 18, 0.8);
+}
+
+.spinner {
     display: inline-block;
     position: relative;
     border-radius: 50%;
-    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
     border-style: solid;
+    border-color: transparent;
+    animation: spin 1s cubic-bezier(0.17, 0.67, 0.83, 0.67) infinite;
 }
 
-.loader-small {
-    width: 16px;
-    height: 16px;
+/* Size Variants */
+.spinner-small {
+    width: 20px;
+    height: 20px;
     border-width: 2px;
 }
 
-.loader-medium {
-    width: 24px;
-    height: 24px;
+.spinner-medium {
+    width: 40px;
+    height: 40px;
     border-width: 3px;
 }
 
-.loader-large {
-    width: 40px;
-    height: 40px;
+.spinner-large {
+    width: 60px;
+    height: 60px;
     border-width: 4px;
 }
 
-@keyframes lds-ring {
+@keyframes spin {
     0% {
         transform: rotate(0deg);
     }

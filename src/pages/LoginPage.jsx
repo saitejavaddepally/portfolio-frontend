@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import SharedLayout from '../components/SharedLayout';
 import AuthSidePanel from '../components/AuthSidePanel';
 import ErrorAlert from '../components/ErrorAlert';
+import Loader from '../components/Loader';
 import '../css/Auth.css';
 
 const LoginPage = ({ theme, toggleTheme }) => {
@@ -86,7 +87,7 @@ const LoginPage = ({ theme, toggleTheme }) => {
                                 disabled={loading}
                                 className="auth-button"
                             >
-                                {loading ? 'Signing In...' : 'Sign In'}
+                                {loading ? <Loader size="small" color="#ffffff" /> : 'Sign In'}
                             </button>
                         </form>
 

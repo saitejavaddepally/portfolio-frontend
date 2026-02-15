@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { getPublicPortfolio } from '../services/portfolioService';
 import MediumTemplate from '../templates/Medium';
 import ModernTemplate from '../templates/Modern';
+import Loader from '../components/Loader';
 
 const PublicPortfolioPage = () => {
     const { slug } = useParams();
@@ -42,18 +43,7 @@ const PublicPortfolioPage = () => {
     };
 
     if (loading) {
-        return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                fontFamily: '"Source Serif Pro", serif',
-                color: '#666'
-            }}>
-                Loading Portfolio...
-            </div>
-        );
+        return <Loader fullScreen={true} size="large" />;
     }
 
     if (error || !userData) {

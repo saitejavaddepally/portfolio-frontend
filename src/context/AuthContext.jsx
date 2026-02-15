@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import apiClient from '../services/apiClient';
+import Loader from '../components/Loader';
 
 const AuthContext = createContext(null);
 
@@ -42,7 +43,9 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        window.location.href = '/login';
+        if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+        }
     };
 
     // Initial load: Check for tokens
@@ -87,9 +90,16 @@ export const AuthProvider = ({ children }) => {
     };
 
     const register = async (email, password, role) => {
+        // Step 1: Register and send OTP
         const response = await apiClient.post('/auth/register', { email, password, role });
-        const { accessToken, refreshToken, role: returnedRole } = response.data;
-        handleTokenUpdate(accessToken, refreshToken, returnedRole || role);
+        return response.data;
+    };
+
+    const verifyOtp = async (email, otp) => {
+        // Step 2: Verify OTP and get tokens
+        const response = await apiClient.post('/auth/register/verify-otp', { email, otp });
+        const { accessToken, refreshToken, role } = response.data;
+        handleTokenUpdate(accessToken, refreshToken, role);
         return response.data;
     };
 
@@ -99,12 +109,13 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         register,
+        verifyOtp,
         logout
     }), [user, accessToken, loading]);
 
     return (
         <AuthContext.Provider value={value}>
-            {!loading && children}
+            {!loading ? children : <div style={{ display: 'flex', justifyContent: 'center', height: '100vh', alignItems: 'center' }}><Loader fullScreen={true} size="large" /></div>}
         </AuthContext.Provider>
     );
 };
