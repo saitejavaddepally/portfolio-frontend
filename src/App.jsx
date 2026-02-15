@@ -97,18 +97,20 @@ const AppContent = () => {
 					else if (responseData && responseData.data) {
 						// Merge root properties (slug, _id) with the portfolio data
 						// Check for slug in root OR nested in data (as user JSON suggests inconsistent structure)
-						const slug = responseData.slug || responseData.data.slug;
+						// Also check publicSlug and published from user screenshot
+						const slug = responseData.slug || responseData.publicSlug || responseData.data.slug;
+						const isPublished = responseData.isPublished || responseData.published || !!slug;
 						const activeTemplate = responseData.activeTemplate || responseData.data.activeTemplate;
 
 						console.log("DEBUG: getPortfolio Response:", responseData);
-						console.log("DEBUG: Extracted activeTemplate:", activeTemplate, "Slug:", slug);
+						console.log("DEBUG: Extracted activeTemplate:", activeTemplate, "Slug:", slug, "isPublished:", isPublished);
 
 						setUserData({
 							...responseData.data,
 							slug: slug,
 							_id: responseData._id,
 							activeTemplate: activeTemplate,
-							isPublished: !!slug
+							isPublished: isPublished
 						});
 					}
 					else if (responseData && responseData.hero) {
