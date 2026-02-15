@@ -79,7 +79,18 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                             <UserCard
                                 key={user._id || user.id}
                                 user={user}
-                                onClick={() => navigate(`/recruiter/user/${user._id || user.id}`)}
+                                onClick={() => {
+                                    if (user.slug) {
+                                        // Open public portfolio page in new tab or same tab? 
+                                        // User said "directly show", let's do same tab navigation for now, 
+                                        // consistent with single-page app flow, or use window.open if it's external-ish.
+                                        // Since it's internal route /p/:slug, navigate is fine.
+                                        navigate(`/p/${user.slug}`);
+                                    } else {
+                                        // Fallback to internal preview if not published/no slug
+                                        navigate(`/recruiter/user/${user._id || user.id}`);
+                                    }
+                                }}
                             />
                         ))}
                     </div>

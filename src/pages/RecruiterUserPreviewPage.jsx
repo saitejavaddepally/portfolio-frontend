@@ -4,6 +4,7 @@ import apiClient from '../services/apiClient';
 import Loader from '../components/Loader';
 import MediumTemplate from '../templates/Medium';
 import ModernTemplate from '../templates/Modern';
+import { initialData } from '../data/initialData';
 
 const RecruiterUserPreviewPage = ({ theme, toggleTheme }) => {
     const { id } = useParams();
@@ -14,9 +15,28 @@ const RecruiterUserPreviewPage = ({ theme, toggleTheme }) => {
 
     useEffect(() => {
         const fetchUserPortfolio = async () => {
+            // ...
+
             try {
                 const response = await apiClient.get(`/recruiter/professionals/${id}`);
-                setUserData(response.data);
+                const fetchedData = response.data || {};
+
+                // Deep merge or ensure essential sections exist
+                const mergedData = {
+                    ...initialData,
+                    ...fetchedData,
+                    hero: { ...initialData.hero, ...(fetchedData.hero || {}) },
+                    header: { ...initialData.header, ...(fetchedData.header || {}) },
+                    experience: fetchedData.experience || [],
+                    education: fetchedData.education || [],
+                    projects: fetchedData.projects || [],
+                    skills: fetchedData.skills || [],
+                    achievements: { ...initialData.achievements, ...(fetchedData.achievements || {}) },
+                    socials: fetchedData.socials || initialData.socials,
+                    footer: { ...initialData.footer, ...(fetchedData.footer || {}) }
+                };
+
+                setUserData(mergedData);
             } catch (err) {
                 console.error("Failed to fetch user portfolio:", err);
                 setError("Failed to load portfolio. User might not exist or you don't have permission.");
