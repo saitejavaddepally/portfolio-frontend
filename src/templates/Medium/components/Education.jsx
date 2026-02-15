@@ -111,27 +111,45 @@ const Education = ({ data, isEditing, setUserData }) => {
                         </div>
 
                         <div className="job-details">
-                            {edu.desc && edu.desc.map((desc, i) => (
-                                isEditing ? (
-                                    <textarea
-                                        key={i}
-                                        value={desc}
-                                        onChange={(e) => handleDescUpdate(index, i, e.target.value)}
-                                        style={{ width: '100%', marginBottom: '0.5rem', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'vertical' }}
-                                        rows={1}
-                                        placeholder="Degree or Field of Study"
-                                    />
-                                ) : (
-                                    <p key={i}>{desc}</p>
-                                )
-                            ))}
+                            <ul>
+                                {edu.desc && edu.desc.map((desc, i) => (
+                                    isEditing ? (
+                                        <li key={i} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', alignItems: 'flex-start', listStyle: 'none' }}>
+                                            <span style={{ marginTop: '0.5rem' }}>•</span>
+                                            <textarea
+                                                value={desc}
+                                                onChange={(e) => handleDescUpdate(index, i, e.target.value)}
+                                                style={{ width: '100%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'vertical' }}
+                                                rows={1}
+                                                placeholder="Degree or Field of Study"
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    const newDesc = edu.desc.filter((_, idx) => idx !== i);
+                                                    setUserData(prev => {
+                                                        const newEdu = [...prev.education];
+                                                        newEdu[index] = { ...newEdu[index], desc: newDesc };
+                                                        return { ...prev, education: newEdu };
+                                                    });
+                                                }}
+                                                style={{ color: '#ff4444', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', lineHeight: 1 }}
+                                                title="Remove point"
+                                            >
+                                                ×
+                                            </button>
+                                        </li>
+                                    ) : (
+                                        <li key={i}>{desc}</li>
+                                    )
+                                ))}
+                            </ul>
                             {isEditing && (
                                 <button
                                     onClick={() => {
-                                        const newDesc = [...edu.desc, ""];
+                                        const newDesc = [...(edu.desc || []), ""];
                                         handleUpdate(index, 'desc', newDesc);
                                     }}
-                                    style={{ fontSize: '0.8rem', color: 'var(--accent-color)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                    style={{ fontSize: '0.8rem', color: 'var(--accent-color)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: '1.5rem' }}
                                 >
                                     + Add Detail
                                 </button>

@@ -130,20 +130,59 @@ const Experience = ({ data, isEditing, setUserData }) => {
                         </div>
 
                         <div className="job-details">
-                            {job.description.map((desc, i) => (
-                                isEditing ? (
-                                    <textarea
-                                        key={i}
-                                        value={desc}
-                                        onChange={(e) => handleDescUpdate(index, i, e.target.value)}
-                                        style={{ width: '100%', marginBottom: '0.5rem', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'vertical' }}
-                                        rows={2}
-                                        placeholder="Job Description / Achievement"
-                                    />
-                                ) : (
-                                    <p key={i}>{desc}</p>
-                                )
-                            ))}
+                            {/* Render as list for cleaner look */}
+                            <ul>
+                                {job.description.map((desc, i) => (
+                                    isEditing ? (
+                                        <li key={i} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', alignItems: 'flex-start', listStyle: 'none' }}>
+                                            <span style={{ marginTop: '0.5rem' }}>•</span>
+                                            <textarea
+                                                value={desc}
+                                                onChange={(e) => handleDescUpdate(index, i, e.target.value)}
+                                                style={{ width: '100%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'vertical' }}
+                                                rows={2}
+                                                placeholder="Job Description / Achievement"
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    const newDesc = job.description.filter((_, idx) => idx !== i);
+                                                    const newExp = [...data];
+                                                    newExp[index] = { ...newExp[index], description: newDesc };
+                                                    // We need to use setUserData updater pattern from parent or just call handleUpdate if it supported value?
+                                                    // Start using manual update since handleUpdate is single field.
+                                                    // Actually handleDescUpdate is for updating, we need a "remove description" function or inline it.
+                                                    setUserData(prev => {
+                                                        const latestExp = [...prev.experience];
+                                                        latestExp[index] = { ...latestExp[index], description: newDesc };
+                                                        return { ...prev, experience: latestExp };
+                                                    });
+                                                }}
+                                                style={{ color: '#ff4444', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', lineHeight: 1 }}
+                                                title="Remove point"
+                                            >
+                                                ×
+                                            </button>
+                                        </li>
+                                    ) : (
+                                        <li key={i}>{desc}</li>
+                                    )
+                                ))}
+                            </ul>
+                            {isEditing && (
+                                <button
+                                    onClick={() => {
+                                        setUserData(prev => {
+                                            const newExp = [...prev.experience];
+                                            const newDesc = [...newExp[index].description, ""];
+                                            newExp[index] = { ...newExp[index], description: newDesc };
+                                            return { ...prev, experience: newExp };
+                                        });
+                                    }}
+                                    style={{ fontSize: '0.8rem', color: 'var(--accent-color)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: '1.5rem' }}
+                                >
+                                    + Add Point
+                                </button>
+                            )}
                         </div>
 
                         <a href={job.url} target="_blank" rel="noopener noreferrer" className="company-link">

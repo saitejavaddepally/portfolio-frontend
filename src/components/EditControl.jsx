@@ -26,18 +26,7 @@ const EditControl = ({ onSave, onExport, toggleTheme, theme, onExitEdit, isSavin
                         {isSaving ? 'Saving...' : 'Save'}
                     </button>
 
-                    <button
-                        onClick={onDeploy}
-                        className="deploy-btn-small" // Need to add style for this
-                        disabled={isSaving || isDeploying}
-                        style={{
-                            display: 'flex', alignItems: 'center', gap: '6px',
-                            background: '#10b981', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', fontWeight: '500'
-                        }}
-                    >
-                        {isDeploying && <Loader size="small" color="#fff" />}
-                        {isDeploying ? 'Deploying...' : 'Deploy'}
-                    </button>
+
 
                     {publicUrl && (
                         <a

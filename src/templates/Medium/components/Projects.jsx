@@ -73,18 +73,65 @@ const Projects = ({ data, isEditing, setUserData }) => {
                             )}
                         </div>
 
-                        {isEditing ? (
-                            <textarea
-                                value={project.desc}
-                                onChange={(e) => handleUpdate(index, 'desc', e.target.value)}
-                                className="project-desc"
-                                style={{ width: '100%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit' }}
-                                rows={3}
-                                placeholder="Project Description"
-                            />
-                        ) : (
-                            <p className="project-desc">{project.desc}</p>
-                        )}
+                        <div className="project-details" style={{ marginTop: '1rem' }}>
+                            {Array.isArray(project.desc) ? project.desc.map((descPoint, i) => (
+                                isEditing ? (
+                                    <div key={i} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', alignItems: 'flex-start' }}>
+                                        <span style={{ marginTop: '0.5rem' }}>•</span>
+                                        <textarea
+                                            value={descPoint}
+                                            onChange={(e) => {
+                                                const newDesc = [...project.desc];
+                                                newDesc[i] = e.target.value;
+                                                handleUpdate(index, 'desc', newDesc);
+                                            }}
+                                            style={{ width: '100%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'vertical' }}
+                                            rows={2}
+                                            placeholder="Project Feature / Detail"
+                                        />
+                                        <button
+                                            onClick={() => {
+                                                const newDesc = project.desc.filter((_, idx) => idx !== i);
+                                                handleUpdate(index, 'desc', newDesc);
+                                            }}
+                                            style={{ color: '#ff4444', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', lineHeight: 1 }}
+                                            title="Remove point"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <ul key={i} style={{ paddingLeft: '1.2rem', margin: '0.2rem 0' }}>
+                                        <li>{descPoint}</li>
+                                    </ul>
+                                )
+                            )) : (
+                                // Fallback for old string data: render as single point or convert? 
+                                // Better to just render it as is if not editing, but if editing, maybe convert it?
+                                // Let's just handle it safe.
+                                isEditing ? (
+                                    <textarea
+                                        value={project.desc}
+                                        onChange={(e) => handleUpdate(index, 'desc', [e.target.value])} // Auto-convert to array on edit
+                                        rows={3}
+                                        style={{ width: '100%' }}
+                                    />
+                                ) : (
+                                    <p>{project.desc}</p>
+                                )
+                            )}
+                            {isEditing && (
+                                <button
+                                    onClick={() => {
+                                        const currentDesc = Array.isArray(project.desc) ? project.desc : [project.desc];
+                                        handleUpdate(index, 'desc', [...currentDesc, ""]);
+                                    }}
+                                    style={{ fontSize: '0.8rem', color: 'var(--accent-color)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: '0.5rem' }}
+                                >
+                                    + Add Point
+                                </button>
+                            )}
+                        </div>
 
                         <div className="project-tags">
                             {isEditing ? (

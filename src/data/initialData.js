@@ -3,7 +3,7 @@ export const initialData = {
     "name": "",
     "roles": [""],
     "intro": {
-      "text": "",
+      "desc": [""],
       "highlight": "",
       "suffix": ""
     },

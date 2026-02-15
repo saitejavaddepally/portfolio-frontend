@@ -31,6 +31,7 @@ const AppContent = () => {
   const [isDeploying, setIsDeploying] = useState(false);
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Theme State
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
@@ -117,6 +118,12 @@ const AppContent = () => {
     try {
       await savePortfolio(userData);
       addToast("Portfolio saved successfully!", "success");
+      // Exit edit mode and go to dashboard
+      const url = new URL(window.location);
+      url.searchParams.delete('edit');
+      window.history.pushState({}, '', url);
+      setIsEditing(false);
+      navigate('/dashboard');
     } catch (error) {
       console.error("Error saving portfolio:", error);
       const msg = error.response?.data?.errorMessage || error.message || "Failed to save portfolio.";
