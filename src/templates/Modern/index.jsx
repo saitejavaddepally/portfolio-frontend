@@ -243,7 +243,14 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                                             />
                                         ) : project.title}</h3>
                                     </div>
-                                    <p>{project.desc}</p>
+                                    {/* Description as bullet points for Modern too if array */}
+                                    {Array.isArray(project.desc) ? (
+                                        <ul className="modern-job-desc" style={{ marginTop: '1rem' }}>
+                                            {project.desc.map((d, i) => <li key={i}>{d}</li>)}
+                                        </ul>
+                                    ) : (
+                                        <p>{project.desc}</p>
+                                    )}
                                     <div className="card-tags">
                                         {project.tags.map(t => <span key={t}>#{t}</span>)}
                                     </div>
@@ -253,6 +260,29 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                     </div>
                 </section>
             )}
+
+            {/* Achievements Section */}
+            {(!isEditing && (!data.achievements || !data.achievements.items || data.achievements.items.length === 0)) ? null : (
+                <section className="modern-section" id="achievements" style={{ background: 'var(--bg-secondary)' }}>
+                    <div className="modern-container">
+                        <h2 className="section-title">Achievements</h2>
+                        <div className="modern-card" style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+                            <span className="project-type-badge">{data.achievements.type}</span>
+                            <h3 style={{ fontSize: '2rem', margin: '1rem 0' }}>{data.achievements.title}</h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginBottom: '1rem' }}>{data.achievements.org}</p>
+                            <p style={{ fontSize: '1.1rem', marginBottom: '2rem' }}>{data.achievements.description}</p>
+
+                            <ul className="modern-job-desc" style={{ textAlign: 'left', display: 'inline-block' }}>
+                                {data.achievements?.items?.map((item, i) => (
+                                    <li key={i}>{item}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+
 
             <footer className="modern-footer" id="contact">
                 <div className="modern-container">

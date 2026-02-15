@@ -3,12 +3,13 @@ import Hero from './components/Hero';
 import Experience from './components/Experience';
 import Education from './components/Education';
 import Projects from './components/Projects';
+import Achievements from './components/Achievements';
 import Skills from './components/Skills';
 import Footer from './components/Footer';
 import '../../css/Medium.css';
 
 
-const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData }) => {
+const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData, theme, toggleTheme }) => {
     // Helper to check if a section should be visible
     const shouldShow = (sectionData) => {
         if (isEditing) return true;
@@ -22,6 +23,8 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                 data={data.header || { name: data.hero.name }} // Fallback
                 isEditing={isEditing}
                 updateData={updateData}
+                theme={theme}
+                toggleTheme={toggleTheme}
             />
 
             <main className="container">
@@ -55,6 +58,14 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                 {shouldShow(data.projects) && (
                     <Projects
                         data={data.projects}
+                        isEditing={isEditing}
+                        setUserData={setUserData}
+                    />
+                )}
+
+                {shouldShow(data.achievements?.items) && (
+                    <Achievements
+                        data={data.achievements}
                         isEditing={isEditing}
                         setUserData={setUserData}
                     />

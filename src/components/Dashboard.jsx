@@ -122,7 +122,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                             onClick={() => {
                                 // Generic navigation for all templates
                                 if (template.id !== 'medium') {
-                                    addToast("Opening Standard Editor. Changes apply to all templates.", "info", 4000);
+                                    addToast("Opening Editor for " + template.name, "info", 2000);
                                 }
                                 navigate(`/?portfolioStyle=${template.id}&edit=true`);
                             }}

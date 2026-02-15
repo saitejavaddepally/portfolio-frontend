@@ -1,0 +1,209 @@
+/* Recruiter Dashboard Styles */
+.recruiter-dashboard {
+    min-height: 100vh;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+}
+
+.recruiter-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header-content h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.header-content p {
+    margin: 0.25rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.secondary-btn:hover {
+    background: var(--bg-primary);
+    border-color: #38bdf8;
+}
+
+/* Main Content */
+.recruiter-content {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Grid */
+.professionals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .professionals-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .recruiter-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+/* User Card */
+.recruiter-user-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.recruiter-user-card:hover {
+    transform: translateY(-4px);
+    border-color: #38bdf8;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.user-card-header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.user-avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.user-info {
+    overflow: hidden;
+}
+
+.user-name {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-role {
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Skills */
+.user-card-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.skill-badge {
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 100px;
+    font-weight: 500;
+}
+
+.skill-badge.more {
+    background: var(--border-color);
+    color: var(--text-secondary);
+}
+
+.user-card-footer {
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    text-align: right;
+}
+
+.view-profile-link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #38bdf8;
+}
+
+/* Error State */
+.recruiter-error-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.error-card {
+    text-align: center;
+    background: var(--bg-secondary);
+    padding: 3rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.back-btn {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #38bdf8;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}

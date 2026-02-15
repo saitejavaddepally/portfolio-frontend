@@ -15,6 +15,8 @@ import PublicPortfolioPage from './pages/PublicPortfolioPage';
 import { savePortfolio, getPortfolio, publishPortfolio } from './services/portfolioService';
 import { initialData as defaultTemplate } from './data/initialData';
 import Loader from './components/Loader';
+import RecruiterDashboardPage from './pages/RecruiterDashboardPage';
+import RecruiterUserPreviewPage from './pages/RecruiterUserPreviewPage';
 
 // AppContent handles the main logic requiring AuthContext
 const AppContent = () => {
@@ -253,6 +255,24 @@ const AppContent = () => {
           }
         />
 
+        {/* Recruiter Routes */}
+        <Route
+          path="/recruiter/dashboard"
+          element={
+            <PrivateRoute>
+              <RecruiterDashboardPage theme={theme} toggleTheme={toggleTheme} />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/recruiter/user/:id"
+          element={
+            <PrivateRoute>
+              <RecruiterUserPreviewPage theme={theme} toggleTheme={toggleTheme} />
+            </PrivateRoute>
+          }
+        />
+
         {/* Public Portfolio Route */}
         <Route path="/p/:slug" element={<PublicPortfolioPage />} />
 
@@ -279,7 +299,7 @@ const AppContent = () => {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </div>
+    </div >
   );
 };
 
