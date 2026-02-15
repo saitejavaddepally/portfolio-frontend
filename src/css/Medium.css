@@ -26,6 +26,7 @@
   --accent-color: #4caf50;
   --border-color: #333;
   --code-bg: #1e1e1e;
+  color-scheme: dark;
 }
 
 /* Reset & Base */
@@ -728,37 +729,21 @@ img {
   }
 
   .hero-content {
-    flex-direction: column-reverse;
-    /* Text on top (column-reverse puts last item on top? No wait) */
-    /* Original was column-reverse: Image (2nd child) on top, Text (1st child) on bottom? 
-       Actually standard column stack: Text top, Image bottom. 
-       If flex-direction: column, text is top. 
-       Let's stick to standard column for mobile: Image Top usually looks nice, or Text Top. 
-       Let's try Text Top (default column). 
-       The user said "Photo right correct?". On mobile "right" usually means "bottom" or "top".
-    */
-    flex-direction: column-reverse;
-    /* Wait, if HTML is Text then Image.
-       Column: Text -> Image.
-       Column-Reverse: Image -> Text.
-       Usually Image on Top is better for profiles.
-    */
+    flex-direction: column;
     gap: 2rem;
     align-items: center;
-    /* Center align on mobile */
-    flex-wrap: wrap;
-    /* Allow wrapping back */
+    flex-wrap: nowrap;
   }
 
   .hero-image-container {
     width: 180px;
     height: 180px;
     margin: 0 auto 1.5rem;
+    order: -1;
+    /* Force image to top */
   }
 
-  .hero-image {
-    /* Reset rotation on mobile for cleaner look or keep it? Keep it fun. */
-  }
+
 
   .header-content {
     flex-direction: column;

@@ -55,17 +55,23 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
     return (
         <div className="recruiter-dashboard">
             <header className="recruiter-header">
-                <div className="header-content">
-                    <h1>Recruiter Dashboard</h1>
-                    <p>Discover top talent for your open roles.</p>
+                <div className="header-left">
+                    <div className="header-text">
+                        <h1>Recruiter Dashboard</h1>
+                        <p>Discover top talent for your open roles.</p>
+                    </div>
                 </div>
-                <div className="header-actions">
-                    <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle Theme">
-                        {theme === 'dark' ? '☀️' : '🌙'}
-                    </button>
-                    <button onClick={() => navigate('/dashboard')} className="secondary-btn">
-                        My Portfolio
-                    </button>
+
+                <div className="header-right">
+                    <img src="/assets/projects.svg" alt="Recruiting" className="recruiter-hero-img" />
+                    <div className="header-actions">
+                        <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle Theme">
+                            {theme === 'dark' ? '☀️' : '🌙'}
+                        </button>
+                        <button onClick={() => navigate('/dashboard')} className="secondary-btn">
+                            My Portfolio
+                        </button>
+                    </div>
                 </div>
             </header>
 
