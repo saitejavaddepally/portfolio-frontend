@@ -2,31 +2,34 @@ import React from 'react';
 import '../css/Recruiter.css';
 
 const UserCard = ({ user, onClick }) => {
+    // Access portfolio data safely
+    const portfolioData = user.portfolio?.data || {};
+
     // Derive current role/company
     let currentRole = "Fresher";
     let currentCompany = "";
 
-    if (user.experience && user.experience.length > 0) {
+    if (portfolioData.experience && portfolioData.experience.length > 0) {
         // Try to find a "Present" role
-        const currentExp = user.experience.find(exp =>
+        const currentExp = portfolioData.experience.find(exp =>
             exp.dates && (exp.dates.toLowerCase().includes('present') || exp.dates.toLowerCase().includes('current'))
-        ) || user.experience[0]; // Fallback to first
+        ) || portfolioData.experience[0]; // Fallback to first
 
         currentRole = currentExp.role;
         currentCompany = currentExp.company;
     }
 
     // Top 3 skills
-    const topSkills = user.skills ? user.skills.slice(0, 3) : [];
+    const topSkills = portfolioData.skills ? portfolioData.skills.slice(0, 3) : [];
 
     return (
         <div className="recruiter-user-card" onClick={onClick}>
             <div className="user-card-header">
                 <div className="user-avatar-placeholder">
-                    {user.hero?.name ? user.hero.name.charAt(0).toUpperCase() : 'U'}
+                    {portfolioData.hero?.name ? portfolioData.hero.name.charAt(0).toUpperCase() : 'U'}
                 </div>
                 <div className="user-info">
-                    <h3 className="user-name">{user.hero?.name || 'Unnamed Professional'}</h3>
+                    <h3 className="user-name">{portfolioData.hero?.name || 'Unnamed Professional'}</h3>
                     <p className="user-role">
                         {currentRole}
                         {currentCompany && <span className="user-company"> @ {currentCompany}</span>}
@@ -38,8 +41,8 @@ const UserCard = ({ user, onClick }) => {
                 {topSkills.map((skill, index) => (
                     <span key={index} className="skill-badge">{skill}</span>
                 ))}
-                {user.skills && user.skills.length > 3 && (
-                    <span className="skill-badge more">+{user.skills.length - 3}</span>
+                {portfolioData.skills && portfolioData.skills.length > 3 && (
+                    <span className="skill-badge more">+{portfolioData.skills.length - 3}</span>
                 )}
             </div>
 
