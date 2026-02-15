@@ -75,11 +75,13 @@ const AppContent = () => {
             // Merge root properties (slug, _id) with the portfolio data
             // Check for slug in root OR nested in data (as user JSON suggests inconsistent structure)
             const slug = responseData.slug || responseData.data.slug;
+            const activeTemplate = responseData.activeTemplate || responseData.data.activeTemplate;
 
             setUserData({
               ...responseData.data,
               slug: slug,
               _id: responseData._id,
+              activeTemplate: activeTemplate,
               isPublished: !!slug
             });
           }

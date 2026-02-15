@@ -124,7 +124,6 @@ const RecruiterUserPreviewPage = ({ theme, toggleTheme }) => {
                 <button
                     onClick={() => navigate('/recruiter/dashboard')}
                     style={{
-                        x
                         background: 'white',
                         color: 'black',
                         border: 'none',
