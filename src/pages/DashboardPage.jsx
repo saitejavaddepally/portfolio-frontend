@@ -18,37 +18,14 @@ const DashboardPage = ({ theme, toggleTheme, userData, setUserData, setActiveTem
         if (isRecruiter) {
             navigate('/recruiter/dashboard');
         }
-    }, [isRecruiter]);
+    }, [isRecruiter, navigate]);
 
-    // Better approach: Add useNavigate at top level
+    if (isRecruiter) {
+        return null; // Don't render anything while redirecting
+    }
+
     return (
         <SharedLayout showUserInfo={true} theme={theme} toggleTheme={toggleTheme}>
-            {isRecruiter ? (
-                <RedirectToRecruiter />
-            ) : (
-                // ... existing professional dashboard
-                // ...
-            )}
-        </SharedLayout>
-    );
-};
-
-// Sub-component to handle redirect cleanly
-const RedirectToRecruiter = () => {
-    const navigate = require('react-router-dom').useNavigate();
-    React.useEffect(() => {
-        navigate('/recruiter/dashboard');
-    }, [navigate]);
-    return null;
-};
-// Wait, I can just add useNavigate to the main component.
-
-
-return (
-    <SharedLayout showUserInfo={true} theme={theme} toggleTheme={toggleTheme}>
-        {isProfessional ? (
-            // For Professionals: Show the Portfolio Dashboard
-            // userData is passed from App, fetched globally
             <Dashboard
                 activeTemplate={userData?.activeTemplate || 'medium'}
                 onSelectTemplate={setActiveTemplate}
@@ -88,14 +65,10 @@ return (
                 onDeployTemplate={async (templateId) => {
                     try {
                         // 1. Prepare data with new template
-                        // 1. Prepare data with new template
                         const currentName = userData.header?.name || userData.hero?.name || '';
                         const nameSlug = currentName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
                         // Check if current slug matches name (roughly)
-                        // If current slug is 'saiteja-v' and name is 'Saiteja V.', it matches.
-                        // If name is 'John Doe', slug should be 'john-doe'.
-                        // If they differ, we nullify slug to force regen.
                         let newSlug = userData.slug;
                         if (userData.slug && !userData.slug.includes(nameSlug)) {
                             console.log("Name changed, forcing slug regeneration");
@@ -117,15 +90,11 @@ return (
 
                         // 4. Update State
                         let slug = result.slug;
-
                         if (!slug && result.publicUrl) {
-                            // Fallback: extract slug from publicUrl
                             try {
-                                // Handle full URL or relative path
                                 const url = result.publicUrl;
                                 const parts = url.split('/');
                                 slug = parts[parts.length - 1] || parts[parts.length - 2];
-                                // If ends with /, pop gives empty string, so take previous.
                                 if (!slug) slug = parts[parts.length - 2];
                             } catch (e) {
                                 console.warn("Failed to extract slug from publicUrl", e);
@@ -142,7 +111,6 @@ return (
                             ...payload,
                             slug: slug,
                             isPublished: true
-                            // Also update publicUrl if available
                         }));
 
                         // 5. Update App active template
@@ -155,11 +123,8 @@ return (
                     }
                 }}
             />
-                // For Recruiters: Redirect is handled in useEffect
-                null
-            )}
-    </SharedLayout>
-);
+        </SharedLayout>
+    );
 };
 
 export default DashboardPage;
