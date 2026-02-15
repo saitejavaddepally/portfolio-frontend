@@ -514,8 +514,11 @@
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    width: 90%;
+    width: calc(100% - 3rem);
+    /* Ensure explicit margin-like spacing on mobile */
     max-width: 400px;
+    margin: 1.5rem;
+    /* Explicit margin requested by user */
     text-align: center;
     border: 1px solid var(--border-color);
 }

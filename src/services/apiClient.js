@@ -20,6 +20,22 @@ apiClient.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
+// Queue to hold requests while refreshing
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+    failedQueue.forEach(prom => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token);
+        }
+    });
+
+    failedQueue = [];
+};
+
 // Response Interceptor: Handle 401
 apiClient.interceptors.response.use(
     (response) => response,
@@ -27,7 +43,20 @@ apiClient.interceptors.response.use(
         const originalRequest = error.config;
 
         if (error.response?.status === 401 && !originalRequest._retry) {
+
+            if (isRefreshing) {
+                return new Promise(function (resolve, reject) {
+                    failedQueue.push({ resolve, reject });
+                }).then(token => {
+                    originalRequest.headers['Authorization'] = 'Bearer ' + token;
+                    return apiClient(originalRequest);
+                }).catch(err => {
+                    return Promise.reject(err);
+                });
+            }
+
             originalRequest._retry = true;
+            isRefreshing = true;
 
             try {
                 const refreshToken = localStorage.getItem('refreshToken');
@@ -51,17 +80,23 @@ apiClient.interceptors.response.use(
                     localStorage.setItem('refreshToken', newRefreshToken);
                 }
 
-                // Update header and retry
-                originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+                // Update header
+                apiClient.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
+                originalRequest.headers['Authorization'] = 'Bearer ' + accessToken;
+
+                processQueue(null, accessToken);
                 return apiClient(originalRequest);
 
             } catch (refreshError) {
+                processQueue(refreshError, null);
                 console.error("Session expired:", refreshError);
                 // Clear tokens and redirect
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
                 window.location.href = '/login';
                 return Promise.reject(refreshError);
+            } finally {
+                isRefreshing = false;
             }
         }
         return Promise.reject(error);
