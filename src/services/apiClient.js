@@ -44,6 +44,12 @@ apiClient.interceptors.response.use(
 
         if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
 
+            // Skip refresh logic for login/register endpoints to allow actual 401s to reach the component
+            const isAuthRequest = originalRequest.url.includes('/auth/login') || originalRequest.url.includes('/auth/register');
+            if (isAuthRequest) {
+                return Promise.reject(error);
+            }
+
             if (isRefreshing) {
                 return new Promise(function (resolve, reject) {
                     failedQueue.push({ resolve, reject });
