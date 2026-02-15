@@ -22,8 +22,10 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                 console.error("Failed to fetch professionals:", err);
                 if (err.response && err.response.status === 403) {
                     setError("Access Denied. This area is for Recruiters only.");
+                } else if (err.response) {
+                    setError(`Error ${err.response.status}: ${err.response.data?.message || err.message}`);
                 } else {
-                    setError("Failed to load professionals. Please try again later.");
+                    setError("Failed to load professionals. Server unreachable.");
                 }
             } finally {
                 setLoading(false);
