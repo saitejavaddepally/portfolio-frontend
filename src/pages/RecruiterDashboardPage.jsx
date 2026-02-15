@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../services/apiClient';
 import UserCard from '../components/UserCard';
+import SharedLayout from '../components/SharedLayout';
 import Loader from '../components/Loader';
 import '../css/Recruiter.css';
 
@@ -53,57 +54,44 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
     }
 
     return (
-        <div className="recruiter-dashboard">
-            <header className="recruiter-header">
-                <div className="header-left">
-                    <div className="header-text">
-                        <h1>Recruiter Dashboard</h1>
-                        <p>Discover top talent for your open roles.</p>
+        <SharedLayout showUserInfo={true} theme={theme} toggleTheme={toggleTheme}>
+            <div className="recruiter-dashboard" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
+                <header className="dashboard-header" style={{ marginBottom: '2rem' }}>
+                    <div className="dashboard-header-content">
+                        <h1 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '0.5rem', color: 'var(--text-primary)', fontFamily: '"Source Serif Pro", serif' }}>
+                            Recruiter Dashboard
+                        </h1>
+                        <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: 0 }}>
+                            Discover top talent for your open roles.
+                        </p>
                     </div>
-                </div>
+                </header>
 
-                <div className="header-right">
-                    <img src="/assets/projects.svg" alt="Recruiting" className="recruiter-hero-img" />
-                    <div className="header-actions">
-                        <button className="theme-toggle-btn" onClick={toggleTheme} title="Toggle Theme">
-                            {theme === 'dark' ? '☀️' : '🌙'}
-                        </button>
-                        <button onClick={() => navigate('/dashboard')} className="secondary-btn">
-                            My Portfolio
-                        </button>
-                    </div>
-                </div>
-            </header>
-
-            <main className="recruiter-content">
-                {professionals.length === 0 ? (
-                    <div className="current-empty-state">
-                        <p>No professionals found at the moment.</p>
-                    </div>
-                ) : (
-                    <div className="professionals-grid">
-                        {professionals.map(user => (
-                            <UserCard
-                                key={user._id || user.id}
-                                user={user}
-                                onClick={() => {
-                                    if (user.slug) {
-                                        // Open public portfolio page in new tab or same tab? 
-                                        // User said "directly show", let's do same tab navigation for now, 
-                                        // consistent with single-page app flow, or use window.open if it's external-ish.
-                                        // Since it's internal route /p/:slug, navigate is fine.
-                                        navigate(`/p/${user.slug}`);
-                                    } else {
-                                        // Fallback to internal preview if not published/no slug
-                                        navigate(`/recruiter/user/${user._id || user.id}`);
-                                    }
-                                }}
-                            />
-                        ))}
-                    </div>
-                )}
-            </main>
-        </div>
+                <main className="recruiter-content" style={{ padding: 0 }}>
+                    {professionals.length === 0 ? (
+                        <div className="current-empty-state" style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-secondary)' }}>
+                            <p>No professionals found at the moment.</p>
+                        </div>
+                    ) : (
+                        <div className="professionals-grid">
+                            {professionals.map(user => (
+                                <UserCard
+                                    key={user._id || user.id}
+                                    user={user}
+                                    onClick={() => {
+                                        if (user.slug) {
+                                            navigate(`/p/${user.slug}`);
+                                        } else {
+                                            navigate(`/recruiter/user/${user._id || user.id}`);
+                                        }
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </main>
+            </div>
+        </SharedLayout>
     );
 };
 
