@@ -28,6 +28,8 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
     const [deployingId, setDeployingId] = useState(null);
     const [copySuccess, setCopySuccess] = useState('');
 
+    console.log("DEBUG: Dashboard Props - activeTemplate:", activeTemplate, "isPublished:", isPublished, "publicUrl:", publicUrl);
+
     // Derived data for previews
     const userName = userData?.hero?.name || userData?.header?.name || 'Your Name';
     const userTitle = userData?.hero?.headline || (userData?.hero?.roles && userData.hero.roles[0]) || 'Creative Professional';
