@@ -72,7 +72,16 @@ const AppContent = () => {
             setUserData(defaultTemplate);
           }
           else if (responseData && responseData.data) {
-            setUserData(responseData.data);
+            // Merge root properties (slug, _id) with the portfolio data
+            // Check for slug in root OR nested in data (as user JSON suggests inconsistent structure)
+            const slug = responseData.slug || responseData.data.slug;
+
+            setUserData({
+              ...responseData.data,
+              slug: slug,
+              _id: responseData._id,
+              isPublished: !!slug
+            });
           }
           else if (responseData && responseData.hero) {
             setUserData(responseData);

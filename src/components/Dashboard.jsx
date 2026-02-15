@@ -22,11 +22,16 @@ const templates = [
     }
 ];
 
-const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, onPublishUpdate, onPublish, onDeployTemplate }) => {
+const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, onPublishUpdate, onPublish, onDeployTemplate, userData }) => {
     const navigate = useNavigate();
     const { addToast } = useToast();
     const [deployingId, setDeployingId] = useState(null);
     const [copySuccess, setCopySuccess] = useState('');
+
+    // Derived data for previews
+    const userName = userData?.hero?.name || userData?.header?.name || 'Your Name';
+    const userTitle = userData?.hero?.headline || (userData?.hero?.roles && userData.hero.roles[0]) || 'Creative Professional';
+    const userDesc = userData?.hero?.description || userData?.hero?.intro?.text || 'Passionate about building scalable applications...';
 
     const handleDeploy = async (templateId) => {
         if (onDeployTemplate) {
@@ -139,14 +144,14 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                             <div className="preview-area">
                                 {template.id === 'medium' ? (
                                     <div className="preview-medium">
-                                        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>Your Name</div>
-                                        <div style={{ fontSize: '0.8rem', lineHeight: '1.4', color: '#444' }}>Passionate about building scalable applications...</div>
+                                        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>{userName}</div>
+                                        <div style={{ fontSize: '0.8rem', lineHeight: '1.4', color: '#444' }}>{userDesc}</div>
                                         <div style={{ marginTop: '1.5rem', width: '30px', height: '2px', background: '#000' }}></div>
                                     </div>
                                 ) : template.id === 'modern' ? (
                                     <div className="preview-modern">
-                                        <div className="preview-modern-title">Your Name</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>AI Engineer & Full Stack Dev</div>
+                                        <div className="preview-modern-title">{userName}</div>
+                                        <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{userTitle}</div>
                                         <div style={{ marginTop: '1.5rem', display: 'flex', gap: '8px' }}>
                                             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#38bdf8' }}></div>
                                             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#818cf8' }}></div>

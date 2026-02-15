@@ -2,8 +2,17 @@ import React from 'react';
 import '../css/Recruiter.css';
 
 const UserCard = ({ user, onClick }) => {
-    // Access portfolio data safely
-    const portfolioData = user.portfolio?.data || {};
+    // Access portfolio data safely, handling potential structure variations
+    const getPortfolioData = (u) => {
+        if (u.userData) return u.userData; // Explicit field from UserSummaryResponse
+        if (u.data?.hero) return u.data; // Structure from potential JSON variation
+        if (u.portfolio?.data?.hero) return u.portfolio.data;
+        if (u.portfolio?.hero) return u.portfolio; // Maybe flattened in list
+        if (u.hero) return u; // Maybe at root
+        return u.portfolio?.data || {}; // Default fallback
+    };
+
+    const portfolioData = getPortfolioData(user);
 
     // Derive current role/company
     let currentRole = "Fresher";

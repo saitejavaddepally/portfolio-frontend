@@ -21,7 +21,15 @@ const RecruiterUserPreviewPage = ({ theme, toggleTheme }) => {
                 const response = await apiClient.get(`/recruiter/professionals/${id}`);
                 // Extract portfolio data from the user object
                 const userObject = response.data || {};
-                const fetchedData = userObject.portfolio?.data || {};
+                let fetchedData = {};
+
+                if (userObject.data && userObject.data.hero) {
+                    fetchedData = userObject.data;
+                } else if (userObject.portfolio && userObject.portfolio.data) {
+                    fetchedData = userObject.portfolio.data;
+                } else {
+                    fetchedData = userObject; // Fallback to root or whatever is there
+                }
 
                 // Deep merge or ensure essential sections exist
                 const mergedData = {
@@ -42,10 +50,6 @@ const RecruiterUserPreviewPage = ({ theme, toggleTheme }) => {
                 };
 
                 setUserData(mergedData);
-                console.log("Recruiter Preview Debug:");
-                console.log("API Response:", response.data);
-                console.log("Fetched Portfolio Data:", fetchedData);
-                console.log("Merged Data for Template:", mergedData);
             } catch (err) {
                 console.error("Failed to fetch user portfolio:", err);
                 setError("Failed to load portfolio. User might not exist or you don't have permission.");
@@ -120,6 +124,7 @@ const RecruiterUserPreviewPage = ({ theme, toggleTheme }) => {
                 <button
                     onClick={() => navigate('/recruiter/dashboard')}
                     style={{
+                        x
                         background: 'white',
                         color: 'black',
                         border: 'none',

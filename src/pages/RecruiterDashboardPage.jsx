@@ -17,6 +17,7 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                 const response = await apiClient.get('/recruiter/professionals');
                 // Assuming response.data is the array of users, or response.data.data
                 const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
+                console.log("Recruiter Dashboard Professionals Data:", data);
                 setProfessionals(data);
             } catch (err) {
                 console.error("Failed to fetch professionals:", err);
