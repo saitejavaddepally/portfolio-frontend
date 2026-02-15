@@ -13,7 +13,7 @@ const Skills = ({ data, isEditing, setUserData }) => {
     const addSkill = () => {
         setUserData(prev => ({
             ...prev,
-            skills: [...prev.skills, "New Skill"]
+            skills: [...prev.skills, ""]
         }));
     };
 
@@ -36,6 +36,7 @@ const Skills = ({ data, isEditing, setUserData }) => {
                                 onChange={(e) => handleUpdate(index, e.target.value)}
                                 className="skill-tag"
                                 style={{ border: '1px dashed var(--border-color)', minWidth: '80px', textAlign: 'center', background: 'transparent', color: 'inherit' }}
+                                placeholder="Skill"
                             />
                             <button
                                 onClick={() => removeSkill(index)}

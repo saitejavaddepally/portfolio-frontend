@@ -7,21 +7,22 @@ const Hero = ({ data, isEditing, onUpdate, onArrayUpdate }) => {
                 <div className="hero-text">
                     {isEditing ? (
                         <div style={{ marginBottom: '1rem' }}>
-                            <label style={{ fontSize: '0.8rem', color: '#666', display: 'block' }}>Headline</label>
-                            <h1 style={{ margin: 0 }}>
+                            <label style={{ fontSize: '0.8rem', color: '#666', display: 'block', marginBottom: '0.5rem' }}>Headline</label>
+                            <h1 style={{ margin: 0, display: 'block' }}>
                                 <span>Hi, I'm </span>
                                 <span
+                                    className="placeholder-empty"
                                     contentEditable
                                     suppressContentEditableWarning
-                                    onBlur={(e) => {
-                                        const newName = e.target.innerText;
-                                        onUpdate('name', newName);
-                                    }}
+                                    onBlur={(e) => onUpdate('name', e.target.innerText)}
+                                    placeholder="Your Name"
                                     style={{
                                         borderBottom: '1px dashed var(--border-color)',
                                         minWidth: '50px',
-                                        display: 'inline',
-                                        outline: 'none'
+                                        display: 'inline', /* Allow wrapping */
+                                        outline: 'none',
+                                        background: 'transparent',
+                                        color: 'inherit',
                                     }}
                                 >
                                     {data.name}
@@ -45,7 +46,8 @@ const Hero = ({ data, isEditing, onUpdate, onArrayUpdate }) => {
                                             onUpdate('roles', newRoles);
                                         }}
                                         className="role-badge"
-                                        style={{ border: '1px dashed var(--border-color)', width: '200px', background: 'transparent', color: 'inherit' }}
+                                        placeholder="Role"
+                                        style={{ border: '1px dashed var(--border-color)', width: `${Math.max(role.length, 10)}ch`, minWidth: '80px', background: 'transparent', color: 'inherit' }}
                                     />
                                     <button
                                         onClick={() => {
@@ -53,17 +55,13 @@ const Hero = ({ data, isEditing, onUpdate, onArrayUpdate }) => {
                                             onUpdate('roles', newRoles);
                                         }}
                                         style={{
-                                            background: '#ff4444',
-                                            color: 'white',
+                                            background: 'none',
+                                            color: '#ff4444',
                                             border: 'none',
-                                            borderRadius: '50%',
-                                            width: '20px',
-                                            height: '20px',
-                                            fontSize: '12px',
+                                            fontSize: '16px',
                                             cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
+                                            padding: '0 4px',
+                                            lineHeight: 1
                                         }}
                                         title="Remove role"
                                     >
@@ -76,36 +74,50 @@ const Hero = ({ data, isEditing, onUpdate, onArrayUpdate }) => {
                         ))}
                         {isEditing && (
                             <button
-                                onClick={() => onUpdate('roles', [...data.roles, "New Role"])}
-                                style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem', marginLeft: '0.5rem', background: 'var(--bg-color)', color: 'var(--text-main)', border: '1px solid var(--border-color)', cursor: 'pointer' }}
+                                onClick={() => onUpdate('roles', [...data.roles, ""])}
+                                style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem', background: 'transparent', color: 'var(--text-muted)', border: '1px dashed var(--border-color)', cursor: 'pointer', borderRadius: '4px' }}
                             >
-                                + Add Role
+                                + Add
                             </button>
                         )}
                     </div>
 
                     <div className="intro-text">
                         {isEditing ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
-                                <textarea
-                                    value={data.intro.text}
-                                    onChange={(e) => onUpdate('intro', { ...data.intro, text: e.target.value })}
-                                    style={{ width: '100%', padding: '0.5rem', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit' }}
-                                    placeholder="Intro start..."
-                                />
-                                <input
-                                    value={data.intro.highlight}
-                                    onChange={(e) => onUpdate('intro', { ...data.intro, highlight: e.target.value })}
-                                    style={{ width: '100%', padding: '0.5rem', border: '1px dashed var(--border-color)', color: 'var(--accent-color)', background: 'transparent', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: '500' }}
-                                    placeholder="Highlighted text"
-                                />
-                                <textarea
-                                    value={data.intro.suffix}
-                                    onChange={(e) => onUpdate('intro', { ...data.intro, suffix: e.target.value })}
-                                    style={{ width: '100%', padding: '0.5rem', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit' }}
-                                    placeholder="Intro end..."
-                                />
-                            </div>
+                            <p className="intro-text" style={{ display: 'block' }}>
+                                <span
+                                    className="placeholder-empty"
+                                    contentEditable
+                                    suppressContentEditableWarning
+                                    onBlur={(e) => onUpdate('intro', { ...data.intro, text: e.target.innerText })}
+                                    placeholder="I build things with..."
+                                    style={{ borderBottom: '1px dashed var(--border-color)', minWidth: '20px', display: 'inline-block', outline: 'none' }}
+                                >
+                                    {data.intro.text}
+                                </span>
+                                {' '}
+                                <span
+                                    className="highlight placeholder-empty"
+                                    contentEditable
+                                    suppressContentEditableWarning
+                                    onBlur={(e) => onUpdate('intro', { ...data.intro, highlight: e.target.innerText })}
+                                    placeholder="highlighted tech"
+                                    style={{ borderBottom: '1px dashed var(--border-color)', minWidth: '20px', display: 'inline-block', outline: 'none', margin: '0 0.3rem' }}
+                                >
+                                    {data.intro.highlight}
+                                </span>
+                                {' '}
+                                <span
+                                    className="placeholder-empty"
+                                    contentEditable
+                                    suppressContentEditableWarning
+                                    onBlur={(e) => onUpdate('intro', { ...data.intro, suffix: e.target.innerText })}
+                                    placeholder="and solve problems."
+                                    style={{ borderBottom: '1px dashed var(--border-color)', minWidth: '20px', display: 'inline-block', outline: 'none' }}
+                                >
+                                    {data.intro.suffix}
+                                </span>
+                            </p>
                         ) : (
                             <p>
                                 {data.intro.text}
@@ -116,55 +128,34 @@ const Hero = ({ data, isEditing, onUpdate, onArrayUpdate }) => {
                     </div>
                 </div>
 
-                <div className="hero-image">
-                    {/* If editing, could add an image upload/url input. For now just display. */}
-                    <img src={data.image} alt={data.name} />
-                    {isEditing && (
-                        <div style={{
-                            position: 'absolute',
-                            bottom: 0,
-                            left: 0,
-                            width: '100%',
-                            background: 'rgba(255,255,255,0.9)',
-                            padding: '5px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '5px'
-                        }}>
-                            <input
-                                type="text"
-                                value={data.image}
-                                onChange={(e) => onUpdate('image', e.target.value)}
-                                placeholder="Image URL"
-                                style={{
-                                    fontSize: '0.7rem',
-                                    border: '1px solid #ccc',
-                                    padding: '2px',
-                                    width: '100%'
-                                }}
-                            />
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                <label style={{ fontSize: '0.7rem', cursor: 'pointer', background: '#eee', padding: '2px 5px', borderRadius: '3px', border: '1px solid #ccc' }}>
-                                    Select File
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        style={{ display: 'none' }}
-                                        onChange={(e) => {
-                                            const file = e.target.files[0];
-                                            if (file) {
-                                                const reader = new FileReader();
-                                                reader.onloadend = () => {
-                                                    onUpdate('image', reader.result);
-                                                };
-                                                reader.readAsDataURL(file);
-                                            }
-                                        }}
-                                    />
-                                </label>
-                            </div>
-                        </div>
-                    )}
+                <div className="hero-image-container">
+                    <div className="hero-image">
+                        <img src={data.image || "https://via.placeholder.com/250"} alt={data.name} />
+
+                        {isEditing && (
+                            <label className="image-upload-overlay">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onloadend = () => {
+                                                onUpdate('image', reader.result);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                />
+                                <div className="upload-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                    Change Photo
+                                </div>
+                            </label>
+                        )}
+                    </div>
                 </div>
             </div>
         </section>

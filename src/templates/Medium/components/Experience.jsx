@@ -37,12 +37,12 @@ const Experience = ({ data, isEditing, setUserData }) => {
         setUserData(prev => ({
             ...prev,
             experience: [{
-                company: "New Company",
-                role: "New Role",
+                company: "",
+                role: "",
                 logo: "",
-                dates: "Present",
-                url: "#",
-                description: ["Description..."]
+                dates: "",
+                url: "",
+                description: [""]
             }, ...prev.experience]
         }));
     };
@@ -121,6 +121,7 @@ const Experience = ({ data, isEditing, setUserData }) => {
                                     value={job.dates}
                                     onChange={(e) => handleUpdate(index, 'dates', e.target.value)}
                                     className="dates"
+                                    placeholder="Dates (e.g. 2022 - Present)"
                                     style={{ border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit' }}
                                 />
                             ) : (
@@ -137,6 +138,7 @@ const Experience = ({ data, isEditing, setUserData }) => {
                                         onChange={(e) => handleDescUpdate(index, i, e.target.value)}
                                         style={{ width: '100%', marginBottom: '0.5rem', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'vertical' }}
                                         rows={2}
+                                        placeholder="Job Description / Achievement"
                                     />
                                 ) : (
                                     <p key={i}>{desc}</p>

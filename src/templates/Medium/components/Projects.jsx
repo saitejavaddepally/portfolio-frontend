@@ -80,6 +80,7 @@ const Projects = ({ data, isEditing, setUserData }) => {
                                 className="project-desc"
                                 style={{ width: '100%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit' }}
                                 rows={3}
+                                placeholder="Project Description"
                             />
                         ) : (
                             <p className="project-desc">{project.desc}</p>
@@ -98,6 +99,7 @@ const Projects = ({ data, isEditing, setUserData }) => {
                                                     handleUpdate(index, 'tags', newTags);
                                                 }}
                                                 style={{ border: 'none', background: 'transparent', color: 'inherit', width: '80px', fontSize: '0.8rem' }}
+                                                placeholder="Tag"
                                             />
                                             <button
                                                 onClick={() => {
@@ -111,7 +113,7 @@ const Projects = ({ data, isEditing, setUserData }) => {
                                         </div>
                                     ))}
                                     <button
-                                        onClick={() => handleUpdate(index, 'tags', [...project.tags, "New Tag"])}
+                                        onClick={() => handleUpdate(index, 'tags', [...project.tags, ""])}
                                         style={{ fontSize: '0.8rem', padding: '2px 8px', borderRadius: '4px', border: '1px dashed var(--border-color)', background: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}
                                     >
                                         + Add Tag
@@ -147,11 +149,11 @@ const Projects = ({ data, isEditing, setUserData }) => {
                         setUserData(prev => ({
                             ...prev,
                             projects: [...prev.projects, {
-                                title: "New Project",
-                                type: "Web App",
-                                desc: "Description here...",
-                                tags: ["React"],
-                                link: "#"
+                                title: "",
+                                type: "",
+                                desc: "",
+                                tags: [""],
+                                link: ""
                             }]
                         }));
                     }}

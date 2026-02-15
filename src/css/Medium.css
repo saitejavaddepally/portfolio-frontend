@@ -193,26 +193,39 @@ img {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  gap: 3rem;
-  flex-wrap: wrap;
+  gap: 4rem;
+  /* Prevent wrapping on desktop to keep image on right */
+  flex-wrap: nowrap;
 }
 
 .hero-text {
   flex: 1;
+  min-width: 0;
+  /* Prevent flex overflow */
+}
+
+.hero-image-container {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  /* Circle looks cleaner for Medium style usually, or keeping rounded rect */
+  border-radius: 24px;
+  /* overflow: hidden; -> Moved to inner wrapper if needed, but important for overlay */
 }
 
 .hero-image {
-  width: 220px;
-  height: 220px;
+  width: 100%;
+  height: 100%;
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  margin-bottom: 0;
-  flex-shrink: 0;
   border: 4px solid var(--bg-color);
-  /* FIX: Match theme */
   transform: rotate(3deg);
   transition: all 0.3s ease;
+  position: relative;
+  background: var(--code-bg);
 }
 
 .hero-image:hover {
@@ -224,6 +237,39 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Image Upload Overlay */
+.image-upload-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.hero-image:hover .image-upload-overlay {
+  opacity: 1;
+}
+
+.upload-btn {
+  background: white;
+  color: black;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* Role Badges */
@@ -683,13 +729,35 @@ img {
 
   .hero-content {
     flex-direction: column-reverse;
+    /* Text on top (column-reverse puts last item on top? No wait) */
+    /* Original was column-reverse: Image (2nd child) on top, Text (1st child) on bottom? 
+       Actually standard column stack: Text top, Image bottom. 
+       If flex-direction: column, text is top. 
+       Let's stick to standard column for mobile: Image Top usually looks nice, or Text Top. 
+       Let's try Text Top (default column). 
+       The user said "Photo right correct?". On mobile "right" usually means "bottom" or "top".
+    */
+    flex-direction: column-reverse;
+    /* Wait, if HTML is Text then Image.
+       Column: Text -> Image.
+       Column-Reverse: Image -> Text.
+       Usually Image on Top is better for profiles.
+    */
     gap: 2rem;
+    align-items: center;
+    /* Center align on mobile */
+    flex-wrap: wrap;
+    /* Allow wrapping back */
+  }
+
+  .hero-image-container {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 1.5rem;
   }
 
   .hero-image {
-    width: 160px;
-    height: 160px;
-    margin: 0 auto 1.5rem;
+    /* Reset rotation on mobile for cleaner look or keep it? Keep it fun. */
   }
 
   .header-content {
@@ -711,4 +779,13 @@ img {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* ContentEditable Placeholder */
+.placeholder-empty:empty::before {
+  content: attr(placeholder);
+  color: var(--text-muted);
+  opacity: 0.6;
+  pointer-events: none;
+  font-style: italic;
 }

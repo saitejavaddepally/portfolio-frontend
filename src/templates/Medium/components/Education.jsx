@@ -24,10 +24,10 @@ const Education = ({ data, isEditing, setUserData }) => {
         setUserData(prev => ({
             ...prev,
             education: [{
-                school: "University Name",
-                desc: ["Degree Name", "Honors/Major"],
-                dates: "2020 - 2024",
-                url: "#"
+                school: "",
+                desc: [""],
+                dates: "",
+                url: ""
             }, ...(prev.education || [])]
         }));
     };
@@ -102,6 +102,7 @@ const Education = ({ data, isEditing, setUserData }) => {
                                     value={edu.dates}
                                     onChange={(e) => handleUpdate(index, 'dates', e.target.value)}
                                     className="dates"
+                                    placeholder="Dates (e.g. 2020 - 2024)"
                                     style={{ border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit' }}
                                 />
                             ) : (
@@ -127,7 +128,7 @@ const Education = ({ data, isEditing, setUserData }) => {
                             {isEditing && (
                                 <button
                                     onClick={() => {
-                                        const newDesc = [...edu.desc, "Accolade/Detail"];
+                                        const newDesc = [...edu.desc, ""];
                                         handleUpdate(index, 'desc', newDesc);
                                     }}
                                     style={{ fontSize: '0.8rem', color: 'var(--accent-color)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
