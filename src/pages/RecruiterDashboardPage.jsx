@@ -4,8 +4,9 @@ import apiClient from '../services/apiClient';
 import UserCard from '../components/UserCard';
 import SharedLayout from '../components/SharedLayout';
 import Loader from '../components/Loader';
-import '../css/Dashboard.css'; // Import professional dashboard styles
+import '../css/Dashboard.css';
 import '../css/Recruiter.css';
+import portfolioSvg from '../assets/undraw_portfolio_btd8.svg';
 
 const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
     const [professionals, setProfessionals] = useState([]);
@@ -63,6 +64,9 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                         <p className="dashboard-subtitle">
                             Discover top talent for your open roles.
                         </p>
+                    </div>
+                    <div className="dashboard-header-image-container">
+                        <img src={portfolioSvg} alt="Recruiting" className="dashboard-header-image" style={{ maxHeight: '200px', width: 'auto' }} />
                     </div>
                 </header>
 
