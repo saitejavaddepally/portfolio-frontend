@@ -4,6 +4,7 @@ import apiClient from '../services/apiClient';
 import UserCard from '../components/UserCard';
 import SharedLayout from '../components/SharedLayout';
 import Loader from '../components/Loader';
+import '../css/Dashboard.css'; // Import professional dashboard styles
 import '../css/Recruiter.css';
 
 const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
@@ -16,9 +17,7 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
         const fetchProfessionals = async () => {
             try {
                 const response = await apiClient.get('/recruiter/professionals');
-                // Assuming response.data is the array of users, or response.data.data
                 const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
-                console.log("Recruiter Dashboard Professionals Data:", data);
                 setProfessionals(data);
             } catch (err) {
                 console.error("Failed to fetch professionals:", err);
@@ -55,13 +54,13 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
 
     return (
         <SharedLayout showUserInfo={true} theme={theme} toggleTheme={toggleTheme}>
-            <div className="recruiter-dashboard" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
-                <header className="dashboard-header" style={{ marginBottom: '2rem' }}>
+            <div className="dashboard-container">
+                <header className="dashboard-header">
                     <div className="dashboard-header-content">
-                        <h1 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '0.5rem', color: 'var(--text-primary)', fontFamily: '"Source Serif Pro", serif' }}>
+                        <h1 className="dashboard-title">
                             Recruiter Dashboard
                         </h1>
-                        <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', margin: 0 }}>
+                        <p className="dashboard-subtitle">
                             Discover top talent for your open roles.
                         </p>
                     </div>
@@ -73,7 +72,7 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                             <p>No professionals found at the moment.</p>
                         </div>
                     ) : (
-                        <div className="professionals-grid">
+                        <div className="dashboard-grid">
                             {professionals.map(user => (
                                 <UserCard
                                     key={user._id || user.id}

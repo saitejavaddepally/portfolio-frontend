@@ -11,19 +11,7 @@
     width: 100%;
 }
 
-/* Grid Layout */
-.professionals-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
 
-@media (max-width: 768px) {
-    .professionals-grid {
-        grid-template-columns: 1fr;
-    }
-}
 
 /* User Card */
 .recruiter-user-card {
