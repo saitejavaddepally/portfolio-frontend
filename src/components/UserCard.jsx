@@ -4,7 +4,9 @@ import '../css/Recruiter.css';
 const UserCard = ({ user, onClick }) => {
     // Access portfolio data safely, handling potential structure variations
     const getPortfolioData = (u) => {
-        if (u.userData) return u.userData; // Explicit field from UserSummaryResponse
+        if (u.userData?.portfolio?.data) return u.userData.portfolio.data; // Specific nested structure from screenshot
+        if (u.userData?.portfolio) return u.userData.portfolio; // Just in case
+        if (u.userData) return u.userData; // Fallback if flattened
         if (u.data?.hero) return u.data; // Structure from potential JSON variation
         if (u.portfolio?.data?.hero) return u.portfolio.data;
         if (u.portfolio?.hero) return u.portfolio; // Maybe flattened in list

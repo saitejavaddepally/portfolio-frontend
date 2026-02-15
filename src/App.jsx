@@ -82,7 +82,6 @@ const AppContent = () => {
 						const isPublished = portfolio.published || !!portfolio.publicSlug || !!pData.slug;
 						const activeTemplate = portfolio.activeTemplate || pData.activeTemplate || 'medium';
 
-						console.log("DEBUG: Found portfolio data:", portfolio);
 						setUserData({
 							...pData,
 							_id: dataToProcess.id || dataToProcess.userData?.id,
@@ -101,9 +100,6 @@ const AppContent = () => {
 						const slug = responseData.slug || responseData.publicSlug || responseData.data.slug;
 						const isPublished = responseData.isPublished || responseData.published || !!slug;
 						const activeTemplate = responseData.activeTemplate || responseData.data.activeTemplate;
-
-						console.log("DEBUG: getPortfolio Response:", responseData);
-						console.log("DEBUG: Extracted activeTemplate:", activeTemplate, "Slug:", slug, "isPublished:", isPublished);
 
 						setUserData({
 							...responseData.data,

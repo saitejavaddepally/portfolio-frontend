@@ -23,7 +23,11 @@ const RecruiterUserPreviewPage = ({ theme, toggleTheme }) => {
                 const userObject = response.data || {};
                 let fetchedData = {};
 
-                if (userObject.data && userObject.data.hero) {
+                if (userObject.userData?.portfolio?.data) {
+                    fetchedData = userObject.userData.portfolio.data;
+                } else if (userObject.userData?.portfolio) {
+                    fetchedData = userObject.userData.portfolio;
+                } else if (userObject.data && userObject.data.hero) {
                     fetchedData = userObject.data;
                 } else if (userObject.portfolio && userObject.portfolio.data) {
                     fetchedData = userObject.portfolio.data;
