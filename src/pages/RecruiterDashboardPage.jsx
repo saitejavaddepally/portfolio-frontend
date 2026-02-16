@@ -31,7 +31,8 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                         user.userData?.slug ||
                         user.userData?.portfolio?.published ||
                         user.portfolio?.published ||
-                        !!user.userData?.portfolio?.publicSlug;
+                        !!user.userData?.portfolio?.publicSlug ||
+                        !!user.userData?.data; // Handle structure where data is directly under userData
 
                     return !!isPublished;
                 });
