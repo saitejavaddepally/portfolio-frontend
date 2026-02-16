@@ -20,16 +20,20 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                 const response = await apiClient.get('/recruiter/professionals');
                 const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
 
-                // Filter only published profiles
-                const publishedPros = data.filter(user => {
-                    // Check various locations for isPublished flag due to inconsistent schema history
-                    return user.isPublished ||
-                        user.userData?.isPublished ||
-                        user.portfolio?.isPublished ||
-                        user.data?.isPublished;
-                });
+                // TEMP DEBUG: Log data to see structure
+                console.log("Recruiter Data Debug:", data);
+                if (data.length > 0) {
+                    console.log("First User Sample:", data[0]);
+                    console.log("isPublished check:", {
+                        root: data[0].isPublished,
+                        userData: data[0].userData?.isPublished,
+                        portfolio: data[0].portfolio?.isPublished,
+                        data: data[0].data?.isPublished
+                    });
+                }
 
-                setProfessionals(publishedPros);
+                // Revert filter temporarily to show all users while debugging
+                setProfessionals(data);
             } catch (err) {
                 console.error("Failed to fetch professionals:", err);
                 if (err.response && err.response.status === 403) {
