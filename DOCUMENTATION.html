@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortHire Project Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+            color: #111;
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            color: #222;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            margin-top: 1.2em;
+            margin-bottom: 0.5em;
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 1em;
+        }
+
+        ul {
+            margin-bottom: 1em;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background-color: #f6f8fa;
+            padding: 16px;
+            overflow: auto;
+            border-radius: 6px;
+            margin-bottom: 1em;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            font-size: 0.9em;
+        }
+
+        a {
+            color: #0366d6;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #0366d6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .print-btn:hover {
+            background-color: #0256b9;
+        }
+
+        @media print {
+            .print-btn {
+                display: none;
+            }
+
+            body {
+                padding: 0;
+                max-width: 100%;
+            }
+
+            a {
+                text-decoration: none;
+                color: #000;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="window.print()" class="print-btn">🖨️ Print as PDF</button>
+
+    <h1>PortHire - Project Documentation</h1>
+
+    <h2>1. Project Overview</h2>
+    <p><strong>PortHire</strong> is a comprehensive Portfolio Builder application designed to bridge the gap between
+        Professionals (Job Seekers) and Recruiters. It allows professionals to build, customize, and deploy stunning
+        portfolios using templates (Medium, Modern), while Recruiters can discover and view these portfolios through a
+        dedicated dashboard.</p>
+
+    <h2>2. Technology Stack</h2>
+    <ul>
+        <li><strong>Frontend Library</strong>: React (Version 18+)</li>
+        <li><strong>Build Tool</strong>: Vite (For fast development and bundling)</li>
+        <li><strong>Routing</strong>: React Router DOM (Client-side routing)</li>
+        <li><strong>State Management</strong>: React Context API & Hooks</li>
+        <li><strong>HTTP Client</strong>: Axios (via a custom <code>apiClient</code> wrapper)</li>
+        <li><strong>Styling</strong>: Vanilla CSS with CSS Variables (<code>var(--color)</code>) for theming (Light/Dark
+            mode)</li>
+    </ul>
+
+    <hr>
+
+    <h2>3. Core React Concepts Used</h2>
+    <p>Responsive, interactive, and scalable features were built using the following core React concepts:</p>
+
+    <h3>3.1. Functional Components</h3>
+    <p>The entire application uses <strong>Functional Components</strong>, which are JavaScript functions that return
+        JSX.</p>
+    <ul>
+        <li><strong>Example</strong>: <code>Dashboard.jsx</code>, <code>UserCard.jsx</code>,
+            <code>SharedLayout.jsx</code>.
+        </li>
+        <li><strong>Benefit</strong>: Cleaner code, easier to test, and support for Hooks.</li>
+    </ul>
+
+    <h3>3.2. React Hooks</h3>
+    <p>We utilized standard React Hooks to manage logic and state:</p>
+    <ul>
+        <li><strong><code>useState</code></strong>: Used for local component state.
+            <ul>
+                <li><em>Usage</em>: Managing form inputs, loading states (<code>loading</code>), error messages
+                    (<code>error</code>), and data arrays (<code>professionals</code>).</li>
+                <li><em>Example</em>: <code>const [professionals, setProfessionals] = useState([]);</code></li>
+            </ul>
+        </li>
+        <li><strong><code>useEffect</code></strong>: Used for side effects (actions that happen outside the render
+            cycle).
+            <ul>
+                <li><em>Usage</em>: Fetching data from the API when a component mounts, checking authentication status,
+                    or updating the document title.</li>
+                <li><em>Example</em>: Fetching the list of professionals when <code>RecruiterDashboardPage</code> loads.
+                </li>
+            </ul>
+        </li>
+        <li><strong><code>useContext</code></strong>: Used to consume global state.
+            <ul>
+                <li><em>Usage</em>: Accessing the <code>AuthContext</code> to get the current <code>user</code> object
+                    and <code>logout</code> function anywhere in the app.</li>
+                <li><em>Example</em>: <code>const { logout } = useContext(AuthContext);</code></li>
+            </ul>
+        </li>
+        <li><strong><code>useNavigate</code></strong>: Used for programmatic navigation.
+            <ul>
+                <li><em>Usage</em>: Redirecting the user after login, logout, or clicking a card.</li>
+                <li><em>Example</em>: <code>navigate('/login');</code></li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>3.3. Context API (Global State)</h3>
+    <p>We implemented a <strong>Global Store</strong> using <code>src/context/AuthContext.jsx</code>.</p>
+    <ul>
+        <li><strong>Purpose</strong>: To hold authentication state (User details, Access Token) that needs to be
+            accessible by many components (Header, Private Routes, Dashboard).</li>
+        <li><strong>Mechanism</strong>: The <code>&lt;AuthProvider&gt;</code> wraps the entire application in
+            <code>App.jsx</code>, making the state available to the entire component tree.
+        </li>
+    </ul>
+
+    <h3>3.4. Layouts & Composition</h3>
+    <p>We used the <strong>Compound Component Pattern</strong> (composition) for the layout.</p>
+    <ul>
+        <li><strong><code>SharedLayout.jsx</code></strong>: Acts as a wrapper (shell) for authenticated pages. It
+            contains the fixed <strong>Header</strong> (Logo, Theme Toggle, Logout) and a dynamic
+            <strong>Footer</strong>.
+        </li>
+        <li><strong><code>{children}</code> Prop</strong>: The specific page content (e.g., Dashboard grid) is passed as
+            <code>children</code> to this layout, ensuring a consistent look and feel across different pages
+            (<code>DashboardPage</code>, <code>RecruiterDashboardPage</code>).
+        </li>
+    </ul>
+
+    <h3>3.5. Protected Routes</h3>
+    <p>We created a <strong><code>PrivateRoute</code></strong> component (<code>src/routes/PrivateRoute.jsx</code>).</p>
+    <ul>
+        <li><strong>Logic</strong>: It checks if a user is authenticated (has a token). If yes, it renders the child
+            component; if no, it redirects to <code>/login</code>.</li>
+        <li><strong>Security</strong>: This prevents unauthorized access to the Dashboard and Editor pages.</li>
+    </ul>
+
+    <hr>
+
+    <h2>4. Key Features & Implementation Details</h2>
+
+    <h3>4.1. Authentication Flow</h3>
+    <ol>
+        <li><strong>Login/Register</strong>: Forms submit credentials to the backend.</li>
+        <li><strong>Tokens</strong>: On success, an <code>accessToken</code> and <code>refreshToken</code> are stored in
+            <code>localStorage</code> and State.
+        </li>
+        <li><strong>Interceptors</strong>: <code>src/services/apiClient.js</code> automatically attaches the generic
+            <code>Authorization: Bearer &lt;token&gt;</code> header to every request. It also handles <strong>401
+                Unauthorized</strong> errors by attempting to refresh the token transparently.
+        </li>
+    </ol>
+
+    <h3>4.2. Dashboard System</h3>
+    <p>We implemented two distinct dashboards based on user roles:</p>
+    <ul>
+        <li><strong>Professional Dashboard</strong>:
+            <ul>
+                <li>View available templates (Medium, Modern).</li>
+                <li>Edit portfolio details (Hero, Experience, Projects).</li>
+                <li>Deploy/Publish the portfolio to a public URL.</li>
+            </ul>
+        </li>
+        <li><strong>Recruiter Dashboard</strong>:
+            <ul>
+                <li><strong>Grid Layout</strong>: Displays a list of professionals using a responsive CSS Grid
+                    (<code>auto-fill</code>).</li>
+                <li><strong>User Cards</strong>: Reusable <code>UserCard</code> component showing avatar, name, role,
+                    and skills.</li>
+                <li><strong>Preview</strong>: Clicking a card opens the candidate's portfolio in a read-only view.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>4.3. Portfolio Editor</h3>
+    <ul>
+        <li><strong>Real-time Updates</strong>: Changing inputs updates the local state immediately.</li>
+        <li><strong>Data Structure</strong>: Complex nested objects (e.g.,
+            <code>experience: [{ company, role, dates }]</code>) are managed to mirror the MongoDB schema.
+        </li>
+        <li><strong>Templates</strong>: Two distinct visual templates (<code>Medium</code>, <code>Modern</code>) use the
+            same underlying data but render it differently.</li>
+    </ul>
+
+    <h3>4.4. Theming (Dark Mode)</h3>
+    <ul>
+        <li><strong>CSS Variables</strong>: Colors are defined in <code>index.css</code> as variables (e.g.,
+            <code>--bg-primary</code>, <code>--text-primary</code>).
+        </li>
+        <li><strong>Toggling</strong>: The <code>SharedLayout</code> toggles a <code>data-theme="dark"</code> attribute
+            on the root element.</li>
+        <li><strong>Implementation</strong>: CSS rules use these variables, so changing the attribute automatically
+            repaints the entire app with the new color scheme.</li>
+    </ul>
+
+    <hr>
+
+    <h2>5. Recent Improvements (What we just did)</h2>
+    <ol>
+        <li><strong>Recruiter Dashboard Refactor</strong>:
+            <ul>
+                <li>Moved to <code>SharedLayout</code> for consistency.</li>
+                <li>Added <strong>Logout Button</strong> and Confirmation Modal.</li>
+                <li>Cleaned up CSS to remove unused styles.</li>
+            </ul>
+        </li>
+        <li><strong>Grid System Alignment</strong>:
+            <ul>
+                <li>Updated the Recruiter grid to use the exact same CSS classes (<code>.dashboard-grid</code>) as the
+                    Professional Dashboard.</li>
+                <li>Fixed a bug where single items stretched to 100% width by switching from <code>auto-fit</code> to
+                    <code>auto-fill</code>.
+                </li>
+            </ul>
+        </li>
+        <li><strong>Visual Enhancements</strong>:
+            <ul>
+                <li>Added <code>undraw_portfolio_btd8.svg</code> to the header.</li>
+                <li>Ensured the layout respects a maximum width (<code>1200px</code>) for better readability on large
+                    screens.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <hr>
+
+    <h2>7. Deep Dive: Code Breakdown for Beginners</h2>
+    <p>Here, we explain the most complex files in the project in simple terms.</p>
+
+    <h3>7.1. <code>src/context/AuthContext.jsx</code> (The "Broadcast Tower")</h3>
+    <p><strong>What it does:</strong> This file is like a radio tower that broadcasts the user's login status to the
+        entire application.</p>
+    <p><strong>Why it's complex:</strong> It uses the <strong>Context API</strong>, which saves you from passing props
+        down manually through every single component level (Prop Drilling).</p>
+    <h4>Key Parts Explained:</h4>
+    <ul>
+        <li><code>createContext(null)</code>: Creates the "frequency" that components can tune into.</li>
+        <li><code>AuthProvider</code>: The component that wraps our entire app. Any data we put in its
+            <code>value</code> prop (like <code>user</code>, <code>login</code>, <code>logout</code>) becomes accessible
+            to any child component.</li>
+        <li><code>useEffect</code> (Initial Load): When the app first opens, this runs once. It checks if there's a
+            token in the browser's <code>localStorage</code>. If found, it automatically logs you in.</li>
+    </ul>
+
+    <h3>7.2. <code>src/services/apiClient.js</code> (The "Security Guard")</h3>
+    <p><strong>What it does:</strong> This is a custom wrapper around <strong>Axios</strong> (our tool for making API
+        calls). It acts like a security guard for all outgoing and incoming data.</p>
+    <p><strong>Why it's complex:</strong> It uses <strong>Interceptors</strong>. Imagine having a personal assistant who
+        checks every letter you send and receive.</p>
+    <h4>Key Parts Explained:</h4>
+    <ul>
+        <li><strong>Request Interceptor</strong>: Before any API call leaves your browser, this code runs. It checks if
+            you have a "Token" (your ID card) in storage. If yes, it stamps it onto the request header
+            (<code>Authorization: Bearer ...</code>). This saves you from manually adding the token to every single API
+            call.</li>
+        <li><strong>Response Interceptor</strong>: When a reply comes back from the server, this checks if the server
+            shouted "401 Unauthorized!" (which means your token expired). Instead of crashing, it quietly pauses, asks
+            for a new token (Refresh), and then retries your original request. You (the user) never even notice.</li>
+    </ul>
+
+    <h3>7.3. <code>src/routes/PrivateRoute.jsx</code> (The "Bouncer")</h3>
+    <p><strong>What it does:</strong> This component protects pages like the Dashboard. It acts like a bouncer at a
+        club.</p>
+    <h4>Key Parts Explained:</h4>
+    <ul>
+        <li><code>{ children }</code>: This represents the page you are trying to visit (e.g., Dashboard).</li>
+        <li><strong>The Check</strong>: It looks at the <code>user</code> state from our AuthContext.</li>
+        <li><strong>Logic</strong>:
+            <pre>if (!user) { return &lt;Navigate to="/login" /&gt;; }</pre>
+            "If you are not logged in, go to Login. Otherwise, come on in (<code>return children</code>)."
+        </li>
+    </ul>
+
+    <hr>
+
+    <h2>8. How to Run & Build</h2>
+    <ul>
+        <li><strong>Development</strong>: <code>npm run dev</code> (Starts Vite server)</li>
+        <li><strong>Production Build</strong>: <code>npm run build</code> (Outputs optimized static files to
+            <code>dist/</code>)
+        </li>
+        <li><strong>Preview Build</strong>: <code>npm run preview</code></li>
+    </ul>
+</body>
+
+</html>

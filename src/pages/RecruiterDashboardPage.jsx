@@ -19,7 +19,17 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
             try {
                 const response = await apiClient.get('/recruiter/professionals');
                 const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
-                setProfessionals(data);
+
+                // Filter only published profiles
+                const publishedPros = data.filter(user => {
+                    // Check various locations for isPublished flag due to inconsistent schema history
+                    return user.isPublished ||
+                        user.userData?.isPublished ||
+                        user.portfolio?.isPublished ||
+                        user.data?.isPublished;
+                });
+
+                setProfessionals(publishedPros);
             } catch (err) {
                 console.error("Failed to fetch professionals:", err);
                 if (err.response && err.response.status === 403) {
@@ -83,9 +93,9 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                                     user={user}
                                     onClick={() => {
                                         if (user.slug) {
-                                            navigate(`/p/${user.slug}`);
+                                            navigate(`/p/${user.slug}`, { state: { userData: user } });
                                         } else {
-                                            navigate(`/recruiter/user/${user._id || user.id}`);
+                                            navigate(`/recruiter/user/${user._id || user.id}`, { state: { userData: user } });
                                         }
                                     }}
                                 />

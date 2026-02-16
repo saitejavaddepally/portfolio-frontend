@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import apiClient from '../services/apiClient';
 import Loader from '../components/Loader';
 import MediumTemplate from '../templates/Medium';
@@ -9,51 +9,65 @@ import { initialData } from '../data/initialData';
 const RecruiterUserPreviewPage = ({ theme, toggleTheme }) => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchUserPortfolio = async () => {
-            // ...
+    // Helper to process and normalize user data
+    const processData = (rawUserObject) => {
+        let fetchedData = {};
 
+        // Handle various data structures
+        if (rawUserObject.userData?.portfolio?.data) {
+            fetchedData = rawUserObject.userData.portfolio.data;
+        } else if (rawUserObject.userData?.portfolio) {
+            fetchedData = rawUserObject.userData.portfolio;
+        } else if (rawUserObject.data && rawUserObject.data.hero) {
+            fetchedData = rawUserObject.data;
+        } else if (rawUserObject.portfolio && rawUserObject.portfolio.data) {
+            fetchedData = rawUserObject.portfolio.data;
+        } else {
+            fetchedData = rawUserObject; // Fallback
+        }
+
+        // Deep merge with initialData
+        return {
+            ...initialData,
+            ...fetchedData,
+            hero: { ...initialData.hero, ...(fetchedData.hero || {}) },
+            header: (fetchedData.header || initialData.header)
+                ? { ...(initialData.header || {}), ...(fetchedData.header || {}) }
+                : null,
+            experience: fetchedData.experience || [],
+            education: fetchedData.education || [],
+            projects: fetchedData.projects || [],
+            skills: fetchedData.skills || [],
+            achievements: { ...initialData.achievements, ...(fetchedData.achievements || {}) },
+            socials: fetchedData.socials || initialData.socials,
+            footer: { ...initialData.footer, ...(fetchedData.footer || {}) },
+            // Preserve the template preference
+            activeTemplate: fetchedData.activeTemplate || rawUserObject.activeTemplate || 'medium'
+        };
+    };
+
+    useEffect(() => {
+        const loadPortfolio = async () => {
+            // OPTION 1: Use data passed from Dashboard (Instant Load)
+            if (location.state?.userData) {
+                console.log("Using passed state data:", location.state.userData);
+                const processed = processData(location.state.userData);
+                setUserData(processed);
+                setLoading(false);
+                return;
+            }
+
+            // OPTION 2: Fetch from API (Fallback)
             try {
                 const response = await apiClient.get(`/recruiter/professionals/${id}`);
-                // Extract portfolio data from the user object
                 const userObject = response.data || {};
-                let fetchedData = {};
-
-                if (userObject.userData?.portfolio?.data) {
-                    fetchedData = userObject.userData.portfolio.data;
-                } else if (userObject.userData?.portfolio) {
-                    fetchedData = userObject.userData.portfolio;
-                } else if (userObject.data && userObject.data.hero) {
-                    fetchedData = userObject.data;
-                } else if (userObject.portfolio && userObject.portfolio.data) {
-                    fetchedData = userObject.portfolio.data;
-                } else {
-                    fetchedData = userObject; // Fallback to root or whatever is there
-                }
-
-                // Deep merge or ensure essential sections exist
-                const mergedData = {
-                    ...initialData,
-                    ...fetchedData,
-                    hero: { ...initialData.hero, ...(fetchedData.hero || {}) },
-                    // Ensure header is null if no data exists, so template falls back to hero.name
-                    header: (fetchedData.header || initialData.header)
-                        ? { ...(initialData.header || {}), ...(fetchedData.header || {}) }
-                        : null,
-                    experience: fetchedData.experience || [],
-                    education: fetchedData.education || [],
-                    projects: fetchedData.projects || [],
-                    skills: fetchedData.skills || [],
-                    achievements: { ...initialData.achievements, ...(fetchedData.achievements || {}) },
-                    socials: fetchedData.socials || initialData.socials,
-                    footer: { ...initialData.footer, ...(fetchedData.footer || {}) }
-                };
-
-                setUserData(mergedData);
+                const processed = processData(userObject);
+                setUserData(processed);
             } catch (err) {
                 console.error("Failed to fetch user portfolio:", err);
                 setError("Failed to load portfolio. User might not exist or you don't have permission.");
@@ -63,9 +77,9 @@ const RecruiterUserPreviewPage = ({ theme, toggleTheme }) => {
         };
 
         if (id) {
-            fetchUserPortfolio();
+            loadPortfolio();
         }
-    }, [id]);
+    }, [id, location.state]);
 
     if (loading) return <Loader fullScreen={true} />;
 
