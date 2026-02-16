@@ -20,16 +20,23 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                 const response = await apiClient.get('/recruiter/professionals');
                 const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
 
+                console.log("RecruiterDashboard: Fetched professionals:", data);
+
                 // Filter only published profiles
                 const publishedPros = data.filter(user => {
                     // Check deeply nested published flag based on DB structure
                     const isPublished = user.isPublished ||
+                        user.slug ||
+                        user.userData?.isPublished ||
+                        user.userData?.slug ||
                         user.userData?.portfolio?.published ||
                         user.portfolio?.published ||
-                        !!user.userData?.portfolio?.publicSlug; // Fallback: has slug = published
+                        !!user.userData?.portfolio?.publicSlug;
 
-                    return isPublished;
+                    return !!isPublished;
                 });
+
+                console.log("RecruiterDashboard: Published professionals after filter:", publishedPros);
 
                 setProfessionals(publishedPros);
             } catch (err) {
@@ -94,8 +101,9 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                                     key={user._id || user.id}
                                     user={user}
                                     onClick={() => {
-                                        if (user.slug) {
-                                            navigate(`/p/${user.slug}`, { state: { userData: user } });
+                                        const slug = user.slug || user.userData?.slug || user.userData?.portfolio?.publicSlug;
+                                        if (slug) {
+                                            navigate(`/p/${slug}`, { state: { userData: user } });
                                         } else {
                                             navigate(`/recruiter/user/${user._id || user.id}`, { state: { userData: user } });
                                         }
