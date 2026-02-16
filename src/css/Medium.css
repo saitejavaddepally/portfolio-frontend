@@ -456,7 +456,7 @@ img {
 /* Experience */
 .job-item {
   padding: 2.5rem 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: none;
   display: grid;
   grid-template-columns: 60px 1fr;
   gap: 2rem;
@@ -583,7 +583,7 @@ img {
 
 .project-item {
   padding: 2rem 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: none;
 }
 
 .project-item:last-child {
