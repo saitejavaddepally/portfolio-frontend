@@ -103,10 +103,14 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                                     user={user}
                                     onClick={() => {
                                         const slug = user.slug || user.userData?.slug || user.userData?.portfolio?.publicSlug;
+                                        // Pass the nested data if it exists, otherwise pass the user object itself
+                                        // This ensures the target page gets the actual portfolio data structure it expects
+                                        const stateData = user.userData?.data || user.userData || user;
+
                                         if (slug) {
-                                            navigate(`/p/${slug}`, { state: { userData: user } });
+                                            navigate(`/p/${slug}`, { state: { userData: stateData } });
                                         } else {
-                                            navigate(`/recruiter/user/${user._id || user.id}`, { state: { userData: user } });
+                                            navigate(`/recruiter/user/${user._id || user.id}`, { state: { userData: stateData } });
                                         }
                                     }}
                                 />

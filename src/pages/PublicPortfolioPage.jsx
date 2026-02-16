@@ -15,6 +15,20 @@ const PublicPortfolioPage = () => {
     // but here we can default to light or read from portfolio config if we saved it)
     const [theme, setTheme] = useState('light'); // Could load from userData if we saved 'theme' preference
 
+    // Dynamic Title Effect
+    useEffect(() => {
+        if (userData?.hero?.name) {
+            document.title = userData.hero.name;
+        } else if (userData) {
+            document.title = "Portfolio"; // Fallback if name is missing but data loaded
+        }
+
+        // Cleanup: Revert to default title when component unmounts or slug changes
+        return () => {
+            document.title = "PortHire";
+        };
+    }, [userData]);
+
     useEffect(() => {
         const fetchPublicPortfolio = async () => {
             try {
