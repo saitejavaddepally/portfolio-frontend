@@ -105,7 +105,12 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                                         const slug = user.slug || user.userData?.slug || user.userData?.portfolio?.publicSlug;
                                         // Pass the nested data if it exists, otherwise pass the user object itself
                                         // This ensures the target page gets the actual portfolio data structure it expects
-                                        const stateData = user.userData?.data || user.userData || user;
+                                        let stateData = user.userData?.data || user.userData || user;
+
+                                        // Ensure we don't lose the email if we drilled down
+                                        if (user.email && !stateData.email) {
+                                            stateData = { ...stateData, email: user.email };
+                                        }
 
                                         if (slug) {
                                             navigate(`/p/${slug}`, { state: { userData: stateData } });
