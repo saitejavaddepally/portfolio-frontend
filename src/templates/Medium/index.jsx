@@ -17,7 +17,7 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
     };
 
     return (
-        <div className="medium-template">
+        <div className="medium-template animate-fade-in">
             {/* ... Header ... */}
             <Header
                 data={data.header || { name: data.hero.name }} // Fallback

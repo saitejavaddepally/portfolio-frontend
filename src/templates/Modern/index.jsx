@@ -5,7 +5,7 @@ import CompanySelector from '../../components/CompanySelector';
 // A completely different layout to prove the concept
 const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData }) => {
     return (
-        <div className="modern-template">
+        <div className="modern-template animate-fade-in">
             <nav className="modern-nav">
                 <div className="modern-container nav-flex">
                     {isEditing ? (
@@ -27,7 +27,7 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
 
             <header className="modern-hero" id="about">
                 <div className="modern-container hero-grid">
-                    <div className="hero-content">
+                    <div className="hero-content animate-slide-up">
                         <h1 className="glitch-text">
                             {isEditing ? "Hello, I'm" : "Hello, I'm"} <br />
                             <span className="text-highlight">{data.hero.name}</span>

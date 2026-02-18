@@ -238,6 +238,7 @@ const RecruiterUserPreviewPage = ({ theme, toggleTheme }) => {
                         onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
                         onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                         title="Open AI Assistant"
+                        className="animate-scale-in"
                     >
                         ✨
                     </button>
@@ -267,7 +268,8 @@ const RecruiterUserPreviewPage = ({ theme, toggleTheme }) => {
                     overflow: 'hidden',
                     border: '1px solid var(--border-color)',
                     display: 'flex',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
+                    animation: 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                 }}>
                     <AIChatPanel
                         candidateData={userData}
