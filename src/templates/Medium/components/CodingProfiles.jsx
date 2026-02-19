@@ -89,7 +89,7 @@ const CodingProfiles = ({ data, isEditing, setUserData, validationTrigger }) => 
     if (!isEditing && (!data || data.length === 0)) return null;
 
     return (
-        <section id="coding-profiles" style={{ marginBottom: '4rem' }}>
+        <section id="coding-profiles" style={{ marginBottom: '5rem' }}>
             <div className="section-header">
                 <h2>Coding Profiles</h2>
             </div>
