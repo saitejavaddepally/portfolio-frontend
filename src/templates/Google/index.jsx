@@ -216,7 +216,6 @@ const GoogleTemplate = ({ data }) => {
 
                     {/* Search bar — SVG icon, no emoji */}
                     <div className="google-search-bar">
-                        <span className="search-icon">{Icons.search}</span>
                         <input value={queryText} readOnly />
                         <span style={{ display: 'flex', color: 'var(--g-secondary)', cursor: 'pointer' }}>{Icons.close}</span>
                     </div>

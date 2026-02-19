@@ -433,10 +433,15 @@
 }
 
 .sitelink-item {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     color: var(--g-link);
     cursor: pointer;
     padding: 2px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 2px;
+    line-height: 1.5;
+    word-break: break-word;
 }
 
 .sitelink-item:hover {

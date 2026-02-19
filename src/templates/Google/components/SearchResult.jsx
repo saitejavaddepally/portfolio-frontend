@@ -84,8 +84,8 @@ const SearchResult = ({ title, company, subtitle, url, description, image, tags,
                 <div className="result-sitelinks">
                     {sitelinks.filter(Boolean).slice(0, 6).map((s, i) => (
                         <div key={i} className="sitelink-item">
-                            <span style={{ display: 'inline-flex', verticalAlign: 'middle', marginRight: '4px', color: 'var(--g-link)' }}>{Icons.chevron}</span>
-                            {s.length > 80 ? s.substring(0, 80) + '…' : s}
+                            <span style={{ display: 'inline-flex', verticalAlign: 'middle', marginRight: '4px', flexShrink: 0, color: 'var(--g-link)' }}>{Icons.chevron}</span>
+                            {s}
                         </div>
                     ))}
                 </div>
