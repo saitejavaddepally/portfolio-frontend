@@ -224,29 +224,21 @@ img {
 
 /* Guarantee text is left, image is right */
 .hero-text {
+  flex: 1;
+  min-width: 0;
   order: 1;
 }
 
 .hero-image-container {
   order: 2;
-}
-
-.hero-text {
-  flex: 1;
-  min-width: 0;
-  /* Prevent flex overflow */
-}
-
-.hero-image-container {
   position: relative;
-  width: 250px;
-  height: 250px;
+  width: 220px;
+  height: 220px;
   flex-shrink: 0;
-  border-radius: 50%;
-  /* Circle looks cleaner for Medium style usually, or keeping rounded rect */
   border-radius: 24px;
-  /* overflow: hidden; -> Moved to inner wrapper if needed, but important for overlay */
 }
+
+
 
 .hero-image {
   width: 100%;
@@ -766,7 +758,7 @@ img {
   color: var(--text-muted);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .hero {
     text-align: center;
   }
@@ -779,11 +771,10 @@ img {
   }
 
   .hero-image-container {
-    width: 180px;
-    height: 180px;
+    width: 160px;
+    height: 160px;
     margin: 0 auto 1.5rem;
     order: -1;
-    /* Force image to top */
   }
 
 
