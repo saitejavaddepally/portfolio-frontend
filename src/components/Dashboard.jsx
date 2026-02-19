@@ -125,9 +125,8 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                             key={template.id}
                             className={`template-card ${isDeployed ? 'deployed' : 'not-deployed'}`}
                             onClick={() => {
-                                // Generic navigation for all templates
                                 if (template.id !== 'medium') {
-                                    addToast("Opening Editor for " + template.name, "info", 2000);
+                                    addToast(`✏️ Editing ${template.name} — redirecting to the Medium editor. Your changes apply to all templates.`, 'info', 4000);
                                 }
                                 navigate(`/?portfolioStyle=${template.id}&edit=true`);
                             }}
@@ -189,7 +188,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 if (template.id !== 'medium') {
-                                                    addToast("Opening Standard Editor. Changes apply to all templates.", "info", 4000);
+                                                    addToast(`✏️ All edits happen in the Medium Editor — your data powers every template. Redirecting now.`, 'info', 4000);
                                                 }
                                                 navigate(`/?portfolioStyle=medium&edit=true`);
                                             }}
