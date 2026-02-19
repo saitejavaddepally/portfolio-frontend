@@ -422,11 +422,11 @@
 
 /* Sitelinks (bullet list items shown under a result) */
 .result-sitelinks {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
     margin-top: 0.6rem;
-    padding: 0.5rem;
+    padding: 0.6rem 0.75rem;
     background: var(--g-hover-bg);
     border-radius: 6px;
     border-left: 3px solid var(--g-blue);
