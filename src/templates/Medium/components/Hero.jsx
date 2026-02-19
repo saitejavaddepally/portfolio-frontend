@@ -3,8 +3,8 @@ import React from 'react';
 const Hero = ({ data, isEditing, onUpdate, onArrayUpdate }) => {
     return (
         <section className="hero" id="about">
-            <div className="hero-content">
-                <div className="hero-text">
+            <div className="hero-content" style={{ display: 'grid', gridTemplateColumns: '1fr 200px', alignItems: 'center', gap: '3rem' }}>
+                <div className="hero-text" style={{ gridColumn: 1 }}>
                     {isEditing ? (
                         <div style={{ marginBottom: '1rem' }}>
                             <label style={{ fontSize: '0.8rem', color: '#666', display: 'block', marginBottom: '0.5rem' }}>Headline</label>
@@ -128,7 +128,7 @@ const Hero = ({ data, isEditing, onUpdate, onArrayUpdate }) => {
                     </div>
                 </div>
 
-                <div className="hero-image-container">
+                <div className="hero-image-container" style={{ gridColumn: 2 }}>
                     <div className="hero-image">
                         <img src={data.image || "https://via.placeholder.com/250"} alt={data.name} />
 
