@@ -55,9 +55,19 @@ const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
         loadHistory();
     }, []);
 
+    // Smooth scroll when a new message bubble is added; instant scroll during streaming
+    const prevLengthRef = useRef(messages.length);
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+        const newLength = messages.length;
+        if (newLength !== prevLengthRef.current) {
+            // New message added — smooth scroll
+            prevLengthRef.current = newLength;
+            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        } else if (isStreaming) {
+            // Content updating during stream — instant scroll (no shake)
+            messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
+        }
+    }, [messages, isStreaming]);
 
     useEffect(() => {
         inputRef.current?.focus();
@@ -196,9 +206,15 @@ const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
                         <div key={i} className={`chat-bubble ${msg.role}`}>
                             {msg.role === 'assistant' ? (
                                 <div className="markdown-content">
-                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                        {formatContent(msg.content)}
-                                    </ReactMarkdown>
+                                    {msg.content ? (
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {formatContent(msg.content)}
+                                        </ReactMarkdown>
+                                    ) : (
+                                        <div className="typing-indicator">
+                                            <span></span><span></span><span></span>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 msg.content
