@@ -127,8 +127,10 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                             onClick={() => {
                                 if (template.id !== 'medium') {
                                     addToast(`✏️ Editing ${template.name} — redirecting to the Medium editor. Your changes apply to all templates.`, 'info', 4000);
+                                    navigate(`/?portfolioStyle=medium&edit=true`);
+                                } else {
+                                    navigate(`/?portfolioStyle=medium&edit=true`);
                                 }
-                                navigate(`/?portfolioStyle=${template.id}&edit=true`);
                             }}
                             style={{ cursor: 'pointer' }}
                         >
