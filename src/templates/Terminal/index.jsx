@@ -12,14 +12,25 @@ const TerminalTemplate = ({ data, isEditing, setUserData }) => {
         else setStep(0);
     }, [isEditing]);
 
+    // Flexible data extraction — data structure may vary
+    const name = data.hero?.name || '';
+    const title = data.hero?.title ||
+        (Array.isArray(data.hero?.roles) ? data.hero.roles.filter(Boolean).join(' | ') : '') || '';
+    const bio = data.about?.description || data.hero?.description ||
+        (Array.isArray(data.hero?.intro?.desc) ? data.hero.intro.desc.join(' ') : '') || '';
+
+    const email = data.footer?.email || data.contact?.email || '';
+    const github = data.socials?.find(s => s.name?.toLowerCase().includes('github'))?.url || data.contact?.github || '';
+    const linkedin = data.socials?.find(s => s.name?.toLowerCase().includes('linkedin'))?.url || data.contact?.linkedin || '';
+
     const commands = [
         {
             cmd: 'whoami',
             output: (
                 <div className="term-text">
-                    <h1 style={{ color: '#7ee787', fontSize: '1.5rem', marginBottom: '0.5rem', marginTop: 0 }}>{data.hero?.name}</h1>
-                    <p style={{ margin: 0, fontWeight: 'bold' }}>{data.hero?.title}</p>
-                    <p style={{ marginTop: '0.5rem', maxWidth: '600px' }}>{data.about?.description || data.hero?.description}</p>
+                    <h1 style={{ color: '#7ee787', fontSize: '1.5rem', marginBottom: '0.5rem', marginTop: 0 }}>{name}</h1>
+                    {title && <p style={{ margin: 0, fontWeight: 'bold', color: '#79c0ff' }}>{title}</p>}
+                    {bio && <p style={{ marginTop: '0.5rem', maxWidth: '600px', color: '#c9d1d9' }}>{bio}</p>}
                 </div>
             )
         },
@@ -28,11 +39,11 @@ const TerminalTemplate = ({ data, isEditing, setUserData }) => {
             output: (
                 <div className="term-json" style={{ color: '#e3b341' }}>
                     {'['}
-                    {data.skills && data.skills.map((skill, i) => (
+                    {data.skills && data.skills.length > 0 ? data.skills.map((skill, i) => (
                         <span key={i}>
                             <span className="json-string">"{skill}"</span>{i < data.skills.length - 1 ? ', ' : ''}
                         </span>
-                    ))}
+                    )) : <span style={{ color: '#8b949e' }}> (no skills added)</span>}
                     {']'}
                 </div>
             )
@@ -41,16 +52,24 @@ const TerminalTemplate = ({ data, isEditing, setUserData }) => {
             cmd: 'ls -l ./experience',
             output: (
                 <div className="term-exp-list">
-                    {data.experience && data.experience.map((job, i) => (
-                        <div key={i} className="term-exp-item">
-                            <div style={{ color: '#79c0ff', fontWeight: 'bold' }}>{job.role}</div>
-                            <div style={{ color: '#d2a8ff' }}>@ {job.company}</div>
-                            <div style={{ color: '#8b949e', fontSize: '0.85rem' }}>{job.dates}</div>
-                            <ul style={{ marginTop: '0.5rem', paddingLeft: '1.2rem', marginBottom: 0 }}>
-                                {job.description.map((d, j) => <li key={j}>{d}</li>)}
-                            </ul>
-                        </div>
-                    ))}
+                    {data.experience && data.experience.length > 0
+                        ? data.experience.map((job, i) => (
+                            <div key={i} className="term-exp-item">
+                                <div style={{ color: '#79c0ff', fontWeight: 'bold' }}>{job.role}</div>
+                                <div style={{ color: '#d2a8ff' }}>@ {job.company}</div>
+                                <div style={{ color: '#8b949e', fontSize: '0.85rem' }}>{job.dates}</div>
+                                {Array.isArray(job.description) && (
+                                    <ul style={{ marginTop: '0.5rem', paddingLeft: '1.2rem', marginBottom: 0 }}>
+                                        {job.description.map((d, j) => <li key={j}>{d}</li>)}
+                                    </ul>
+                                )}
+                                {typeof job.description === 'string' && (
+                                    <div style={{ marginTop: '0.4rem' }}>{job.description}</div>
+                                )}
+                            </div>
+                        ))
+                        : <span style={{ color: '#8b949e' }}>(no experience entries)</span>
+                    }
                 </div>
             )
         },
@@ -58,23 +77,88 @@ const TerminalTemplate = ({ data, isEditing, setUserData }) => {
             cmd: 'ls ./projects',
             output: (
                 <div className="term-project-list">
-                    {data.projects && data.projects.map((proj, i) => (
-                        <div key={i} className="term-project-item">
-                            <div style={{ fontWeight: 'bold', color: '#7ee787' }}>{proj.title}</div>
-                            <div style={{ fontSize: '0.9rem', margin: '0.5rem 0', color: '#c9d1d9' }}>{Array.isArray(proj.description) ? proj.description[0] : proj.description}</div>
-                            {proj.link && <a href={proj.link} target="_blank" rel="noopener noreferrer" className="term-link">Link {'->'}</a>}
-                        </div>
-                    ))}
+                    {data.projects && data.projects.length > 0
+                        ? data.projects.map((proj, i) => (
+                            <div key={i} className="term-project-item">
+                                <div style={{ fontWeight: 'bold', color: '#7ee787' }}>{proj.title}</div>
+                                <div style={{ fontSize: '0.9rem', margin: '0.5rem 0', color: '#c9d1d9' }}>
+                                    {Array.isArray(proj.description) ? proj.description[0] : proj.description}
+                                </div>
+                                {proj.link && <a href={proj.link} target="_blank" rel="noopener noreferrer" className="term-link">Link {'->'}</a>}
+                            </div>
+                        ))
+                        : <span style={{ color: '#8b949e' }}>(no projects added)</span>
+                    }
+                </div>
+            )
+        },
+        {
+            cmd: 'cat education.json',
+            output: (
+                <div className="term-exp-list">
+                    {data.education && data.education.length > 0
+                        ? data.education.map((edu, i) => (
+                            <div key={i} className="term-exp-item">
+                                <div style={{ color: '#d2a8ff', fontWeight: 'bold' }}>{edu.degree}</div>
+                                <div style={{ color: '#79c0ff' }}>@ {edu.school}</div>
+                                <div style={{ color: '#8b949e', fontSize: '0.85rem' }}>{edu.year}</div>
+                                {edu.description && <div style={{ marginTop: '0.2rem' }}>{edu.description}</div>}
+                            </div>
+                        ))
+                        : <span style={{ color: '#8b949e' }}>(no education entries)</span>
+                    }
+                </div>
+            )
+        },
+        {
+            cmd: 'cat achievements.txt',
+            output: (
+                <div className="term-text">
+                    {data.achievements?.title && <div style={{ color: '#e3b341', marginBottom: '0.5rem', fontWeight: 'bold' }}>{data.achievements.title}:</div>}
+                    {data.achievements?.items && data.achievements.items.length > 0
+                        ? <ul style={{ paddingLeft: '1.2rem', margin: 0 }}>
+                            {data.achievements.items.map((item, i) => (
+                                <li key={i}>{item}</li>
+                            ))}
+                        </ul>
+                        : <span style={{ color: '#8b949e' }}>(no achievements added)</span>
+                    }
+                </div>
+            )
+        },
+        {
+            cmd: 'cat coding-profiles.json',
+            output: (
+                <div className="term-json">
+                    {'['}
+                    {data.codingProfiles && data.codingProfiles.length > 0
+                        ? data.codingProfiles.map((prof, i) => (
+                            <div key={i} style={{ paddingLeft: '1rem' }}>
+                                {'{'}
+                                <span className="json-key"> "platform":</span> <span className="json-string">"{prof.platform}"</span>,
+                                <span className="json-key"> "handle":</span> <span className="json-string">"{prof.username}"</span>,
+                                <span className="json-key"> "link":</span> <a href={prof.url} target="_blank" rel="noopener noreferrer" className="term-link">"{prof.url}"</a>
+                                {'}'}{i < data.codingProfiles.length - 1 ? ',' : ''}
+                            </div>
+                        ))
+                        : <span style={{ color: '#8b949e', paddingLeft: '1rem' }}>(no profiles added)</span>
+                    }
+                    {']'}
                 </div>
             )
         },
         {
             cmd: './contact.sh',
             output: (
-                <div className="term-contact" style={{ display: 'flex', gap: '1.5rem' }}>
-                    {data.contact?.email && <div>Email: <a href={`mailto:${data.contact.email}`} className="term-link">{data.contact.email}</a></div>}
-                    {data.contact?.github && <div>GitHub: <a href={data.contact.github} target="_blank" rel="noopener noreferrer" className="term-link">Profile</a></div>}
-                    {data.contact?.linkedin && <div>LinkedIn: <a href={data.contact.linkedin} target="_blank" rel="noopener noreferrer" className="term-link">Profile</a></div>}
+                <div className="term-contact" style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem' }}>
+                    {email && <div>Email: <a href={`mailto:${email}`} className="term-link">{email}</a></div>}
+                    {github && <div>GitHub: <a href={github} target="_blank" rel="noopener noreferrer" className="term-link">Profile</a></div>}
+                    {linkedin && <div>LinkedIn: <a href={linkedin} target="_blank" rel="noopener noreferrer" className="term-link">Profile</a></div>}
+                    {data.socials && data.socials
+                        .filter(s => s.url && !s.name?.toLowerCase().includes('github') && !s.name?.toLowerCase().includes('linkedin'))
+                        .map((s, i) => <div key={i}>{s.name}: <a href={s.url} target="_blank" rel="noopener noreferrer" className="term-link">{s.name}</a></div>)
+                    }
+                    {!email && !github && !linkedin && <span style={{ color: '#8b949e' }}>(no contact info added)</span>}
                 </div>
             )
         }

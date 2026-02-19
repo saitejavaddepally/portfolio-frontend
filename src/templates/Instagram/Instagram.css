@@ -136,27 +136,31 @@
     border-top: 1px solid var(--ig-border);
     display: flex;
     justify-content: center;
-    gap: 60px;
+    flex-wrap: wrap;
+    gap: 0 30px;
     font-size: 12px;
     letter-spacing: 1px;
     font-weight: 600;
     color: var(--ig-secondary);
+    overflow-x: auto;
 }
 
 .ig-tab {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding-top: 15px;
+    padding: 12px 6px;
     cursor: pointer;
     text-transform: uppercase;
-    border-top: 1px solid transparent;
+    border-top: 2px solid transparent;
     margin-top: -1px;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .ig-tab.active {
     color: var(--ig-text);
-    border-top: 1px solid var(--ig-text);
+    border-top: 2px solid var(--ig-text);
 }
 
 /* Grid */

@@ -38,9 +38,65 @@ const GoogleTemplate = ({ data, isEditing, updateData, setUserData }) => {
         </>
     );
 
+    const renderEducation = () => (
+        <>
+            {data.education && data.education.map((edu, index) => (
+                <SearchResult
+                    key={`edu-${index}`}
+                    type="Education"
+                    title={edu.school}
+                    company={edu.degree}
+                    subtitle={edu.year}
+                    description={[edu.description]}
+                    url="#"
+                />
+            ))}
+        </>
+    );
+
+    const renderCredentials = () => (
+        <>
+            {data.achievements?.items && (
+                <SearchResult
+                    type="Credentials"
+                    title={data.achievements.title || "Achievements"}
+                    company=""
+                    subtitle="Certifications & Awards"
+                    description={data.achievements.items}
+                    url="#"
+                />
+            )}
+        </>
+    );
+
+    const renderProfiles = () => (
+        <>
+            {data.codingProfiles && data.codingProfiles.map((prof, index) => (
+                <SearchResult
+                    key={`prof-${index}`}
+                    type="Profile"
+                    title={prof.platform}
+                    company={prof.username}
+                    subtitle="Coding Profile"
+                    description={[`Check out my profile on ${prof.platform}`]}
+                    url={prof.url}
+                />
+            ))}
+        </>
+    );
+
+    const tabs = ['All', 'Work', 'Projects', 'Education', 'Credentials', 'Profiles'];
+
+    // Flexible data extraction — handles different data structures
+    const totalResults = (data.experience?.length || 0) +
+        (data.projects?.length || 0) +
+        (data.education?.length || 0) +
+        (data.codingProfiles?.length || 0);
+
     return (
         <div className="google-container">
             <header className="google-header">
+                {/* ... header top bar ... */}
                 <div className="google-top-bar">
                     <div className="google-logo">
                         <span className="g-blue">G</span>
@@ -60,7 +116,7 @@ const GoogleTemplate = ({ data, isEditing, updateData, setUserData }) => {
                 </div>
 
                 <div className="google-nav">
-                    {['All', 'Work', 'Projects', 'Connect'].map(tab => (
+                    {tabs.map(tab => (
                         <div
                             key={tab}
                             className={`google-tab ${activeTab === tab ? 'active' : ''}`}
@@ -75,23 +131,23 @@ const GoogleTemplate = ({ data, isEditing, updateData, setUserData }) => {
             <main className="google-content">
                 <div className="google-main-col">
                     <div className="search-meta">
-                        About {data.experience?.length + data.projects?.length || 0} results (0.42 seconds)
+                        About {totalResults} results ({(Math.random() * 0.5 + 0.2).toFixed(2)} seconds)
                     </div>
 
                     {activeTab === 'All' && (
                         <>
                             {renderExperience()}
                             {renderProjects()}
+                            {renderEducation()}
+                            {renderCredentials()}
+                            {renderProfiles()}
                         </>
                     )}
                     {activeTab === 'Work' && renderExperience()}
                     {activeTab === 'Projects' && renderProjects()}
-                    {activeTab === 'Connect' && (
-                        <div className="panel-socials" style={{ border: 'none' }}>
-                            {/* Reusing social links logic if needed, or just KnowledgePanel handles it */}
-                            See Knowledge Panel →
-                        </div>
-                    )}
+                    {activeTab === 'Education' && renderEducation()}
+                    {activeTab === 'Credentials' && renderCredentials()}
+                    {activeTab === 'Profiles' && renderProfiles()}
                 </div>
 
                 <aside className="google-side-col">
