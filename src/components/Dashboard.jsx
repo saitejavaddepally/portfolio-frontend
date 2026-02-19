@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/Components.css';
 import '../css/Dashboard.css';
-import Loader from './Loader';
 import { useToast } from '../context/ToastContext';
 
 const templates = [
@@ -19,6 +18,27 @@ const templates = [
         description: 'Dark mode friendly, colorful, and card-based design.',
         image: '/assets/modern-preview.png',
         tags: ['Dark Mode', 'Vibrant']
+    },
+    {
+        id: 'google',
+        name: 'Search Engine',
+        description: 'Familiar, trust-worthy search results layout.',
+        image: '/assets/google-preview.png',
+        tags: ['Clean', 'Professional']
+    },
+    {
+        id: 'instagram',
+        name: 'Social Profile',
+        description: 'Visual-first design for creators and influencers.',
+        image: '/assets/insta-preview.png',
+        tags: ['Visual', 'Modern']
+    },
+    {
+        id: 'terminal',
+        name: 'Dev Terminal',
+        description: 'Retro command line interface for developers.',
+        image: '/assets/terminal-preview.png',
+        tags: ['Hacker', 'Retro']
     }
 ];
 
@@ -141,9 +161,9 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                             <div className="preview-area">
                                 {template.id === 'medium' ? (
                                     <div className="preview-medium">
-                                        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>{userName}</div>
-                                        <div style={{ fontSize: '0.8rem', lineHeight: '1.4', color: '#444' }}>{userDesc}</div>
-                                        <div style={{ marginTop: '1.5rem', width: '30px', height: '2px', background: '#000' }}></div>
+                                        <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '0.4rem' }}>{userName}</div>
+                                        <div style={{ fontSize: '0.7rem', lineHeight: '1.4', color: '#444' }}>{userDesc ? userDesc.substring(0, 60) + '...' : ''}</div>
+                                        <div style={{ marginTop: '1rem', width: '25px', height: '2px', background: '#000' }}></div>
                                     </div>
                                 ) : template.id === 'modern' ? (
                                     <div className="preview-modern">
@@ -154,11 +174,35 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                                             <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#818cf8' }}></div>
                                         </div>
                                     </div>
-                                ) : (
-                                    <div className="preview-default">
-                                        No Preview
+                                ) : template.id === 'google' ? (
+                                    <div style={{ background: '#fff', padding: '15px', height: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        <div style={{ border: '1px solid #dfe1e5', borderRadius: '20px', padding: '4px 10px', fontSize: '0.6rem', color: '#5f6368' }}>🔍 {userName}</div>
+                                        <div style={{ fontSize: '0.8rem', color: '#1a0dab' }}>{userTitle || 'Portfolio'}</div>
+                                        <div style={{ fontSize: '0.6rem', color: '#545454' }}>About 1,300,000 results...</div>
                                     </div>
-                                )}
+                                ) : template.id === 'instagram' ? (
+                                    <div style={{ background: '#fff', padding: '15px', height: '100%' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                                            <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: '#dbdbdb' }}></div>
+                                            <div style={{ flex: 1, height: '4px', background: '#dbdbdb' }}></div>
+                                        </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px' }}>
+                                            <div style={{ height: '30px', background: '#efefef' }}></div>
+                                            <div style={{ height: '30px', background: '#efefef' }}></div>
+                                            <div style={{ height: '30px', background: '#efefef' }}></div>
+                                            <div style={{ height: '30px', background: '#efefef' }}></div>
+                                            <div style={{ height: '30px', background: '#efefef' }}></div>
+                                            <div style={{ height: '30px', background: '#efefef' }}></div>
+                                        </div>
+                                    </div>
+                                ) : template.id === 'terminal' ? (
+                                    <div style={{ background: '#0d1117', padding: '15px', height: '100%', color: '#7ee787', fontFamily: 'monospace', fontSize: '0.7rem' }}>
+                                        <div>visitor@portfolio:~$</div>
+                                        <div style={{ color: '#c9d1d9' }}>whoami</div>
+                                        <div style={{ color: '#79c0ff', marginTop: '4px' }}>{userName || 'user'}</div>
+                                        <div style={{ marginTop: '8px' }}>_</div>
+                                    </div>
+                                ) : null}
                             </div>
 
                             {/* Content Area */}

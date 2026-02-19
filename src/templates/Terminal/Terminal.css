@@ -1,0 +1,137 @@
+:root {
+    --term-bg: #0d1117;
+    --term-text: #c9d1d9;
+    --term-green: #7ee787;
+    /* Strings */
+    --term-blue: #79c0ff;
+    /* Commands */
+    --term-yellow: #d2a8ff;
+    /* Keys */
+    --term-red: #ff7b72;
+    --term-prompt: #f0f6fc;
+    --term-font: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+[data-theme='light'] {
+    /* Terminal usually stays dark, but we can have light theme terminal */
+    --term-bg: #ffffff;
+    --term-text: #24292e;
+    --term-green: #22863a;
+    --term-blue: #0366d6;
+    --term-yellow: #6f42c1;
+    --term-prompt: #24292e;
+}
+
+.term-container {
+    background-color: var(--term-bg);
+    color: var(--term-text);
+    font-family: var(--term-font);
+    min-height: 100vh;
+    padding: 2rem;
+    line-height: 1.6;
+    font-size: 16px;
+    overflow-x: hidden;
+}
+
+.term-line {
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.term-prompt {
+    color: var(--term-green);
+    margin-right: 0.8rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.term-cmd {
+    color: var(--term-blue);
+    font-weight: bold;
+}
+
+.term-output {
+    margin-bottom: 1.5rem;
+    padding-left: 0rem;
+    white-space: pre-wrap;
+    width: 100%;
+}
+
+.term-json {
+    color: var(--term-text);
+}
+
+.json-key {
+    color: var(--term-blue);
+}
+
+.json-string {
+    color: var(--term-green);
+}
+
+.json-number {
+    color: var(--term-yellow);
+}
+
+.term-link {
+    color: var(--term-blue);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.term-cursor {
+    display: inline-block;
+    width: 10px;
+    height: 1.2em;
+    background-color: var(--term-text);
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
+    margin-left: 2px;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Specific Output Styles */
+.term-project-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.term-project-item {
+    border: 1px solid var(--term-text);
+    padding: 1rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.term-project-item:hover {
+    opacity: 1;
+    border-color: var(--term-green);
+}
+
+.term-exp-item {
+    margin-bottom: 1rem;
+    border-left: 2px solid var(--term-text);
+    padding-left: 1rem;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .term-container {
+        padding: 1rem;
+        font-size: 14px;
+    }
+}

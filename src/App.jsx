@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import MediumTemplate from './templates/Medium';
 import ModernTemplate from './templates/Modern';
+import GoogleTemplate from './templates/Google';
+import InstagramTemplate from './templates/Instagram';
+import TerminalTemplate from './templates/Terminal';
 import Dashboard from './components/Dashboard';
 import EditControl from './components/EditControl';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -47,6 +50,8 @@ const AppContent = () => {
 
 	// Theme State
 	const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
+
+
 
 	// Theme Effect
 	useEffect(() => {
@@ -325,7 +330,21 @@ const AppContent = () => {
 	const queryParams = new URLSearchParams(location.search);
 	const previewTemplateId = queryParams.get('portfolioStyle');
 	const contextTemplateId = previewTemplateId || userData?.activeTemplate || 'medium';
-	const Template = contextTemplateId === 'modern' ? ModernTemplate : MediumTemplate;
+
+	// Define helper here or outside? 
+	// It's cleaner to define helper once. I'll define it inside AppContent but outside this block.
+	// Wait, I removed the helper in the first chunk. I should KEEP the helper but remove the `Template` variable.
+	// Let's re-add the helper in the first chunk but NOT `const Template = ...`.
+	const Template = ((templateName) => {
+		switch (templateName) {
+			case 'modern': return ModernTemplate;
+			case 'google': return GoogleTemplate;
+			case 'instagram': return InstagramTemplate;
+			case 'terminal': return TerminalTemplate;
+			case 'medium':
+			default: return MediumTemplate;
+		}
+	})(contextTemplateId);
 
 	// Global Loading State
 	if (authLoading) {
