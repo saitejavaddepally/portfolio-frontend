@@ -292,6 +292,71 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                 )
             }
 
+            {/* Coding Profiles Section */}
+            {(!isEditing && (!data.codingProfiles || data.codingProfiles.length === 0)) ? null : (
+                <section className="modern-section" id="coding-profiles" style={{ background: 'var(--bg-primary)', paddingBottom: '3rem' }}>
+                    <div className="modern-container">
+                        <h2 className={!isEditing ? 'section-title reveal' : 'section-title'}>Coding Profiles</h2>
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                            gap: '1rem',
+                            marginTop: '1.5rem',
+                        }}>
+                            {(data.codingProfiles || []).map((profile, i) => {
+                                const platformColors = {
+                                    'LeetCode': '#FFA116', 'GitHub': '#24292e', 'Codeforces': '#1F8ACB',
+                                    'HackerRank': '#00EA64', 'GeeksForGeeks': '#2F8D46', 'CodeChef': '#5B4638',
+                                    'HackerEarth': '#2C3E8C', 'AtCoder': '#222222', 'TUF+': '#e84118',
+                                };
+                                const platformIcons = {
+                                    'LeetCode': '🟨', 'GitHub': '🐙', 'Codeforces': '🔵',
+                                    'HackerRank': '🟢', 'GeeksForGeeks': '🌿', 'CodeChef': '👨‍🍳',
+                                    'HackerEarth': '🟣', 'AtCoder': '⬜', 'TUF+': '🔥',
+                                };
+                                const color = platformColors[profile.platform] || '#6366f1';
+                                const icon = platformIcons[profile.platform] || '🔗';
+                                return (
+                                    <div key={i} className="modern-card" style={{
+                                        borderLeft: `4px solid ${color}`,
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        padding: '1rem 1.2rem',
+                                        gap: '1rem',
+                                    }}>
+                                        <div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                                <span style={{ fontSize: '1.2rem' }}>{icon}</span>
+                                                <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)' }}>{profile.platform}</span>
+                                            </div>
+                                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.88rem' }}>@{profile.username}</span>
+                                        </div>
+                                        <a
+                                            href={profile.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                background: color,
+                                                color: '#fff',
+                                                padding: '6px 14px',
+                                                borderRadius: '20px',
+                                                fontSize: '0.82rem',
+                                                fontWeight: 600,
+                                                textDecoration: 'none',
+                                                whiteSpace: 'nowrap',
+                                                flexShrink: 0,
+                                            }}
+                                        >
+                                            Visit ↗
+                                        </a>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </section>
+            )}
 
 
             <footer className={!isEditing ? "modern-footer reveal" : "modern-footer"} id="contact">
