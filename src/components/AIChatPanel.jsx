@@ -6,19 +6,54 @@ import './AIChatPanel.css';
 
 const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
 
-    const [messages, setMessages] = useState([
-        {
-            role: 'assistant',
-            content: `Hello! I've analyzed **${candidateData?.hero?.name || 'this candidate'}**'s profile.\n\Ask me anything about their experience, skills, or projects.`
-        }
-    ]);
+    const defaultGreeting = {
+        role: 'assistant',
+        content: `Hello! I've analyzed **${candidateData?.hero?.name || 'this candidate'}**'s profile.\n\nAsk me anything about their experience, skills, or projects.`
+    };
 
+    const [messages, setMessages] = useState([defaultGreeting]);
     const [input, setInput] = useState('');
     const [isStreaming, setIsStreaming] = useState(false);
+    const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
     const abortControllerRef = useRef(null);
+
+    // Fetch chat history on mount
+    useEffect(() => {
+        const loadHistory = async () => {
+            try {
+                const token = localStorage.getItem('accessToken');
+
+                // Decode JWT payload (base64 decode the middle part)
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const recruiterEmail = payload.sub || '';
+
+                const email = candidateEmail || candidateData?.email;
+                const baseURL = apiClient.defaults.baseURL || 'http://localhost:5000/api';
+
+                const res = await fetch(
+                    `${baseURL}/ai/history?candidateEmail=${encodeURIComponent(email)}&recruiterEmail=${encodeURIComponent(recruiterEmail)}`,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                if (res.ok) {
+                    const history = await res.json();
+                    if (Array.isArray(history) && history.length > 0) {
+                        setMessages(history.map(h => ({ role: h.role, content: h.content })));
+                    }
+                    // If empty array, keep the default greeting
+                }
+            } catch (e) {
+                console.warn('Could not load chat history:', e);
+            } finally {
+                setIsLoadingHistory(false);
+            }
+        };
+
+        loadHistory();
+    }, []);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -76,14 +111,9 @@ const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
                 buffer = lines.pop() || '';
 
                 for (const line of lines) {
-
-                    console.log(line);
-
                     if (!line.startsWith('data:')) continue;
 
-                    // Preserve leading space if any
-                    // "data: hello" -> " hello"
-                    // "data:hello" -> "hello"
+                    // Preserve leading space: "data: hello" -> " hello", "data:hello" -> "hello"
                     let chunk = line.slice(5).replace(/\r$/, '');
 
                     if (chunk.trim() === '[DONE]') {
@@ -91,8 +121,13 @@ const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
                         return;
                     }
 
-                    // Append exactly as received
-                    accumulated += chunk;
+                    // Empty data: lines represent a newline in the stream content
+                    // e.g. the \n between "**Heading:**\n- list item" comes as an empty "data:" line
+                    if (chunk === '') {
+                        accumulated += '\n';
+                    } else {
+                        accumulated += chunk;
+                    }
 
                     setMessages(prev => {
                         const updated = [...prev];
@@ -131,18 +166,14 @@ const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
         if (!text) return '';
 
         return text
-            // 1. Normalize line endings
+            // Normalize line endings
             .replace(/\r\n/g, '\n')
-
-            // 2. Collapse any line that is only whitespace into empty string
+            // Collapse whitespace-only lines
             .replace(/\n[ \t]+\n/g, '\n\n')
-
-            // 3. Collapse 3+ consecutive newlines into max 2
+            // Collapse 3+ newlines to max 2
             .replace(/\n{3,}/g, '\n\n')
-
-            // 4. Remove stray lone asterisks (keep **bold**)
+            // Remove stray lone asterisks (keep **bold**)
             .replace(/(?<!\*)\*(?!\*|\s)/g, '')
-
             .trim();
     };
 
@@ -156,19 +187,25 @@ const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
             </div>
 
             <div className="chat-messages">
-                {messages.map((msg, i) => (
-                    <div key={i} className={`chat-bubble ${msg.role}`}>
-                        {msg.role === 'assistant' ? (
-                            <div className="markdown-content">
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                    {formatContent(msg.content)}
-                                </ReactMarkdown>
-                            </div>
-                        ) : (
-                            msg.content
-                        )}
+                {isLoadingHistory ? (
+                    <div className="chat-bubble assistant">
+                        <div className="markdown-content">Loading history...</div>
                     </div>
-                ))}
+                ) : (
+                    messages.map((msg, i) => (
+                        <div key={i} className={`chat-bubble ${msg.role}`}>
+                            {msg.role === 'assistant' ? (
+                                <div className="markdown-content">
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                        {formatContent(msg.content)}
+                                    </ReactMarkdown>
+                                </div>
+                            ) : (
+                                msg.content
+                            )}
+                        </div>
+                    ))
+                )}
                 <div ref={messagesEndRef} />
             </div>
 
@@ -179,7 +216,7 @@ const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Ask about this candidate..."
-                    disabled={isStreaming}
+                    disabled={isStreaming || isLoadingHistory}
                 />
                 <button
                     onClick={handleSend}
