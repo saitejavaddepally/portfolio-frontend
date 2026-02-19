@@ -4,6 +4,7 @@
 
 :root {
   --bg-color: #ffffff;
+  --bg-secondary: #f7f7f5;
   --text-main: #242424;
   --text-muted: #6b6b6b;
   --accent-color: #1a8917;
@@ -21,6 +22,7 @@
 
 [data-theme='dark'] {
   --bg-color: #121212;
+  --bg-secondary: #1e1e1e;
   --text-main: #e0e0e0;
   --text-muted: #a0a0a0;
   --accent-color: #4caf50;

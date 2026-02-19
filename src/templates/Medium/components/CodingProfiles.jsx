@@ -12,6 +12,7 @@ const PLATFORMS = [
     { name: 'CodeChef', icon: '👨‍🍳', color: '#5B4638' },
     { name: 'HackerEarth', icon: '🟣', color: '#2C3E8C' },
     { name: 'AtCoder', icon: '⬜', color: '#222' },
+    { name: 'TUF+', icon: '🔥', color: '#e84118' },
 ];
 
 const CodingProfiles = ({ data, isEditing, setUserData, validationTrigger }) => {
