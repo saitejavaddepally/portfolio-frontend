@@ -1,82 +1,113 @@
 import React from 'react';
 
 const ProfileHeader = ({ userData }) => {
-    const { hero, about, experience, projects, contact, socials, footer, education, codingProfiles } = userData;
+    const { hero, about, experience, projects, contact, socials, footer, education, codingProfiles, skills } = userData;
 
     const projectCount = projects?.length || 0;
     const experienceCount = experience?.length || 0;
-    const followers = experienceCount * 100 + projectCount * 50 + 150;
+    // Stable follower count derived from content
+    const followers = experienceCount * 137 + projectCount * 73 + 248;
 
-    // Flexible contact extraction
+    // Contact extraction
     const email = footer?.email || contact?.email || '';
     const linkedin = socials?.find(s => s.name?.toLowerCase().includes('linkedin'))?.url || contact?.linkedin || '';
     const github = socials?.find(s => s.name?.toLowerCase().includes('github'))?.url || contact?.github || '';
 
-    // Bio / description
+    // Bio
     const bio = about?.description || hero?.description ||
         (Array.isArray(hero?.intro?.desc) ? hero.intro.desc.join(' ') : '') ||
         hero?.intro?.desc || '';
 
-    // Title / roles
+    // Title
     const title = hero?.title ||
         (Array.isArray(hero?.roles) ? hero.roles.filter(Boolean).join(' · ') : '') ||
         hero?.headline || '';
 
-    // Total posts count (projects + experience + education)
-    const totalPosts = projectCount + experienceCount + (education?.length || 0) + (codingProfiles?.length || 0);
+    // Skills array
+    const skillsList = skills?.items || skills || [];
+
+    // Total posts
+    const totalPosts = projectCount + experienceCount + (education?.length || 0);
+
+    const hasImage = hero?.image && hero.image !== '/assets/avatar-placeholder.png';
 
     return (
-        <header className="ig-header">
-            <div className="ig-avatar-container">
-                {hero?.image && hero.image !== '/assets/avatar-placeholder.png' ? (
-                    <img src={hero.image} alt={hero.name} className="ig-avatar" />
-                ) : (
-                    <div className="ig-avatar" style={{ background: 'linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3rem', color: '#fff', fontWeight: 'bold' }}>
-                        {hero?.name?.charAt(0)}
-                    </div>
-                )}
-            </div>
-
-            <section className="ig-profile-info">
-                <div className="ig-username-row">
-                    <h2 className="ig-username">{hero?.name?.toLowerCase().replace(/\s/g, '_') || 'user'}</h2>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        <button className="ig-follow-btn"
-                            onClick={() => linkedin && window.open(linkedin, '_blank')}
-                        >
-                            Follow
-                        </button>
-                        <button className="ig-message-btn"
-                            onClick={() => email && (window.location.href = `mailto:${email}`)}
-                        >
-                            Message
-                        </button>
+        <>
+            <header className="ig-header">
+                {/* Avatar with gradient ring */}
+                <div className="ig-avatar-wrap">
+                    <div className="ig-avatar-inner">
+                        {hasImage ? (
+                            <img src={hero.image} alt={hero?.name} className="ig-avatar" />
+                        ) : (
+                            <div className="ig-avatar-initial">
+                                {hero?.name?.charAt(0) || '?'}
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                <ul className="ig-stats">
-                    <li className="ig-stat"><strong>{totalPosts}</strong> posts</li>
-                    <li className="ig-stat"><strong>{followers}</strong> followers</li>
-                    <li className="ig-stat"><strong>{experienceCount}</strong> following</li>
-                </ul>
+                {/* Profile info */}
+                <section className="ig-profile-info">
+                    <div className="ig-username-row">
+                        <h2 className="ig-username">
+                            {hero?.name?.toLowerCase().replace(/\s+/g, '_') || 'user'}
+                        </h2>
+                        <div className="ig-action-btns">
+                            <button
+                                className="ig-follow-btn"
+                                onClick={() => linkedin && window.open(linkedin, '_blank')}
+                            >
+                                Follow
+                            </button>
+                            <button
+                                className="ig-message-btn"
+                                onClick={() => email && (window.location.href = `mailto:${email}`)}
+                            >
+                                Message
+                            </button>
+                        </div>
+                    </div>
 
-                <div className="ig-bio">
-                    <span className="ig-bio-name">{hero?.name}</span>
-                    {title && <div style={{ color: '#8e8e8e', fontSize: '14px', marginBottom: '4px' }}>{title}</div>}
-                    {bio && <div style={{ whiteSpace: 'pre-line', marginBottom: '6px', fontSize: '14px' }}>{bio}</div>}
-                    {github && (
-                        <a href={github} target="_blank" rel="noopener noreferrer" className="ig-bio-link">
-                            {github.replace('https://', '')}
-                        </a>
-                    )}
-                    {!github && linkedin && (
-                        <a href={linkedin} target="_blank" rel="noopener noreferrer" className="ig-bio-link">
-                            {linkedin.replace('https://', '')}
-                        </a>
-                    )}
-                </div>
-            </section>
-        </header>
+                    {/* Stats */}
+                    <ul className="ig-stats">
+                        <li className="ig-stat"><strong>{totalPosts}</strong> posts</li>
+                        <li className="ig-stat"><strong>{followers}</strong> followers</li>
+                        <li className="ig-stat"><strong>{experienceCount}</strong> following</li>
+                    </ul>
+
+                    {/* Bio */}
+                    <div className="ig-bio">
+                        <span className="ig-bio-name">{hero?.name}</span>
+                        {title && <div className="ig-bio-title">{title}</div>}
+                        {bio && (
+                            <div className="ig-bio-desc">
+                                {bio.length > 150 ? bio.substring(0, 150) + '…' : bio}
+                            </div>
+                        )}
+                        {github && (
+                            <a href={github} target="_blank" rel="noopener noreferrer" className="ig-bio-link">
+                                {github.replace('https://', '').replace('http://', '')}
+                            </a>
+                        )}
+                        {!github && linkedin && (
+                            <a href={linkedin} target="_blank" rel="noopener noreferrer" className="ig-bio-link">
+                                {linkedin.replace('https://', '').replace('http://', '')}
+                            </a>
+                        )}
+
+                        {/* Skill chips */}
+                        {Array.isArray(skillsList) && skillsList.length > 0 && (
+                            <div className="ig-bio-skills">
+                                {skillsList.slice(0, 8).map((sk, i) => (
+                                    <span key={i} className="ig-skill-chip">{sk}</span>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </section>
+            </header>
+        </>
     );
 };
 
