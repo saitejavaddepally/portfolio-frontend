@@ -3,6 +3,9 @@ import { useParams } from 'react-router-dom';
 import { getPublicPortfolio } from '../services/portfolioService';
 import MediumTemplate from '../templates/Medium';
 import ModernTemplate from '../templates/Modern';
+import GoogleTemplate from '../templates/Google';
+import InstagramTemplate from '../templates/Instagram';
+import TerminalTemplate from '../templates/Terminal';
 import Loader from '../components/Loader';
 
 const PublicPortfolioPage = () => {
@@ -81,7 +84,16 @@ const PublicPortfolioPage = () => {
 
     // Determine Template
     const activeTemplate = userData.activeTemplate || 'medium';
-    const Template = activeTemplate === 'modern' ? ModernTemplate : MediumTemplate;
+
+    let Template;
+    switch (activeTemplate) {
+        case 'modern': Template = ModernTemplate; break;
+        case 'google': Template = GoogleTemplate; break;
+        case 'instagram': Template = InstagramTemplate; break;
+        case 'terminal': Template = TerminalTemplate; break;
+        case 'medium':
+        default: Template = MediumTemplate; break;
+    }
 
     // Render Read-Only Template
     return (
