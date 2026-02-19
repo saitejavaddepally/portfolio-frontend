@@ -1,6 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { validateProject } from '../../../utils/validateSection';
+import ErrorBubble from '../../../components/ErrorBubble';
+import { useToast } from '../../../context/ToastContext';
 
-const Projects = ({ data, isEditing, setUserData }) => {
+
+const Projects = ({ data, isEditing, setUserData, validationTrigger }) => {
+    const { addToast } = useToast();
+    const [fieldErrors, setFieldErrors] = useState({});
+
+    const clearError = (idx, field) => {
+        setFieldErrors(prev => { const n = { ...prev }; delete n[`${idx}_${field}`]; return n; });
+    };
+
+    const validateOnBlur = (idx) => {
+        const project = data[idx];
+        const errs = validateProject(project);
+        const newErrors = { ...fieldErrors };
+        Object.keys(newErrors).filter(k => k.startsWith(`${idx}_`)).forEach(k => delete newErrors[k]);
+        errs.forEach(e => {
+            if (e.includes('title')) newErrors[`${idx}_title`] = e;
+            if (e.includes('description')) newErrors[`${idx}_desc`] = e;
+        });
+        setFieldErrors(newErrors);
+    };
+
+    useEffect(() => {
+        if (validationTrigger > 0) {
+            data.forEach((_, index) => validateOnBlur(index));
+        }
+    }, [validationTrigger]);
 
     const handleUpdate = (index, field, value) => {
         setUserData(prev => {
@@ -50,20 +78,24 @@ const Projects = ({ data, isEditing, setUserData }) => {
                     <div className="project-content">
                         <div className="project-header">
                             {isEditing ? (
-                                <div style={{ display: 'flex', width: '100%', gap: '1rem' }}>
-                                    <input
-                                        value={project.title}
-                                        onChange={(e) => handleUpdate(index, 'title', e.target.value)}
-                                        placeholder="Project Title"
-                                        style={{ flex: 1, fontFamily: 'var(--font-heading)', fontSize: '1.3rem', fontWeight: 'bold', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit' }}
-                                    />
-                                    <input
-                                        value={project.type}
-                                        onChange={(e) => handleUpdate(index, 'type', e.target.value)}
-                                        placeholder="Project Type"
-                                        className="project-type"
-                                        style={{ border: '1px dashed var(--border-color)', minWidth: '150px', background: 'transparent', color: 'inherit' }}
-                                    />
+                                <div style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '0.3rem' }}>
+                                    <div style={{ display: 'flex', width: '100%', gap: '1rem' }}>
+                                        <input
+                                            value={project.title}
+                                            onChange={(e) => { handleUpdate(index, 'title', e.target.value); clearError(index, 'title'); }}
+                                            onBlur={() => validateOnBlur(index)}
+                                            placeholder="Project Title *"
+                                            style={{ flex: 1, fontFamily: 'var(--font-heading)', fontSize: '1.3rem', fontWeight: 'bold', border: fieldErrors[`${index}_title`] ? '1px solid #dc2626' : '1px dashed var(--border-color)', background: 'transparent', color: 'inherit' }}
+                                        />
+                                        <input
+                                            value={project.type}
+                                            onChange={(e) => handleUpdate(index, 'type', e.target.value)}
+                                            placeholder="Project Type"
+                                            className="project-type"
+                                            style={{ border: '1px dashed var(--border-color)', minWidth: '150px', background: 'transparent', color: 'inherit' }}
+                                        />
+                                    </div>
+                                    <ErrorBubble message={fieldErrors[`${index}_title`]} />
                                 </div>
                             ) : (
                                 <>
@@ -193,6 +225,16 @@ const Projects = ({ data, isEditing, setUserData }) => {
             {isEditing && (
                 <button
                     onClick={() => {
+                        // Validate the most recent project before adding another
+                        if (data.length > 0) {
+                            const latest = data[data.length - 1];
+                            const errs = validateProject(latest);
+                            if (errs.length > 0) {
+                                addToast('Please complete the current project before adding a new one.', 'error');
+                                validateOnBlur(data.length - 1);
+                                return;
+                            }
+                        }
                         setUserData(prev => ({
                             ...prev,
                             projects: [...prev.projects, {
@@ -204,7 +246,7 @@ const Projects = ({ data, isEditing, setUserData }) => {
                             }]
                         }));
                     }}
-                    style={{ marginTop: '1rem', padding: '0.5rem 1rem' }}
+                    style={{ marginTop: '1rem', padding: '0.5rem 1rem', border: '2px dashed var(--border-color)', background: 'transparent', color: 'var(--text-muted)', borderRadius: '8px', cursor: 'pointer', width: '100%' }}
                 >
                     + Add Project
                 </button>

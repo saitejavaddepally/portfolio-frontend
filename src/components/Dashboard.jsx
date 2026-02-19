@@ -125,12 +125,8 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                             key={template.id}
                             className={`template-card ${isDeployed ? 'deployed' : 'not-deployed'}`}
                             onClick={() => {
-                                if (template.id !== 'medium') {
-                                    addToast(`✏️ Editing ${template.name} — redirecting to the Medium editor. Your changes apply to all templates.`, 'info', 4000);
-                                    navigate(`/?portfolioStyle=medium&edit=true`);
-                                } else {
-                                    navigate(`/?portfolioStyle=medium&edit=true`);
-                                }
+                                // Card click → preview
+                                navigate(`/?portfolioStyle=${template.id}`);
                             }}
                             style={{ cursor: 'pointer' }}
                         >

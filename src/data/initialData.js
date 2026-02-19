@@ -52,5 +52,6 @@ export const initialData = {
       }
     ]
   },
+  "codingProfiles": [],
   "activeTemplate": "medium"
 };

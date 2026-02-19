@@ -754,6 +754,45 @@ img {
   color: var(--text-muted);
 }
 
+/* ── Coding Profiles ──────────────────────────────────── */
+.coding-profiles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.coding-profile-card {
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 1.1rem 1.2rem;
+  border-left: 4px solid var(--accent-color);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.coding-profile-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.profile-visit-btn {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: #fff !important;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.profile-visit-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
 @media (max-width: 600px) {
 
   /* Container */
@@ -779,69 +818,114 @@ img {
   .hero {
     text-align: center;
     padding-top: 2rem;
+    padding-bottom: 2rem;
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 
-  .hero h1 {
-    font-size: 2.2rem;
-    line-height: 1.2;
+  .hero-text {
+    align-items: center;
   }
 
-  .role-badges {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .intro-text p {
-    font-size: 1rem;
-    line-height: 1.7;
-  }
-
-  /* Experience — switch to single column on mobile */
+  /* Experience / Job Item */
   .job-item {
     grid-template-columns: 1fr;
     gap: 1rem;
     padding: 1.5rem 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .job-item:last-child {
+    border-bottom: none;
   }
 
   .job-logo {
-    width: 44px;
-    height: 44px;
-  }
-
-  .job-details li {
-    margin-bottom: 0.75rem;
-    line-height: 1.65;
-    font-size: 0.95rem;
+    display: none;
   }
 
   .job-header {
     flex-direction: column;
-    gap: 0.3rem;
+    align-items: flex-start;
+    gap: 0.2rem;
   }
 
-  /* Projects */
-  .projects-grid {
+  .job-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .dates {
+    font-size: 0.85rem;
+    margin-left: 0;
+  }
+
+  /* Coding Profiles Mobile */
+  .coding-profiles-grid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  /* Skills */
-  .skills-grid {
-    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
+}
 
-  /* Stats */
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
+.hero h1 {
+  font-size: 2.2rem;
+  line-height: 1.2;
+}
 
-  /* Section headings */
-  section h2 {
-    font-size: 1.6rem;
-  }
+.role-badges {
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.intro-text p {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* Experience — switch to single column on mobile */
+.job-item {
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1.5rem 0;
+}
+
+.job-logo {
+  width: 44px;
+  height: 44px;
+}
+
+.job-details li {
+  margin-bottom: 0.75rem;
+  line-height: 1.65;
+  font-size: 0.95rem;
+}
+
+.job-header {
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* Projects */
+.projects-grid {
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+/* Skills */
+.skills-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* Stats */
+.stats-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* Section headings */
+section h2 {
+  font-size: 1.6rem;
 }
 
 /* ContentEditable Placeholder */

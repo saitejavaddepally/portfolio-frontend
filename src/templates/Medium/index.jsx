@@ -6,13 +6,14 @@ import Education from './components/Education';
 import Projects from './components/Projects';
 import Achievements from './components/Achievements';
 import Skills from './components/Skills';
+import CodingProfiles from './components/CodingProfiles';
 import Footer from './components/Footer';
 import '../../css/Medium.css';
 import '../../css/scrollReveal.css';
 import useScrollReveal from '../../hooks/useScrollReveal';
 
 
-const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData, theme, toggleTheme }) => {
+const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData, theme, toggleTheme, validationTrigger }) => {
     useScrollReveal();
 
     // Helper to check if a section should be visible
@@ -45,37 +46,40 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                 />
 
                 {shouldShow(data.experience) && (
-                    <div className="reveal">
+                    <div className={!isEditing ? "reveal" : ""}>
                         <Experience
                             data={data.experience}
                             isEditing={isEditing}
                             setUserData={setUserData}
+                            validationTrigger={validationTrigger}
                         />
                     </div>
                 )}
 
                 {shouldShow(data.education) && (
-                    <div className="reveal reveal-delay-1">
+                    <div className={!isEditing ? "reveal reveal-delay-1" : ""}>
                         <Education
                             data={data.education || []}
                             isEditing={isEditing}
                             setUserData={setUserData}
+                            validationTrigger={validationTrigger}
                         />
                     </div>
                 )}
 
                 {shouldShow(data.projects) && (
-                    <div className="reveal reveal-delay-2">
+                    <div className={!isEditing ? "reveal reveal-delay-2" : ""}>
                         <Projects
                             data={data.projects}
                             isEditing={isEditing}
                             setUserData={setUserData}
+                            validationTrigger={validationTrigger}
                         />
                     </div>
                 )}
 
                 {shouldShow(data.achievements?.items) && (
-                    <div className="reveal reveal-scale">
+                    <div className={!isEditing ? "reveal reveal-scale" : ""}>
                         <Achievements
                             data={data.achievements}
                             isEditing={isEditing}
@@ -85,11 +89,22 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                 )}
 
                 {shouldShow(data.skills) && (
-                    <div className="reveal reveal-delay-1">
+                    <div className={!isEditing ? "reveal reveal-delay-1" : ""}>
                         <Skills
                             data={data.skills}
                             isEditing={isEditing}
                             setUserData={setUserData}
+                        />
+                    </div>
+                )}
+
+                {(isEditing || (data.codingProfiles && data.codingProfiles.length > 0)) && (
+                    <div className={!isEditing ? "reveal reveal-delay-2" : ""}>
+                        <CodingProfiles
+                            data={data.codingProfiles || []}
+                            isEditing={isEditing}
+                            setUserData={setUserData}
+                            validationTrigger={validationTrigger}
                         />
                     </div>
                 )}
@@ -105,3 +120,4 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
 };
 
 export default MediumTemplate;
+

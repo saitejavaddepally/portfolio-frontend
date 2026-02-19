@@ -1,7 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import CompanySelector from '../../../components/CompanySelector';
+import { validateExperience } from '../../../utils/validateSection';
+import ErrorBubble from '../../../components/ErrorBubble';
+import { useToast } from '../../../context/ToastContext';
 
-const Experience = ({ data, isEditing, setUserData }) => {
+const Experience = ({ data, isEditing, setUserData, validationTrigger }) => {
+    const { addToast } = useToast();
+    const [fieldErrors, setFieldErrors] = useState({}); // { `${jobIndex}_field`: 'error msg' }
+
+    const clearError = (jobIndex, field) => {
+        setFieldErrors(prev => { const n = { ...prev }; delete n[`${jobIndex}_${field}`]; return n; });
+    };
+
+    const validateOnBlur = (jobIndex) => {
+        const job = data[jobIndex];
+        const errs = validateExperience(job);
+        const newErrors = { ...fieldErrors };
+        // Clear previous errors for this job
+        Object.keys(newErrors).filter(k => k.startsWith(`${jobIndex}_`)).forEach(k => delete newErrors[k]);
+        errs.forEach(e => {
+            if (e.includes('Company')) newErrors[`${jobIndex}_company`] = e;
+            if (e.includes('role')) newErrors[`${jobIndex}_role`] = e;
+            if (e.includes('Dates')) newErrors[`${jobIndex}_dates`] = e;
+            if (e.includes('description')) newErrors[`${jobIndex}_description`] = e;
+        });
+        setFieldErrors(newErrors);
+    };
+
+    useEffect(() => {
+        if (validationTrigger > 0) {
+            data.forEach((_, index) => validateOnBlur(index));
+        }
+    }, [validationTrigger]);
 
     const handleUpdate = (index, field, value) => {
         setUserData(prev => {
@@ -34,6 +64,17 @@ const Experience = ({ data, isEditing, setUserData }) => {
     };
 
     const addJob = () => {
+        // Validate the most-recent job before allowing a new one
+        if (data.length > 0) {
+            const latest = data[0];
+            const errs = validateExperience(latest);
+            if (errs.length > 0) {
+                addToast('Please complete the current experience entry before adding a new one.', 'error');
+                // Highlight fields
+                validateOnBlur(0);
+                return;
+            }
+        }
         setUserData(prev => ({
             ...prev,
             experience: [{
@@ -102,28 +143,35 @@ const Experience = ({ data, isEditing, setUserData }) => {
                                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: '0.5rem' }}>
                                     <input
                                         value={job.role}
-                                        onChange={(e) => handleUpdate(index, 'role', e.target.value)}
-                                        style={{ fontFamily: 'var(--font-heading)', fontSize: '1.4rem', fontWeight: 'bold', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', width: '100%' }}
-                                        placeholder="Role / Job Title"
+                                        onChange={(e) => { handleUpdate(index, 'role', e.target.value); clearError(index, 'role'); }}
+                                        onBlur={() => validateOnBlur(index)}
+                                        style={{ fontFamily: 'var(--font-heading)', fontSize: '1.4rem', fontWeight: 'bold', border: fieldErrors[`${index}_role`] ? '1px solid #dc2626' : '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', width: '100%' }}
+                                        placeholder="Role / Job Title *"
                                     />
+                                    <ErrorBubble message={fieldErrors[`${index}_role`]} />
                                     <CompanySelector
                                         value={job.company}
-                                        onChange={(name, logo) => handleCompanyChange(index, name, logo)}
-                                        placeholder="Company Name"
+                                        onChange={(name, logo) => { handleCompanyChange(index, name, logo); clearError(index, 'company'); }}
+                                        placeholder="Company Name *"
                                     />
+                                    <ErrorBubble message={fieldErrors[`${index}_company`]} />
                                 </div>
                             ) : (
                                 <h3>{job.role} @ {job.company}</h3>
                             )}
 
                             {isEditing ? (
-                                <input
-                                    value={job.dates}
-                                    onChange={(e) => handleUpdate(index, 'dates', e.target.value)}
-                                    className="dates"
-                                    placeholder="Dates (e.g. 2022 - Present)"
-                                    style={{ border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit' }}
-                                />
+                                <>
+                                    <input
+                                        value={job.dates}
+                                        onChange={(e) => { handleUpdate(index, 'dates', e.target.value); clearError(index, 'dates'); }}
+                                        onBlur={() => validateOnBlur(index)}
+                                        className="dates"
+                                        placeholder="Dates * (e.g. 2022 - Present)"
+                                        style={{ border: fieldErrors[`${index}_dates`] ? '1px solid #dc2626' : '1px dashed var(--border-color)', background: 'transparent', color: 'inherit' }}
+                                    />
+                                    <ErrorBubble message={fieldErrors[`${index}_dates`]} />
+                                </>
                             ) : (
                                 <span className="dates">{job.dates}</span>
                             )}

@@ -2,7 +2,7 @@ import React from 'react';
 import Loader from './Loader';
 import '../css/Components.css';
 
-const EditControl = ({ onSave, onExport, toggleTheme, theme, onExitEdit, isSaving, isDeploying, onDeploy, publicUrl }) => {
+const EditControl = ({ onSave, onExport, toggleTheme, theme, onExitEdit, isSaving, isDeploying, onDeploy, publicUrl, saveDisabled }) => {
     return (
         <div className="edit-control">
             <div className="edit-control-inner">
@@ -19,8 +19,16 @@ const EditControl = ({ onSave, onExport, toggleTheme, theme, onExitEdit, isSavin
                     <button
                         onClick={onSave}
                         className="save-btn"
-                        disabled={isSaving || isDeploying}
-                        style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                        disabled={isSaving || isDeploying || saveDisabled}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            opacity: saveDisabled ? 0.6 : 1,
+                            cursor: saveDisabled ? 'not-allowed' : 'pointer',
+                            background: saveDisabled ? '#ccc' : undefined
+                        }}
+                        title={saveDisabled ? "Please fix validation errors to save" : "Save changes"}
                     >
                         {isSaving && <Loader size="small" color="#fff" />}
                         {isSaving ? 'Saving...' : 'Save'}

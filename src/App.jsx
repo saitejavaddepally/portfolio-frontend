@@ -17,6 +17,15 @@ import { initialData as defaultTemplate } from './data/initialData';
 import Loader from './components/Loader';
 import RecruiterDashboardPage from './pages/RecruiterDashboardPage';
 import RecruiterUserPreviewPage from './pages/RecruiterUserPreviewPage';
+import EditBubble from './components/EditBubble';
+import {
+	validateExperience,
+	validateProject,
+	validateEducation,
+	validateCodingProfile,
+	validateAchievements,
+	validateSkills
+} from './utils/validateSection';
 
 // AppContent handles the main logic requiring AuthContext
 const AppContent = () => {
@@ -26,6 +35,7 @@ const AppContent = () => {
 	const [dataLoading, setDataLoading] = useState(false);
 	const [fetchError, setFetchError] = useState(null); // Stop infinite loops
 	const [isEditing, setIsEditing] = useState(false);
+	const [validationTrigger, setValidationTrigger] = useState(0);
 	const isFetchingRef = useRef(false);
 
 	// UX State
@@ -134,6 +144,66 @@ const AppContent = () => {
 		}
 	}, [user, authLoading, userData, dataLoading, fetchError]);
 
+	const getValidationErrors = (data) => {
+		if (!data) return [];
+		const errors = [];
+		// Experience
+		if (data.experience) {
+			data.experience.forEach((job, i) => {
+				const errs = validateExperience(job);
+				if (errs.length) errors.push(`Experience #${i + 1}: ${errs[0]}`);
+			});
+		}
+		// Projects
+		if (data.projects) {
+			data.projects.forEach((proj, i) => {
+				const errs = validateProject(proj);
+				if (errs.length) errors.push(`Project #${i + 1}: ${errs[0]}`);
+			});
+		}
+		// Education
+		if (data.education) {
+			data.education.forEach((edu, i) => {
+				const errs = validateEducation(edu);
+				if (errs.length) errors.push(`Education #${i + 1}: ${errs[0]}`);
+			});
+		}
+		// Achievements
+		if (data.achievements?.items?.length > 0 || data.achievements?.title) {
+			// Only validate if section is active/being used? 
+			// Logic: if present, must be valid. But achievements is an object in initialData.
+			// If title is present, validate. Or if items present.
+			const errs = validateAchievements(data.achievements);
+			if (errs.length > 0 && (data.activeTemplate === 'medium' || data.achievements.items.length > 0)) {
+				// only force validation if it's being used? 
+				// Actually, validate achievements only if it has content presumably?
+				// But user asked for validation.
+				// If title is empty but items exist -> error.
+				// If items empty -> error.
+				// Let's rely on validateAchievements.
+				if (errs.length) errors.push(`Achievements: ${errs[0]}`);
+			}
+		}
+		// Skills
+		if (data.skills && data.skills.length > 0) {
+			// If skills array exists, check if empty? initialData has empty array.
+			// validateSkills checks length > 0.
+			const errs = validateSkills(data.skills);
+			if (errs.length) errors.push(`Skills: ${errs[0]}`);
+		}
+		// Coding Profiles
+		if (data.codingProfiles) {
+			data.codingProfiles.forEach((prof, i) => {
+				const errs = validateCodingProfile(prof);
+				if (errs.length) errors.push(`Coding Profile #${i + 1}: ${errs[0]}`);
+			});
+		}
+		return errors;
+	};
+
+	const validationErrors = userData ? getValidationErrors(userData) : [];
+	const isPortfolioValid = validationErrors.length === 0;
+
 
 	const toggleEditMode = () => {
 		if (isEditing) {
@@ -151,6 +221,21 @@ const AppContent = () => {
 
 	const saveToSource = async () => {
 		if (!userData) return;
+
+		const errors = getValidationErrors(userData);
+		if (errors.length > 0) {
+			addToast(`Please fix validaton errors before saving.`, 'error');
+			setValidationTrigger(prev => prev + 1);
+			// Scroll to the first error bubble
+			setTimeout(() => {
+				const firstError = document.querySelector('.error-bubble') || document.querySelector('.input-error');
+				if (firstError) {
+					firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				}
+			}, 100);
+			return;
+		}
+
 		setIsSaving(true);
 		try {
 			await savePortfolio(userData);
@@ -264,6 +349,7 @@ const AppContent = () => {
 					isSaving={isSaving}
 					isDeploying={isDeploying}
 					onDeploy={handleDeploy}
+					saveDisabled={false} // Always enabled to allow clicking and seeing validation errors
 					publicUrl={userData.slug ? `/p/${userData.slug}` : null}
 				/>
 			)}
@@ -314,15 +400,21 @@ const AppContent = () => {
 				{/* Portfolio View (Authenticated Preview) */}
 				<Route path="/" element={
 					userData ? (
-						<Template
-							data={userData}
-							isEditing={isEditing}
-							updateData={updateData}
-							setUserData={setUserData}
-							theme={theme}
-							toggleTheme={toggleTheme}
-							onArrayUpdate={() => { }}
-						/>
+						<>
+							<Template
+								data={userData}
+								isEditing={isEditing}
+								updateData={updateData}
+								setUserData={setUserData}
+								theme={theme}
+								toggleTheme={toggleTheme}
+								onArrayUpdate={() => { }}
+								validationTrigger={validationTrigger}
+							/>
+							{!isEditing && user && (
+								<EditBubble portfolioStyle={userData?.activeTemplate || 'medium'} />
+							)}
+						</>
 					) : (
 						user ? (
 							<Navigate to="/dashboard" replace />

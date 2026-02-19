@@ -53,10 +53,10 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
             {(!isEditing && (!data.experience || data.experience.length === 0)) ? null : (
                 <section className="modern-section" id="experience" style={{ background: 'var(--bg-primary)' }}>
                     <div className="modern-container">
-                        <h2 className="section-title reveal">Experience</h2>
+                        <h2 className={!isEditing ? "section-title reveal" : "section-title"}>Experience</h2>
                         <div className="modern-timeline">
                             {data.experience.map((job, index) => (
-                                <div key={index} className={`timeline-item reveal reveal-delay-${Math.min(index + 1, 5)}`}>
+                                <div key={index} className={!isEditing ? `timeline-item reveal reveal-delay-${Math.min(index + 1, 5)}` : "timeline-item"}>
                                     <div className="timeline-marker"></div>
                                     <div className="timeline-content modern-card">
                                         <div className="job-header-modern">
@@ -122,10 +122,10 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                 (!isEditing && (!data.education || data.education.length === 0)) ? null : (
                     <section className="modern-section" id="education" style={{ background: 'var(--bg-secondary)' }}>
                         <div className="modern-container">
-                            <h2 className="section-title reveal">Education</h2>
+                            <h2 className={!isEditing ? "section-title reveal" : "section-title"}>Education</h2>
                             <div className="modern-timeline">
                                 {(data.education || []).map((edu, index) => (
-                                    <div key={index} className={`timeline-item reveal reveal-delay-${Math.min(index + 1, 5)}`}>
+                                    <div key={index} className={!isEditing ? `timeline-item reveal reveal-delay-${Math.min(index + 1, 5)}` : "timeline-item"}>
                                         <div className="timeline-marker"></div>
                                         <div className="timeline-content modern-card">
                                             <div className="job-header-modern">
@@ -232,10 +232,10 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                 (!isEditing && (!data.projects || data.projects.length === 0)) ? null : (
                     <section className="modern-section" id="projects">
                         <div className="modern-container">
-                            <h2 className="section-title reveal">Featured Work</h2>
+                            <h2 className={!isEditing ? "section-title reveal" : "section-title"}>Featured Work</h2>
                             <div className="project-grid">
                                 {data.projects.map((project, index) => (
-                                    <div key={index} className={`modern-card reveal reveal-delay-${Math.min(index + 1, 5)}`}>
+                                    <div key={index} className={!isEditing ? `modern-card reveal reveal-delay-${Math.min(index + 1, 5)}` : "modern-card"}>
                                         <div className="card-header">
                                             <span className="project-type-badge">{project.type}</span>
                                             <h3>{isEditing ? (
@@ -294,7 +294,7 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
 
 
 
-            <footer className="modern-footer reveal" id="contact">
+            <footer className={!isEditing ? "modern-footer reveal" : "modern-footer"} id="contact">
                 <div className="modern-container">
                     <h2>Let's Connect</h2>
                     <a href={`mailto:${data.footer.email}`} className="modern-btn">Get In Touch</a>
