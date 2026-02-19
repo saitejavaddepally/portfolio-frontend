@@ -12,7 +12,8 @@ const EditBubble = ({ portfolioStyle }) => {
     if (dismissed) return null;
 
     const handleEdit = () => {
-        navigate(`/?portfolioStyle=${portfolioStyle || 'medium'}&edit=true`);
+        // Editing always happens in the Medium editor — all templates draw from the same data.
+        navigate(`/?portfolioStyle=medium&edit=true`);
     };
 
     return (
