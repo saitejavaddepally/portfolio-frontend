@@ -1,3 +1,4 @@
+import React from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Experience from './components/Experience';
@@ -7,9 +8,13 @@ import Achievements from './components/Achievements';
 import Skills from './components/Skills';
 import Footer from './components/Footer';
 import '../../css/Medium.css';
+import '../../css/scrollReveal.css';
+import useScrollReveal from '../../hooks/useScrollReveal';
 
 
 const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData, theme, toggleTheme }) => {
+    useScrollReveal();
+
     // Helper to check if a section should be visible
     const shouldShow = (sectionData) => {
         if (isEditing) return true;
@@ -40,43 +45,53 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                 />
 
                 {shouldShow(data.experience) && (
-                    <Experience
-                        data={data.experience}
-                        isEditing={isEditing}
-                        setUserData={setUserData}
-                    />
+                    <div className="reveal">
+                        <Experience
+                            data={data.experience}
+                            isEditing={isEditing}
+                            setUserData={setUserData}
+                        />
+                    </div>
                 )}
 
                 {shouldShow(data.education) && (
-                    <Education
-                        data={data.education || []}
-                        isEditing={isEditing}
-                        setUserData={setUserData}
-                    />
+                    <div className="reveal reveal-delay-1">
+                        <Education
+                            data={data.education || []}
+                            isEditing={isEditing}
+                            setUserData={setUserData}
+                        />
+                    </div>
                 )}
 
                 {shouldShow(data.projects) && (
-                    <Projects
-                        data={data.projects}
-                        isEditing={isEditing}
-                        setUserData={setUserData}
-                    />
+                    <div className="reveal reveal-delay-2">
+                        <Projects
+                            data={data.projects}
+                            isEditing={isEditing}
+                            setUserData={setUserData}
+                        />
+                    </div>
                 )}
 
                 {shouldShow(data.achievements?.items) && (
-                    <Achievements
-                        data={data.achievements}
-                        isEditing={isEditing}
-                        setUserData={setUserData}
-                    />
+                    <div className="reveal reveal-scale">
+                        <Achievements
+                            data={data.achievements}
+                            isEditing={isEditing}
+                            setUserData={setUserData}
+                        />
+                    </div>
                 )}
 
                 {shouldShow(data.skills) && (
-                    <Skills
-                        data={data.skills}
-                        isEditing={isEditing}
-                        setUserData={setUserData}
-                    />
+                    <div className="reveal reveal-delay-1">
+                        <Skills
+                            data={data.skills}
+                            isEditing={isEditing}
+                            setUserData={setUserData}
+                        />
+                    </div>
                 )}
             </main>
 

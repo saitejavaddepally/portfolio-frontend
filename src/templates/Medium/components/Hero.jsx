@@ -1,10 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
+const useIsMobile = () => {
+    const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 600px)').matches);
+    useEffect(() => {
+        const mq = window.matchMedia('(max-width: 600px)');
+        const handler = (e) => setIsMobile(e.matches);
+        mq.addEventListener('change', handler);
+        return () => mq.removeEventListener('change', handler);
+    }, []);
+    return isMobile;
+};
 
 const Hero = ({ data, isEditing, onUpdate, onArrayUpdate }) => {
+    const isMobile = useIsMobile();
     return (
         <section className="hero" id="about">
-            <div className="hero-content" style={{ display: 'grid', gridTemplateColumns: '1fr 200px', alignItems: 'center', gap: '3rem' }}>
-                <div className="hero-text" style={{ gridColumn: 1 }}>
+            <div
+                className="hero-content"
+                style={isMobile ? {
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '1.5rem',
+                    textAlign: 'center',
+                } : {
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 200px',
+                    alignItems: 'center',
+                    gap: '3rem',
+                }}
+            >
+                <div className="hero-text" style={isMobile ? { order: 2, width: '100%', textAlign: 'center' } : { gridColumn: 1 }}>
                     {isEditing ? (
                         <div style={{ marginBottom: '1rem' }}>
                             <label style={{ fontSize: '0.8rem', color: '#666', display: 'block', marginBottom: '0.5rem' }}>Headline</label>
@@ -128,7 +154,17 @@ const Hero = ({ data, isEditing, onUpdate, onArrayUpdate }) => {
                     </div>
                 </div>
 
-                <div className="hero-image-container" style={{ gridColumn: 2 }}>
+                <div
+                    className="hero-image-container"
+                    style={isMobile ? {
+                        order: 1,
+                        width: '150px',
+                        height: '150px',
+                        margin: '0 auto',
+                    } : {
+                        gridColumn: 2,
+                    }}
+                >
                     <div className="hero-image">
                         <img src={data.image || "https://via.placeholder.com/250"} alt={data.name} />
 

@@ -1,9 +1,12 @@
 import React from 'react';
 import '../../css/Modern.css';
+import '../../css/scrollReveal.css';
 import CompanySelector from '../../components/CompanySelector';
+import useScrollReveal from '../../hooks/useScrollReveal';
 
 // A completely different layout to prove the concept
 const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData }) => {
+    useScrollReveal();
     return (
         <div className="modern-template animate-fade-in">
             <nav className="modern-nav">
@@ -50,10 +53,10 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
             {(!isEditing && (!data.experience || data.experience.length === 0)) ? null : (
                 <section className="modern-section" id="experience" style={{ background: 'var(--bg-primary)' }}>
                     <div className="modern-container">
-                        <h2 className="section-title">Experience</h2>
+                        <h2 className="section-title reveal">Experience</h2>
                         <div className="modern-timeline">
                             {data.experience.map((job, index) => (
-                                <div key={index} className="timeline-item">
+                                <div key={index} className={`timeline-item reveal reveal-delay-${Math.min(index + 1, 5)}`}>
                                     <div className="timeline-marker"></div>
                                     <div className="timeline-content modern-card">
                                         <div className="job-header-modern">
@@ -112,185 +115,192 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                         </div>
                     </div>
                 </section>
-            )}
+            )
+            }
 
-            {(!isEditing && (!data.education || data.education.length === 0)) ? null : (
-                <section className="modern-section" id="education" style={{ background: 'var(--bg-secondary)' }}>
-                    <div className="modern-container">
-                        <h2 className="section-title">Education</h2>
-                        <div className="modern-timeline">
-                            {(data.education || []).map((edu, index) => (
-                                <div key={index} className="timeline-item">
-                                    <div className="timeline-marker"></div>
-                                    <div className="timeline-content modern-card">
-                                        <div className="job-header-modern">
-                                            <div style={{ flex: 1 }}>
-                                                <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
+            {
+                (!isEditing && (!data.education || data.education.length === 0)) ? null : (
+                    <section className="modern-section" id="education" style={{ background: 'var(--bg-secondary)' }}>
+                        <div className="modern-container">
+                            <h2 className="section-title reveal">Education</h2>
+                            <div className="modern-timeline">
+                                {(data.education || []).map((edu, index) => (
+                                    <div key={index} className={`timeline-item reveal reveal-delay-${Math.min(index + 1, 5)}`}>
+                                        <div className="timeline-marker"></div>
+                                        <div className="timeline-content modern-card">
+                                            <div className="job-header-modern">
+                                                <div style={{ flex: 1 }}>
+                                                    <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
+                                                        {isEditing ? (
+                                                            <input
+                                                                value={edu.school}
+                                                                onChange={(e) => {
+                                                                    const newEdu = [...(data.education || [])];
+                                                                    newEdu[index] = { ...newEdu[index], school: e.target.value };
+                                                                    setUserData(prev => ({ ...prev, education: newEdu }));
+                                                                }}
+                                                                style={{ background: 'transparent', border: 'none', color: 'inherit', fontSize: 'inherit', fontWeight: 'bold', width: '100%' }}
+                                                                placeholder="University Name"
+                                                            />
+                                                        ) : edu.school}
+                                                    </h3>
                                                     {isEditing ? (
                                                         <input
-                                                            value={edu.school}
+                                                            value={edu.dates}
                                                             onChange={(e) => {
                                                                 const newEdu = [...(data.education || [])];
-                                                                newEdu[index] = { ...newEdu[index], school: e.target.value };
+                                                                newEdu[index] = { ...newEdu[index], dates: e.target.value };
                                                                 setUserData(prev => ({ ...prev, education: newEdu }));
                                                             }}
-                                                            style={{ background: 'transparent', border: 'none', color: 'inherit', fontSize: 'inherit', fontWeight: 'bold', width: '100%' }}
-                                                            placeholder="University Name"
+                                                            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontSize: '0.9rem', width: '100%' }}
+                                                            placeholder="Dates"
                                                         />
-                                                    ) : edu.school}
-                                                </h3>
-                                                {isEditing ? (
-                                                    <input
-                                                        value={edu.dates}
-                                                        onChange={(e) => {
+                                                    ) : (
+                                                        <span className="modern-dates" style={{ display: 'block', margin: '5px 0' }}>{edu.dates}</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <ul className="modern-job-desc">
+                                                {(edu.desc || []).map((desc, i) => (
+                                                    <li key={i}>
+                                                        {isEditing ? (
+                                                            <input
+                                                                value={desc}
+                                                                onChange={(e) => {
+                                                                    const newEdu = [...(data.education || [])];
+                                                                    const newDesc = [...newEdu[index].desc];
+                                                                    newDesc[i] = e.target.value;
+                                                                    newEdu[index] = { ...newEdu[index], desc: newDesc };
+                                                                    setUserData(prev => ({ ...prev, education: newEdu }));
+                                                                }}
+                                                                style={{ background: 'transparent', border: 'none', color: 'inherit', width: '100%' }}
+                                                            />
+                                                        ) : desc}
+                                                    </li>
+                                                ))}
+                                                {isEditing && (
+                                                    <button
+                                                        onClick={() => {
                                                             const newEdu = [...(data.education || [])];
-                                                            newEdu[index] = { ...newEdu[index], dates: e.target.value };
+                                                            newEdu[index].desc = [...newEdu[index].desc, "New Detail"];
                                                             setUserData(prev => ({ ...prev, education: newEdu }));
                                                         }}
-                                                        style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontSize: '0.9rem', width: '100%' }}
-                                                        placeholder="Dates"
-                                                    />
-                                                ) : (
-                                                    <span className="modern-dates" style={{ display: 'block', margin: '5px 0' }}>{edu.dates}</span>
+                                                        style={{ fontSize: '0.8rem', color: 'var(--accent-color)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                                    >
+                                                        + Add Detail
+                                                    </button>
                                                 )}
-                                            </div>
-                                        </div>
-                                        <ul className="modern-job-desc">
-                                            {(edu.desc || []).map((desc, i) => (
-                                                <li key={i}>
-                                                    {isEditing ? (
-                                                        <input
-                                                            value={desc}
-                                                            onChange={(e) => {
-                                                                const newEdu = [...(data.education || [])];
-                                                                const newDesc = [...newEdu[index].desc];
-                                                                newDesc[i] = e.target.value;
-                                                                newEdu[index] = { ...newEdu[index], desc: newDesc };
-                                                                setUserData(prev => ({ ...prev, education: newEdu }));
-                                                            }}
-                                                            style={{ background: 'transparent', border: 'none', color: 'inherit', width: '100%' }}
-                                                        />
-                                                    ) : desc}
-                                                </li>
-                                            ))}
+                                            </ul>
                                             {isEditing && (
                                                 <button
                                                     onClick={() => {
-                                                        const newEdu = [...(data.education || [])];
-                                                        newEdu[index].desc = [...newEdu[index].desc, "New Detail"];
+                                                        const newEdu = data.education.filter((_, i) => i !== index);
                                                         setUserData(prev => ({ ...prev, education: newEdu }));
                                                     }}
-                                                    style={{ fontSize: '0.8rem', color: 'var(--accent-color)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                                    style={{ marginTop: '10px', color: '#ff4444', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem' }}
                                                 >
-                                                    + Add Detail
+                                                    Remove Education
                                                 </button>
                                             )}
-                                        </ul>
-                                        {isEditing && (
-                                            <button
-                                                onClick={() => {
-                                                    const newEdu = data.education.filter((_, i) => i !== index);
-                                                    setUserData(prev => ({ ...prev, education: newEdu }));
-                                                }}
-                                                style={{ marginTop: '10px', color: '#ff4444', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem' }}
-                                            >
-                                                Remove Education
-                                            </button>
-                                        )}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                            {isEditing && (
-                                <button
-                                    onClick={() => {
-                                        setUserData(prev => ({
-                                            ...prev,
-                                            education: [...(prev.education || []), {
-                                                school: "New University",
-                                                dates: "2020-2024",
-                                                desc: ["Degree Name"]
-                                            }]
-                                        }));
-                                    }}
-                                    style={{ marginTop: '20px', padding: '10px', width: '100%', border: '2px dashed var(--border-color)', background: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
-                                >
-                                    + Add New Education
-                                </button>
-                            )}
+                                ))}
+                                {isEditing && (
+                                    <button
+                                        onClick={() => {
+                                            setUserData(prev => ({
+                                                ...prev,
+                                                education: [...(prev.education || []), {
+                                                    school: "New University",
+                                                    dates: "2020-2024",
+                                                    desc: ["Degree Name"]
+                                                }]
+                                            }));
+                                        }}
+                                        style={{ marginTop: '20px', padding: '10px', width: '100%', border: '2px dashed var(--border-color)', background: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
+                                    >
+                                        + Add New Education
+                                    </button>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                </section>
-            )}
+                    </section>
+                )
+            }
 
-            {(!isEditing && (!data.projects || data.projects.length === 0)) ? null : (
-                <section className="modern-section" id="projects">
-                    <div className="modern-container">
-                        <h2 className="section-title">Featured Work</h2>
-                        <div className="project-grid">
-                            {data.projects.map((project, index) => (
-                                <div key={index} className="modern-card">
-                                    <div className="card-header">
-                                        <span className="project-type-badge">{project.type}</span>
-                                        <h3>{isEditing ? (
-                                            <input
-                                                value={project.title}
-                                                onChange={(e) => {
-                                                    const newProjects = [...data.projects];
-                                                    newProjects[index].title = e.target.value;
-                                                    setUserData(prev => ({ ...prev, projects: newProjects }));
-                                                }}
-                                                style={{ background: 'transparent', border: 'none', color: 'inherit', fontSize: 'inherit', fontWeight: 'bold', width: '100%' }}
-                                            />
-                                        ) : project.title}</h3>
+            {
+                (!isEditing && (!data.projects || data.projects.length === 0)) ? null : (
+                    <section className="modern-section" id="projects">
+                        <div className="modern-container">
+                            <h2 className="section-title reveal">Featured Work</h2>
+                            <div className="project-grid">
+                                {data.projects.map((project, index) => (
+                                    <div key={index} className={`modern-card reveal reveal-delay-${Math.min(index + 1, 5)}`}>
+                                        <div className="card-header">
+                                            <span className="project-type-badge">{project.type}</span>
+                                            <h3>{isEditing ? (
+                                                <input
+                                                    value={project.title}
+                                                    onChange={(e) => {
+                                                        const newProjects = [...data.projects];
+                                                        newProjects[index].title = e.target.value;
+                                                        setUserData(prev => ({ ...prev, projects: newProjects }));
+                                                    }}
+                                                    style={{ background: 'transparent', border: 'none', color: 'inherit', fontSize: 'inherit', fontWeight: 'bold', width: '100%' }}
+                                                />
+                                            ) : project.title}</h3>
+                                        </div>
+                                        {/* Description as bullet points for Modern too if array */}
+                                        {Array.isArray(project.desc) ? (
+                                            <ul className="modern-job-desc" style={{ marginTop: '1rem' }}>
+                                                {project.desc.map((d, i) => <li key={i}>{d}</li>)}
+                                            </ul>
+                                        ) : (
+                                            <p>{project.desc}</p>
+                                        )}
+                                        <div className="card-tags">
+                                            {project.tags.map(t => <span key={t}>#{t}</span>)}
+                                        </div>
                                     </div>
-                                    {/* Description as bullet points for Modern too if array */}
-                                    {Array.isArray(project.desc) ? (
-                                        <ul className="modern-job-desc" style={{ marginTop: '1rem' }}>
-                                            {project.desc.map((d, i) => <li key={i}>{d}</li>)}
-                                        </ul>
-                                    ) : (
-                                        <p>{project.desc}</p>
-                                    )}
-                                    <div className="card-tags">
-                                        {project.tags.map(t => <span key={t}>#{t}</span>)}
-                                    </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                </section>
-            )}
+                    </section>
+                )
+            }
 
             {/* Achievements Section */}
-            {(!isEditing && (!data.achievements || !data.achievements.items || data.achievements.items.length === 0)) ? null : (
-                <section className="modern-section" id="achievements" style={{ background: 'var(--bg-secondary)' }}>
-                    <div className="modern-container">
-                        <h2 className="section-title">Achievements</h2>
-                        <div className="modern-card" style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-                            <span className="project-type-badge">{data.achievements.type}</span>
-                            <h3 style={{ fontSize: '2rem', margin: '1rem 0' }}>{data.achievements.title}</h3>
-                            <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginBottom: '1rem' }}>{data.achievements.org}</p>
-                            <p style={{ fontSize: '1.1rem', marginBottom: '2rem' }}>{data.achievements.description}</p>
+            {
+                (!isEditing && (!data.achievements || !data.achievements.items || data.achievements.items.length === 0)) ? null : (
+                    <section className="modern-section" id="achievements" style={{ background: 'var(--bg-secondary)' }}>
+                        <div className="modern-container">
+                            <h2 className="section-title">Achievements</h2>
+                            <div className="modern-card" style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+                                <span className="project-type-badge">{data.achievements.type}</span>
+                                <h3 style={{ fontSize: '2rem', margin: '1rem 0' }}>{data.achievements.title}</h3>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginBottom: '1rem' }}>{data.achievements.org}</p>
+                                <p style={{ fontSize: '1.1rem', marginBottom: '2rem' }}>{data.achievements.description}</p>
 
-                            <ul className="modern-job-desc" style={{ textAlign: 'left', display: 'inline-block' }}>
-                                {data.achievements?.items?.map((item, i) => (
-                                    <li key={i}>{item}</li>
-                                ))}
-                            </ul>
+                                <ul className="modern-job-desc" style={{ textAlign: 'left', display: 'inline-block' }}>
+                                    {data.achievements?.items?.map((item, i) => (
+                                        <li key={i}>{item}</li>
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                </section>
-            )}
+                    </section>
+                )
+            }
 
 
 
-            <footer className="modern-footer" id="contact">
+            <footer className="modern-footer reveal" id="contact">
                 <div className="modern-container">
                     <h2>Let's Connect</h2>
                     <a href={`mailto:${data.footer.email}`} className="modern-btn">Get In Touch</a>
                 </div>
             </footer>
-        </div>
+        </div >
     );
 };
 
