@@ -2,18 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { validateCodingProfile } from '../../../utils/validateSection';
 import ErrorBubble from '../../../components/ErrorBubble';
 import { useToast } from '../../../context/ToastContext';
-
-const PLATFORMS = [
-    { name: 'LeetCode', icon: '🟨', color: '#FFA116' },
-    { name: 'GitHub', icon: '🐙', color: '#24292e' },
-    { name: 'Codeforces', icon: '🔵', color: '#1F8ACB' },
-    { name: 'HackerRank', icon: '🟢', color: '#00EA64' },
-    { name: 'GeeksForGeeks', icon: '🌿', color: '#2F8D46' },
-    { name: 'CodeChef', icon: '👨‍🍳', color: '#5B4638' },
-    { name: 'HackerEarth', icon: '🟣', color: '#2C3E8C' },
-    { name: 'AtCoder', icon: '⬜', color: '#222' },
-    { name: 'TUF+', icon: '🔥', color: '#e84118' },
-];
+import { PLATFORMS, getPlatformMeta, getPlatformIconUrl } from './codingPlatforms';
 
 const CodingProfiles = ({ data, isEditing, setUserData, validationTrigger }) => {
     const { addToast } = useToast();
@@ -83,13 +72,12 @@ const CodingProfiles = ({ data, isEditing, setUserData, validationTrigger }) => 
         });
     };
 
-    const getPlatformMeta = (name) =>
-        PLATFORMS.find(p => p.name === name) || { icon: '🔗', color: '#555' };
+
 
     if (!isEditing && (!data || data.length === 0)) return null;
 
     return (
-        <section id="coding-profiles" style={{ marginTop: '5rem' }}>
+        <section id="coding-profiles" style={{ marginTop: '5rem', marginBottom: '5rem' }}>
             <div className="section-header">
                 <h2>Coding Profiles</h2>
             </div>
@@ -118,7 +106,7 @@ const CodingProfiles = ({ data, isEditing, setUserData, validationTrigger }) => 
                                             }}
                                         >
                                             {PLATFORMS.map(p => (
-                                                <option key={p.name} value={p.name}>{p.icon} {p.name}</option>
+                                                <option key={p.name} value={p.name}>{p.name}</option>
                                             ))}
                                         </select>
                                         <button
@@ -175,7 +163,13 @@ const CodingProfiles = ({ data, isEditing, setUserData, validationTrigger }) => 
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                                            <span style={{ fontSize: '1.3rem' }}>{meta.icon}</span>
+                                            <img
+                                                src={getPlatformIconUrl(getPlatformMeta(profile.platform).domain)}
+                                                alt={profile.platform}
+                                                width="22"
+                                                height="22"
+                                                style={{ borderRadius: '4px' }}
+                                            />
                                             <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)' }}>{profile.platform}</span>
                                         </div>
                                         <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>@{profile.username}</span>
