@@ -416,4 +416,25 @@
     .card-tags span {
         margin-right: 0;
     }
+
+    /* ── Remove left timeline line & dots on mobile ── */
+    .modern-timeline::before {
+        display: none;
+    }
+
+    .timeline-marker {
+        display: none;
+    }
+
+    .timeline-item {
+        padding-left: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Replace with a glowing top-accent on each card */
+    .timeline-content.modern-card {
+        border-top: 3px solid #38bdf8;
+        box-shadow: 0 -2px 12px rgba(56, 189, 248, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+    }
 }
