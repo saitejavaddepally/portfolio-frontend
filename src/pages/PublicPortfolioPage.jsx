@@ -14,9 +14,15 @@ const PublicPortfolioPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Theme state (Public View typically defaults to light or user preference, 
-    // but here we can default to light or read from portfolio config if we saved it)
-    const [theme, setTheme] = useState('light'); // Could load from userData if we saved 'theme' preference
+    // Initialize theme from localStorage so user preference persists per-profile
+    const [theme, setTheme] = useState(() => {
+        const savedTheme = localStorage.getItem(`portfolio-theme-${slug}`);
+        if (savedTheme) return savedTheme;
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return 'dark';
+        }
+        return 'light';
+    });
 
     // Dynamic Title Effect
     useEffect(() => {
@@ -56,7 +62,11 @@ const PublicPortfolioPage = () => {
     }, [theme]);
 
     const toggleTheme = () => {
-        setTheme(prev => prev === 'light' ? 'dark' : 'light');
+        setTheme(prev => {
+            const newTheme = prev === 'light' ? 'dark' : 'light';
+            localStorage.setItem(`portfolio-theme-${slug}`, newTheme);
+            return newTheme;
+        });
     };
 
     if (loading) {

@@ -97,7 +97,7 @@ const GRADIENTS = [
     'linear-gradient(135deg,#fccb90,#d57eeb)',
 ];
 
-const InstagramTemplate = ({ data }) => {
+const InstagramTemplate = ({ data, theme, toggleTheme }) => {
     const [activeTab, setActiveTab] = useState('grid');
 
     const TABS = [
@@ -111,7 +111,7 @@ const InstagramTemplate = ({ data }) => {
         <div className="ig-container">
             <main className="ig-main">
                 {/* Profile Header */}
-                <ProfileHeader userData={data} />
+                <ProfileHeader userData={data} theme={theme} toggleTheme={toggleTheme} />
 
                 {/* Story-style section highlights */}
                 <div className="ig-highlights">
