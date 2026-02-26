@@ -1,35 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 import apiClient from '../services/apiClient';
 import { API_BASE_URL } from '../config/api';
 import './AIChatPanel.css';
 
 /**
- * Returns a valid (non-expired) access token.
- * If the stored token is about to expire (< 30s left), it refreshes first.
+ * Returns a valid access token, refreshing only if it is genuinely expired.
+ * Uses jwtDecode (same library as AuthContext) for reliable claim reading.
  */
 const getValidToken = async () => {
     const token = localStorage.getItem('accessToken');
     if (!token) throw new Error('No access token');
 
     try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const expiresAt = payload.exp * 1000; // ms
-        const now = Date.now();
-
-        // If token still has more than 30 seconds left, use it as-is
-        if (expiresAt - now > 30_000) return token;
+        const { exp } = jwtDecode(token);
+        // If exp is missing or token has > 30s left, return as-is
+        if (!exp || (exp * 1000) - Date.now() > 30_000) return token;
     } catch {
-        // Malformed token — fall through to refresh
+        // Malformed JWT — return existing token and let server decide
+        return token;
     }
 
-    // Token expired or malformed — attempt refresh
+    // Token is expired — attempt silent refresh via apiClient (interceptors already handle this)
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) throw new Error('No refresh token');
 
-    const res = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
+    const res = await apiClient.post('/auth/refresh', { refreshToken });
     const { accessToken, refreshToken: newRefreshToken } = res.data;
 
     localStorage.setItem('accessToken', accessToken);
@@ -134,7 +132,11 @@ const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
                 }
             );
 
-            if (!response.ok) throw new Error('Streaming failed');
+            if (!response.ok) {
+                if (response.status === 403) throw new Error('FORBIDDEN');
+                if (response.status === 401) throw new Error('UNAUTHORIZED');
+                throw new Error('Streaming failed');
+            }
 
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
@@ -182,12 +184,20 @@ const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
             setIsStreaming(false);
 
         } catch (err) {
+            if (err.name === 'AbortError') {
+                setIsStreaming(false);
+                return;
+            }
             setIsStreaming(false);
+            const errMsg =
+                err.message === 'FORBIDDEN' ? '🔒 Access denied. You don\'t have permission to use the AI assistant.' :
+                    err.message === 'UNAUTHORIZED' ? '🔑 Session expired. Please refresh the page and log in again.' :
+                        '⚠️ Unable to retrieve response. Please try again.';
             setMessages(prev => {
                 const updated = [...prev];
                 const last = updated[updated.length - 1];
                 if (last.role === 'assistant') {
-                    last.content = '⚠️ Unable to retrieve response.';
+                    last.content = errMsg;
                 }
                 return updated;
             });
