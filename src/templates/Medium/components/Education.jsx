@@ -162,7 +162,9 @@ const Education = ({ data, isEditing, setUserData, validationTrigger }) => {
                                             <textarea
                                                 value={desc}
                                                 onChange={(e) => handleDescUpdate(index, i, e.target.value)}
-                                                style={{ width: '100%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'vertical' }}
+                                                onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
+                                                ref={(el) => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } }}
+                                                style={{ width: '100%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'none', overflow: 'hidden', boxSizing: 'border-box' }}
                                                 rows={1}
                                                 placeholder="Degree or Field of Study"
                                             />

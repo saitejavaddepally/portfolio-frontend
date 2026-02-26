@@ -117,8 +117,10 @@ const Projects = ({ data, isEditing, setUserData, validationTrigger }) => {
                                                 newDesc[i] = e.target.value;
                                                 handleUpdate(index, 'desc', newDesc);
                                             }}
-                                            style={{ width: '100%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'vertical' }}
-                                            rows={2}
+                                            onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
+                                            ref={(el) => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } }}
+                                            style={{ width: '100%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'none', overflow: 'hidden', boxSizing: 'border-box' }}
+                                            rows={1}
                                             placeholder="Project Feature / Detail"
                                         />
                                         <button
@@ -145,8 +147,10 @@ const Projects = ({ data, isEditing, setUserData, validationTrigger }) => {
                                     <textarea
                                         value={project.desc}
                                         onChange={(e) => handleUpdate(index, 'desc', [e.target.value])} // Auto-convert to array on edit
-                                        rows={3}
-                                        style={{ width: '100%' }}
+                                        onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
+                                        ref={(el) => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } }}
+                                        rows={1}
+                                        style={{ width: '100%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'none', overflow: 'hidden', boxSizing: 'border-box' }}
                                     />
                                 ) : (
                                     <p>{project.desc}</p>

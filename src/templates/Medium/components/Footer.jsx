@@ -44,7 +44,10 @@ const Footer = ({ data, isEditing, updateData }) => {
                         <textarea
                             value={data.subtitle}
                             onChange={(e) => updateData('footer', 'subtitle', e.target.value)}
-                            style={{ fontSize: '1.2rem', textAlign: 'center', width: '100%', border: '1px dashed var(--border-color)', marginTop: '1rem', background: 'transparent', color: 'inherit', fontFamily: 'inherit' }}
+                            onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
+                            ref={(el) => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } }}
+                            style={{ fontSize: '1.2rem', textAlign: 'center', width: '100%', border: '1px dashed var(--border-color)', marginTop: '1rem', background: 'transparent', color: 'inherit', fontFamily: 'inherit', resize: 'none', overflow: 'hidden', boxSizing: 'border-box' }}
+                            rows={1}
                         />
                     </>
                 ) : (

@@ -61,8 +61,10 @@ const Achievements = ({ data, isEditing, setUserData }) => {
                         <textarea
                             value={data.description}
                             onChange={(e) => handleUpdate('description', e.target.value)}
-                            style={{ width: '100%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: '1.2rem', resize: 'vertical', textAlign: 'center', marginBottom: '2rem' }}
-                            rows={2}
+                            onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
+                            ref={(el) => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } }}
+                            style={{ width: '100%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: '1.2rem', resize: 'none', overflow: 'hidden', textAlign: 'center', marginBottom: '2rem', boxSizing: 'border-box' }}
+                            rows={1}
                             placeholder="Brief description of the achievement..."
                         />
                     ) : (
@@ -80,7 +82,9 @@ const Achievements = ({ data, isEditing, setUserData }) => {
                                             newItems[i] = e.target.value;
                                             handleUpdate('items', newItems);
                                         }}
-                                        style={{ width: '80%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'vertical' }}
+                                        onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
+                                        ref={(el) => { if (el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; } }}
+                                        style={{ width: '80%', border: '1px dashed var(--border-color)', background: 'transparent', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', resize: 'none', overflow: 'hidden', boxSizing: 'border-box' }}
                                         rows={1}
                                     />
                                     <button
