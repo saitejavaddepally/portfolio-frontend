@@ -1,60 +1,73 @@
 import React from 'react';
 import '../css/Recruiter.css';
 
+/** Returns badge color based on match score */
+const matchColor = (score) => {
+    if (score >= 80) return { bg: 'rgba(34,197,94,0.15)', color: '#16a34a', dot: '#22c55e' };
+    if (score >= 60) return { bg: 'rgba(249,115,22,0.15)', color: '#ea580c', dot: '#f97316' };
+    return { bg: 'rgba(148,163,184,0.15)', color: '#64748b', dot: '#94a3b8' };
+};
+
 const UserCard = ({ user, onClick }) => {
-    // Access portfolio data safely, handling potential structure variations
-    const getPortfolioData = (u) => {
-        if (u.userData?.data) return u.userData.data; // Structure from latest user feedback
-        if (u.userData?.portfolio?.data) return u.userData.portfolio.data; // Specific nested structure from screenshot
-        if (u.userData?.portfolio) return u.userData.portfolio; // Just in case
-        if (u.userData) return u.userData; // Fallback if flattened
-        if (u.data?.hero) return u.data; // Structure from potential JSON variation
-        if (u.portfolio?.data?.hero) return u.portfolio.data;
-        if (u.portfolio?.hero) return u.portfolio; // Maybe flattened in list
-        if (u.hero) return u; // Maybe at root
-        return u.portfolio?.data || {}; // Default fallback
-    };
+    // New API: skills[] and optional matchScore are top-level
+    const skills = Array.isArray(user.skills) ? user.skills : [];
+    const matchScore = typeof user.matchScore === 'number' ? user.matchScore : null;
 
-    const portfolioData = getPortfolioData(user);
+    // Derive display name from email (e.g. "john.doe@..." → "John Doe")
+    const nameFromEmail = user.email
+        ? user.email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+        : 'Professional';
+    const displayName = user.name || nameFromEmail;
+    const initial = displayName.charAt(0).toUpperCase();
 
-    // Derive current role/company
-    let currentRole = "Fresher";
-    let currentCompany = "";
+    const topSkills = skills.slice(0, 4);
+    const remaining = skills.length - topSkills.length;
 
-    if (portfolioData.experience && portfolioData.experience.length > 0) {
-        // Try to find a "Present" role
-        const currentExp = portfolioData.experience.find(exp =>
-            exp.dates && (exp.dates.toLowerCase().includes('present') || exp.dates.toLowerCase().includes('current'))
-        ) || portfolioData.experience[0]; // Fallback to first
-
-        currentRole = currentExp.role;
-        currentCompany = currentExp.company;
-    }
-
-    // Top 3 skills
-    const topSkills = portfolioData.skills ? portfolioData.skills.slice(0, 3) : [];
+    const badge = matchScore !== null ? matchColor(matchScore) : null;
 
     return (
-        <div className="recruiter-user-card" onClick={onClick}>
-            <div className="user-card-header">
-                <div className="user-avatar-placeholder">
-                    {portfolioData.hero?.name ? portfolioData.hero.name.charAt(0).toUpperCase() : 'U'}
+        <div className="recruiter-user-card" onClick={onClick} style={{ position: 'relative' }}>
+            {/* Match Score Badge */}
+            {badge && (
+                <div className="match-score-badge" style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    background: badge.bg,
+                    color: badge.color,
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    padding: '3px 10px',
+                    borderRadius: '100px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    letterSpacing: '0.02em',
+                }}>
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: badge.dot, display: 'inline-block' }} />
+                    {matchScore}% Match
                 </div>
+            )}
+
+            <div className="user-card-header">
+                <div className="user-avatar-placeholder">{initial}</div>
                 <div className="user-info">
-                    <h3 className="user-name">{portfolioData.hero?.name || 'Unnamed Professional'}</h3>
-                    <p className="user-role">
-                        {currentRole}
-                        {currentCompany && <span className="user-company"> @ {currentCompany}</span>}
+                    <h3 className="user-name">{displayName}</h3>
+                    <p className="user-role" style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                        {user.email}
                     </p>
                 </div>
             </div>
 
             <div className="user-card-skills">
-                {topSkills.map((skill, index) => (
-                    <span key={index} className="skill-badge">{skill}</span>
+                {topSkills.map((skill, i) => (
+                    <span key={i} className="skill-badge">{skill}</span>
                 ))}
-                {portfolioData.skills && portfolioData.skills.length > 3 && (
-                    <span className="skill-badge more">+{portfolioData.skills.length - 3}</span>
+                {remaining > 0 && (
+                    <span className="skill-badge more">+{remaining}</span>
+                )}
+                {skills.length === 0 && (
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>No skills listed</span>
                 )}
             </div>
 
@@ -66,3 +79,4 @@ const UserCard = ({ user, onClick }) => {
 };
 
 export default UserCard;
+

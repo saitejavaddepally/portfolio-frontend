@@ -21,25 +21,8 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                 const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
 
                 console.log("RecruiterDashboard: Fetched professionals:", data);
-
-                // Filter only published profiles
-                const publishedPros = data.filter(user => {
-                    // Check deeply nested published flag based on DB structure
-                    const isPublished = user.isPublished ||
-                        user.slug ||
-                        user.userData?.isPublished ||
-                        user.userData?.slug ||
-                        user.userData?.portfolio?.published ||
-                        user.portfolio?.published ||
-                        !!user.userData?.portfolio?.publicSlug ||
-                        !!user.userData?.data; // Handle structure where data is directly under userData
-
-                    return !!isPublished;
-                });
-
-                console.log("RecruiterDashboard: Published professionals after filter:", publishedPros);
-
-                setProfessionals(publishedPros);
+                // New API returns lightweight summary — no filtering needed, backend controls visibility
+                setProfessionals(data);
             } catch (err) {
                 console.error("Failed to fetch professionals:", err);
                 if (err.response && err.response.status === 403) {
@@ -106,21 +89,9 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                                     <UserCard
                                         user={user}
                                         onClick={() => {
-                                            const slug = user.slug || user.userData?.slug || user.userData?.portfolio?.publicSlug;
-                                            // Pass the nested data if it exists, otherwise pass the user object itself
-                                            // This ensures the target page gets the actual portfolio data structure it expects
-                                            let stateData = user.userData?.data || user.userData || user;
-
-                                            // Ensure we don't lose the email if we drilled down
-                                            if (user.email && !stateData.email) {
-                                                stateData = { ...stateData, email: user.email };
-                                            }
-
-                                            if (slug) {
-                                                navigate(`/p/${slug}`, { state: { userData: stateData } });
-                                            } else {
-                                                navigate(`/recruiter/user/${user._id || user.id}`, { state: { userData: stateData } });
-                                            }
+                                            // Always navigate to detail route — page fetches
+                                            // full portfolio via GET /recruiter/professionals/{id}
+                                            navigate(`/recruiter/user/${user._id || user.id}`);
                                         }}
                                     />
                                 </div>
