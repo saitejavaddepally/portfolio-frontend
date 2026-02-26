@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { validateProject } from '../../../utils/validateSection';
 import ErrorBubble from '../../../components/ErrorBubble';
-import { useToast } from '../../../context/ToastContext';
 
 
 const Projects = ({ data, isEditing, setUserData, validationTrigger }) => {
-    const { addToast } = useToast();
     const [fieldErrors, setFieldErrors] = useState({});
+
 
     const clearError = (idx, field) => {
         setFieldErrors(prev => { const n = { ...prev }; delete n[`${idx}_${field}`]; return n; });
@@ -15,13 +14,15 @@ const Projects = ({ data, isEditing, setUserData, validationTrigger }) => {
     const validateOnBlur = (idx) => {
         const project = data[idx];
         const errs = validateProject(project);
-        const newErrors = { ...fieldErrors };
-        Object.keys(newErrors).filter(k => k.startsWith(`${idx}_`)).forEach(k => delete newErrors[k]);
-        errs.forEach(e => {
-            if (e.includes('title')) newErrors[`${idx}_title`] = e;
-            if (e.includes('description')) newErrors[`${idx}_desc`] = e;
+        setFieldErrors(prev => {
+            const newErrors = { ...prev };
+            Object.keys(newErrors).filter(k => k.startsWith(`${idx}_`)).forEach(k => delete newErrors[k]);
+            errs.forEach(e => {
+                if (e.includes('title')) newErrors[`${idx}_title`] = e;
+                if (e.includes('description')) newErrors[`${idx}_desc`] = e;
+            });
+            return newErrors;
         });
-        setFieldErrors(newErrors);
     };
 
     useEffect(() => {
@@ -229,16 +230,6 @@ const Projects = ({ data, isEditing, setUserData, validationTrigger }) => {
             {isEditing && (
                 <button
                     onClick={() => {
-                        // Validate the most recent project before adding another
-                        if (data.length > 0) {
-                            const latest = data[data.length - 1];
-                            const errs = validateProject(latest);
-                            if (errs.length > 0) {
-                                addToast('Please complete the current project before adding a new one.', 'error');
-                                validateOnBlur(data.length - 1);
-                                return;
-                            }
-                        }
                         setUserData(prev => ({
                             ...prev,
                             projects: [...prev.projects, {

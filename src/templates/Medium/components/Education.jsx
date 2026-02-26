@@ -15,13 +15,15 @@ const Education = ({ data, isEditing, setUserData, validationTrigger }) => {
     const validateOnBlur = (idx) => {
         const edu = data[idx];
         const errs = validateEducation(edu);
-        const newErrors = { ...fieldErrors };
-        Object.keys(newErrors).filter(k => k.startsWith(`${idx}_`)).forEach(k => delete newErrors[k]);
-        errs.forEach(e => {
-            if (e.includes('School')) newErrors[`${idx}_school`] = e;
-            if (e.includes('Dates')) newErrors[`${idx}_dates`] = e;
+        setFieldErrors(prev => {
+            const newErrors = { ...prev };
+            Object.keys(newErrors).filter(k => k.startsWith(`${idx}_`)).forEach(k => delete newErrors[k]);
+            errs.forEach(e => {
+                if (e.includes('School')) newErrors[`${idx}_school`] = e;
+                if (e.includes('Dates')) newErrors[`${idx}_dates`] = e;
+            });
+            return newErrors;
         });
-        setFieldErrors(newErrors);
     };
 
     useEffect(() => {

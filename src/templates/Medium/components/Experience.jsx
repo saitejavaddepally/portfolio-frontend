@@ -15,16 +15,18 @@ const Experience = ({ data, isEditing, setUserData, validationTrigger }) => {
     const validateOnBlur = (jobIndex) => {
         const job = data[jobIndex];
         const errs = validateExperience(job);
-        const newErrors = { ...fieldErrors };
-        // Clear previous errors for this job
-        Object.keys(newErrors).filter(k => k.startsWith(`${jobIndex}_`)).forEach(k => delete newErrors[k]);
-        errs.forEach(e => {
-            if (e.includes('Company')) newErrors[`${jobIndex}_company`] = e;
-            if (e.includes('role')) newErrors[`${jobIndex}_role`] = e;
-            if (e.includes('Dates')) newErrors[`${jobIndex}_dates`] = e;
-            if (e.includes('description')) newErrors[`${jobIndex}_description`] = e;
+        setFieldErrors(prev => {
+            const newErrors = { ...prev };
+            // Clear previous errors for this job
+            Object.keys(newErrors).filter(k => k.startsWith(`${jobIndex}_`)).forEach(k => delete newErrors[k]);
+            errs.forEach(e => {
+                if (e.includes('Company')) newErrors[`${jobIndex}_company`] = e;
+                if (e.includes('role')) newErrors[`${jobIndex}_role`] = e;
+                if (e.includes('Dates')) newErrors[`${jobIndex}_dates`] = e;
+                if (e.includes('description')) newErrors[`${jobIndex}_description`] = e;
+            });
+            return newErrors;
         });
-        setFieldErrors(newErrors);
     };
 
     useEffect(() => {
