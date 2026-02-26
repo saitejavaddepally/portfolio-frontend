@@ -27,7 +27,8 @@ import {
 	validateEducation,
 	validateCodingProfile,
 	validateAchievements,
-	validateSkills
+	validateSkills,
+	validateHero
 } from './utils/validateSection';
 
 // AppContent handles the main logic requiring AuthContext
@@ -152,6 +153,11 @@ const AppContent = () => {
 	const getValidationErrors = (data) => {
 		if (!data) return [];
 		const errors = [];
+		// Hero roles
+		if (data.hero) {
+			const heroErrs = validateHero(data.hero);
+			heroErrs.forEach(e => errors.push(`Hero: ${e.message}`));
+		}
 		// Experience
 		if (data.experience) {
 			data.experience.forEach((job, i) => {

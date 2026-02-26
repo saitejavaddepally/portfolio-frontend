@@ -48,3 +48,17 @@ export const validateSkills = (skills) => {
     // Skills can be empty
     return [];
 };
+
+export const validateHero = (hero) => {
+    const errors = [];
+    if (!hero) return errors;
+    // Flag any empty role entries (user clicked + Add but didn't type)
+    if (Array.isArray(hero.roles)) {
+        hero.roles.forEach((role, i) => {
+            if (!role || role.trim() === '') {
+                errors.push({ field: `role_${i}`, message: 'Role cannot be empty. Fill it in or remove it.' });
+            }
+        });
+    }
+    return errors;
+};

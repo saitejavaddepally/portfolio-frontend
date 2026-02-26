@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { validateHero } from '../../../utils/validateSection';
 
 const useIsMobile = () => {
     const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 600px)').matches);
@@ -11,8 +12,39 @@ const useIsMobile = () => {
     return isMobile;
 };
 
-const Hero = ({ data, isEditing, onUpdate, onArrayUpdate }) => {
+const Hero = ({ data, isEditing, onUpdate, onArrayUpdate, validationTrigger }) => {
     const isMobile = useIsMobile();
+    const [roleErrors, setRoleErrors] = useState({}); // { index: 'error msg' }
+
+    // When save is triggered, highlight all empty roles
+    useEffect(() => {
+        if (validationTrigger > 0) {
+            const errs = {};
+            (data.roles || []).forEach((role, i) => {
+                if (!role || role.trim() === '') {
+                    errs[i] = 'Role cannot be empty.';
+                }
+            });
+            setRoleErrors(errs);
+        }
+    }, [validationTrigger]);
+
+    const handleRoleChange = (index, value) => {
+        const newRoles = [...data.roles];
+        newRoles[index] = value;
+        onUpdate('roles', newRoles);
+        // Clear error as user types
+        if (roleErrors[index]) {
+            setRoleErrors(prev => { const n = { ...prev }; delete n[index]; return n; });
+        }
+    };
+
+    const removeRole = (index) => {
+        const newRoles = data.roles.filter((_, i) => i !== index);
+        onUpdate('roles', newRoles);
+        setRoleErrors(prev => { const n = { ...prev }; delete n[index]; return n; });
+    };
+
     return (
         <section className="hero" id="about">
             <div
@@ -63,36 +95,49 @@ const Hero = ({ data, isEditing, onUpdate, onArrayUpdate }) => {
                     <div className="role-badges">
                         {data.roles.map((role, index) => (
                             isEditing ? (
-                                <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                    <input
-                                        value={role}
-                                        onChange={(e) => {
-                                            const newRoles = [...data.roles];
-                                            newRoles[index] = e.target.value;
-                                            onUpdate('roles', newRoles);
-                                        }}
-                                        className="role-badge"
-                                        placeholder="Role"
-                                        style={{ border: '1px dashed var(--border-color)', width: `${Math.max(role.length, 10)}ch`, minWidth: '80px', background: 'transparent', color: 'inherit' }}
-                                    />
-                                    <button
-                                        onClick={() => {
-                                            const newRoles = data.roles.filter((_, i) => i !== index);
-                                            onUpdate('roles', newRoles);
-                                        }}
-                                        style={{
-                                            background: 'none',
-                                            color: '#ff4444',
-                                            border: 'none',
-                                            fontSize: '16px',
-                                            cursor: 'pointer',
-                                            padding: '0 4px',
-                                            lineHeight: 1
-                                        }}
-                                        title="Remove role"
-                                    >
-                                        ×
-                                    </button>
+                                <div key={index} style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        <input
+                                            value={role}
+                                            onChange={(e) => handleRoleChange(index, e.target.value)}
+                                            className="role-badge"
+                                            placeholder="Role"
+                                            style={{
+                                                border: roleErrors[index]
+                                                    ? '1px solid #ef4444'
+                                                    : '1px dashed var(--border-color)',
+                                                width: `${Math.max(role.length, 10)}ch`,
+                                                minWidth: '80px',
+                                                background: roleErrors[index] ? 'rgba(239,68,68,0.05)' : 'transparent',
+                                                color: 'inherit',
+                                                borderRadius: '4px',
+                                            }}
+                                        />
+                                        <button
+                                            onClick={() => removeRole(index)}
+                                            style={{
+                                                background: 'none',
+                                                color: '#ff4444',
+                                                border: 'none',
+                                                fontSize: '16px',
+                                                cursor: 'pointer',
+                                                padding: '0 4px',
+                                                lineHeight: 1
+                                            }}
+                                            title="Remove role"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                    {roleErrors[index] && (
+                                        <span className="error-bubble" style={{
+                                            fontSize: '0.72rem',
+                                            color: '#ef4444',
+                                            paddingLeft: '2px',
+                                        }}>
+                                            ⚠ {roleErrors[index]}
+                                        </span>
+                                    )}
                                 </div>
                             ) : (
                                 <span key={index} className="role-badge">{role}</span>

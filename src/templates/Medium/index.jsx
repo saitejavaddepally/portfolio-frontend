@@ -43,6 +43,7 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                         newRoles[index] = val;
                         updateData('hero', 'roles', newRoles);
                     }}
+                    validationTrigger={validationTrigger}
                 />
 
                 {shouldShow(data.experience) && (
