@@ -1,8 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import axios from 'axios';
 import apiClient from '../services/apiClient';
+import { API_BASE_URL } from '../config/api';
 import './AIChatPanel.css';
+
+/**
+ * Returns a valid (non-expired) access token.
+ * If the stored token is about to expire (< 30s left), it refreshes first.
+ */
+const getValidToken = async () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) throw new Error('No access token');
+
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const expiresAt = payload.exp * 1000; // ms
+        const now = Date.now();
+
+        // If token still has more than 30 seconds left, use it as-is
+        if (expiresAt - now > 30_000) return token;
+    } catch {
+        // Malformed token — fall through to refresh
+    }
+
+    // Token expired or malformed — attempt refresh
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) throw new Error('No refresh token');
+
+    const res = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
+    const { accessToken, refreshToken: newRefreshToken } = res.data;
+
+    localStorage.setItem('accessToken', accessToken);
+    if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+    apiClient.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
+
+    return accessToken;
+};
 
 const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
 
@@ -20,31 +55,25 @@ const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
     const inputRef = useRef(null);
     const abortControllerRef = useRef(null);
 
-    // Fetch chat history on mount
+    // Fetch chat history on mount — uses apiClient (handles token + refresh automatically)
     useEffect(() => {
         const loadHistory = async () => {
             try {
                 const token = localStorage.getItem('accessToken');
-
-                // Decode JWT payload (base64 decode the middle part)
                 const payload = JSON.parse(atob(token.split('.')[1]));
                 const recruiterEmail = payload.sub || '';
 
                 const email = candidateEmail || candidateData?.email;
-                const baseURL = apiClient.defaults.baseURL || 'http://localhost:5000/api';
 
-                const res = await fetch(
-                    `${baseURL}/ai/history?candidateEmail=${encodeURIComponent(email)}&recruiterEmail=${encodeURIComponent(recruiterEmail)}`,
-                    { headers: { Authorization: `Bearer ${token}` } }
+                const res = await apiClient.get(
+                    `/ai/history?candidateEmail=${encodeURIComponent(email)}&recruiterEmail=${encodeURIComponent(recruiterEmail)}`
                 );
 
-                if (res.ok) {
-                    const history = await res.json();
-                    if (Array.isArray(history) && history.length > 0) {
-                        setMessages(history.map(h => ({ role: h.role, content: h.content })));
-                    }
-                    // If empty array, keep the default greeting
+                const history = res.data;
+                if (Array.isArray(history) && history.length > 0) {
+                    setMessages(history.map(h => ({ role: h.role, content: h.content })));
                 }
+                // If empty array, keep the default greeting
             } catch (e) {
                 console.warn('Could not load chat history:', e);
             } finally {
@@ -86,15 +115,15 @@ const AIChatPanel = ({ candidateData, candidateEmail, onClose }) => {
         setMessages(prev => [...prev, { role: 'assistant', content: '', id: assistantId }]);
 
         try {
-            const token = localStorage.getItem('accessToken');
-            const baseURL = apiClient.defaults.baseURL || 'http://localhost:5000/api';
+            // Ensure we have a fresh, valid token before opening the SSE stream
+            const token = await getValidToken();
             const email = candidateEmail || candidateData?.email;
 
             const controller = new AbortController();
             abortControllerRef.current = controller;
 
             const response = await fetch(
-                `${baseURL}/ai/stream?candidateEmail=${encodeURIComponent(email)}&question=${encodeURIComponent(userMessage.content)}`,
+                `${API_BASE_URL}/ai/stream?candidateEmail=${encodeURIComponent(email)}&question=${encodeURIComponent(userMessage.content)}`,
                 {
                     method: 'GET',
                     headers: {

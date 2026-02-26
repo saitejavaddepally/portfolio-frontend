@@ -16,7 +16,17 @@ export const validateExperience = (job) => {
 export const validateProject = (project) => {
     const errors = [];
     if (!project.title || typeof project.title !== 'string' || project.title.trim() === '') errors.push('Project title is required.');
-    const desc = Array.isArray(project.description) ? project.description : (project.desc ? [project.desc] : []);
+    // Normalize: support both `desc` (array or string) and `description` (array)
+    let desc;
+    if (Array.isArray(project.description)) {
+        desc = project.description;
+    } else if (Array.isArray(project.desc)) {
+        desc = project.desc;
+    } else if (project.desc) {
+        desc = [project.desc];
+    } else {
+        desc = [];
+    }
     if (desc.length === 0 || desc.every(d => typeof d !== 'string' || d.trim() === ''))
         errors.push('Add at least one description point.');
     return errors;

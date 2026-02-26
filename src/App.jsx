@@ -269,6 +269,20 @@ const AppContent = () => {
 	const handleDeploy = async () => {
 		if (!userData) return;
 		setIsDeploying(true);
+
+		// Block deploy if there are validation errors (same guard as saveToSource)
+		const errors = getValidationErrors(userData);
+		if (errors.length > 0) {
+			addToast('Please fix validation errors before deploying.', 'error');
+			setValidationTrigger(prev => prev + 1);
+			setTimeout(() => {
+				const firstError = document.querySelector('.error-bubble') || document.querySelector('.input-error');
+				if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}, 100);
+			setIsDeploying(false);
+			return;
+		}
+
 		// 1. Auto-save first
 		try {
 			await savePortfolio(userData);
