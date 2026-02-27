@@ -67,6 +67,17 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                         <p className="dashboard-subtitle">
                             Discover top talent for your open roles.
                         </p>
+                        <button
+                            className="recruiter-search-nav-btn"
+                            onClick={() => navigate('/recruiter/search')}
+                            style={{ marginTop: '1rem' }}
+                        >
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="M21 21l-4.35-4.35" />
+                            </svg>
+                            Semantic Search
+                        </button>
                     </div>
                     <div className="dashboard-header-image-container">
                         <img src={portfolioSvg} alt="Recruiting" className="dashboard-header-image" style={{ maxHeight: '200px', width: 'auto' }} />

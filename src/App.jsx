@@ -20,6 +20,7 @@ import { initialData as defaultTemplate } from './data/initialData';
 import Loader from './components/Loader';
 import RecruiterDashboardPage from './pages/RecruiterDashboardPage';
 import RecruiterUserPreviewPage from './pages/RecruiterUserPreviewPage';
+import RecruiterSearch from './pages/RecruiterSearch';
 import EditBubble from './components/EditBubble';
 import {
 	validateExperience,
@@ -429,6 +430,14 @@ const AppContent = () => {
 					element={
 						<PrivateRoute>
 							<RecruiterUserPreviewPage theme={theme} toggleTheme={toggleTheme} />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/recruiter/search"
+					element={
+						<PrivateRoute>
+							<RecruiterSearch theme={theme} toggleTheme={toggleTheme} />
 						</PrivateRoute>
 					}
 				/>
