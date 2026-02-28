@@ -612,47 +612,69 @@
    DASHBOARD INLINE SEARCH BAR
 ═══════════════════════════════════════════════════════════ */
 .recruiter-dashboard-header .dashboard-header-content {
-    flex: 1;
+    flex: 1 1 0%;
     min-width: 0;
+    width: 0;
+    /* forces flex child to not push layout */
 }
 
+/* The form is a fixed-height, non-growing strip */
 .dashboard-search-form {
     display: flex;
-    gap: 0.65rem;
+    gap: 0.6rem;
     align-items: center;
     margin-top: 1.25rem;
     width: 100%;
-    max-width: 600px;
+    max-width: 560px;
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 
+/* Wrapper locks its own size — the input fills it, nothing else */
 .dashboard-search-wrapper {
-    flex: 1;
     position: relative;
-    display: flex;
-    align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+    /* critical: prevents flex blowout */
+    height: 44px;
+    /* fixed height anchors the bar */
+    box-sizing: border-box;
 }
 
 .dashboard-search-icon {
     position: absolute;
-    left: 13px;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--text-secondary);
     pointer-events: none;
     flex-shrink: 0;
     transition: color 0.2s;
+    z-index: 1;
+}
+
+.dashboard-search-wrapper:focus-within .dashboard-search-icon {
+    color: #38bdf8;
 }
 
 .dashboard-search-input {
+    position: absolute;
+    /* fill the wrapper exactly, no reflow */
+    inset: 0;
     width: 100%;
+    height: 100%;
+    box-sizing: border-box;
     background: var(--bg-primary);
     border: 1.5px solid var(--border-color);
     border-radius: 50px;
-    /* pill shape */
-    padding: 0.72rem 2.6rem 0.72rem 2.7rem;
+    padding: 0 2.8rem 0 2.7rem;
+    /* leave room for icons both sides */
     font-size: 0.88rem;
     color: var(--text-primary);
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
     font-family: inherit;
+    transition: border-color 0.2s;
+    /* no box-shadow → no layout shift */
 }
 
 .dashboard-search-input::placeholder {
@@ -661,26 +683,29 @@
 
 .dashboard-search-input:focus {
     border-color: #38bdf8;
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
-}
-
-.dashboard-search-input:focus+.dashboard-search-icon,
-.dashboard-search-wrapper:focus-within .dashboard-search-icon {
-    color: #38bdf8;
+    /* Use outline so it paints outside the box and never shifts layout */
+    outline: 3px solid rgba(56, 189, 248, 0.18);
+    outline-offset: 0px;
 }
 
 .dashboard-search-clear {
     position: absolute;
-    right: 12px;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     background: none;
     border: none;
     cursor: pointer;
     color: var(--text-secondary);
     display: flex;
     align-items: center;
-    padding: 4px;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     transition: color 0.15s, background 0.15s;
+    z-index: 2;
+    flex-shrink: 0;
 }
 
 .dashboard-search-clear:hover {
@@ -689,7 +714,9 @@
 }
 
 .dashboard-search-btn {
-    padding: 0.72rem 1.25rem;
+    flex-shrink: 0;
+    height: 44px;
+    padding: 0 1.2rem;
     background: linear-gradient(135deg, #38bdf8, #818cf8);
     color: #fff;
     border: none;
@@ -699,13 +726,13 @@
     cursor: pointer;
     white-space: nowrap;
     font-family: inherit;
+    box-sizing: border-box;
     transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
     box-shadow: 0 3px 12px rgba(56, 189, 248, 0.3);
-    flex-shrink: 0;
 }
 
 .dashboard-search-btn:disabled {
-    opacity: 0.4;
+    opacity: 0.38;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -716,6 +743,7 @@
     transform: translateY(-1px);
     box-shadow: 0 5px 16px rgba(56, 189, 248, 0.4);
 }
+
 
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 768px) {
