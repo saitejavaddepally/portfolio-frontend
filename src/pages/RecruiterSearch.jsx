@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import SharedLayout from '../components/SharedLayout';
 import CandidateCard from '../components/CandidateCard';
 import { searchCandidates } from '../services/recruiterApi';
 import '../css/Recruiter.css';
 
-/* ── Inline spinner (no external dep) ─────────────────────────── */
+/* ── Inline spinner ──────────────────────────────────────────── */
 const SearchSpinner = () => (
     <div className="search-spinner-wrapper">
         <div className="search-spinner" />
-        <p className="search-spinner-text">Running semantic search…</p>
+        <p className="search-spinner-text">Looking for the best matches…</p>
     </div>
 );
 
-/* ── Empty state illustration ──────────────────────────────────── */
+/* ── Empty state ─────────────────────────────────────────────── */
 const EmptyState = ({ query }) => (
     <div className="search-empty-state">
         <div className="search-empty-icon">
@@ -24,7 +24,7 @@ const EmptyState = ({ query }) => (
             </svg>
         </div>
         <h3>No candidates found</h3>
-        <p>No matches for <strong>"{query}"</strong>. Try a different query.</p>
+        <p>No matches for <strong>"{query}"</strong>. Try different words or a broader description.</p>
     </div>
 );
 
@@ -32,16 +32,15 @@ const EmptyState = ({ query }) => (
 
 const RecruiterSearch = ({ theme, toggleTheme }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [searched, setSearched] = useState(false); // track if a search was attempted
+    const [searched, setSearched] = useState(false);
     const debounceRef = useRef(null);
     const inputRef = useRef(null);
-
-    /* Focus input on mount */
-    useEffect(() => { inputRef.current?.focus(); }, []);
+    const didAutoSearch = useRef(false);
 
     /* Core search handler */
     const runSearch = useCallback(async (q) => {
@@ -55,14 +54,11 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
             setSearched(true);
         } catch (err) {
             const status = err?.response?.status;
-            if (status === 401) {
-                navigate('/login');
-                return;
-            }
+            if (status === 401) { navigate('/login'); return; }
             if (status === 403) {
-                setError('Access denied. This feature is for Recruiters only.');
+                setError('This feature is only available to Recruiters.');
             } else {
-                setError(err?.response?.data?.message || 'Search failed. Please try again.');
+                setError(err?.response?.data?.message || 'Something went wrong. Please try again.');
             }
             setResults([]);
             setSearched(true);
@@ -71,8 +67,22 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
         }
     }, [navigate]);
 
-    /* Debounce – fires 300 ms after the user stops typing */
+    /* Read ?q= param from URL and auto-search on mount */
     useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const q = params.get('q') || '';
+        if (q && !didAutoSearch.current) {
+            didAutoSearch.current = true;
+            setQuery(q);
+            runSearch(q);
+        } else {
+            inputRef.current?.focus();
+        }
+    }, [location.search, runSearch]);
+
+    /* Debounce on subsequent typing (after initial mount auto-search) */
+    useEffect(() => {
+        if (!didAutoSearch.current) return; // let the URL-param effect handle first run
         if (!query.trim()) {
             setResults([]);
             setSearched(false);
@@ -87,6 +97,7 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         clearTimeout(debounceRef.current);
+        didAutoSearch.current = true;
         runSearch(query);
     };
 
@@ -102,11 +113,11 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                                 <path d="M12 2a8 8 0 0 1 8 8c0 5.25-8 13-8 13S4 15.25 4 10a8 8 0 0 1 8-8z" />
                                 <circle cx="12" cy="10" r="2.5" />
                             </svg>
-                            <span>AI-Powered</span>
+                            <span>Smart Matching</span>
                         </div>
-                        <h1 className="dashboard-title">Semantic Candidate Search</h1>
+                        <h1 className="dashboard-title">Find Candidates</h1>
                         <p className="dashboard-subtitle">
-                            Describe the ideal candidate in plain English and let AI find the best matches.
+                            Describe the person you're looking for in plain English — we'll surface the best matches instantly.
                         </p>
                     </div>
                     <div className="search-header-illustration">
@@ -128,7 +139,6 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                 <div className="search-bar-section">
                     <form className="search-form" onSubmit={handleSubmit}>
                         <div className="search-input-wrapper">
-                            {/* Magnifier icon inside input */}
                             <svg className="search-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="11" cy="11" r="8" />
                                 <path d="M21 21l-4.35-4.35" />
@@ -136,17 +146,16 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
 
                             <input
                                 ref={inputRef}
-                                id="semantic-search-input"
+                                id="candidate-search-input"
                                 type="text"
                                 className="search-input"
-                                placeholder="Search candidates (e.g. Java Spring Boot developer)"
+                                placeholder="e.g. Java Spring Boot developer, React expert, DevOps engineer…"
                                 value={query}
-                                onChange={(e) => setQuery(e.target.value)}
+                                onChange={(e) => { didAutoSearch.current = true; setQuery(e.target.value); }}
                                 autoComplete="off"
                                 spellCheck="false"
                             />
 
-                            {/* Clear button */}
                             {query && (
                                 <button
                                     type="button"
@@ -162,14 +171,12 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                         </div>
 
                         <button
-                            id="semantic-search-btn"
+                            id="candidate-search-btn"
                             type="submit"
                             className="search-submit-btn"
                             disabled={!query.trim() || loading}
                         >
-                            {loading ? (
-                                <span className="btn-spinner" />
-                            ) : (
+                            {loading ? <span className="btn-spinner" /> : (
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                     <circle cx="11" cy="11" r="8" />
                                     <path d="M21 21l-4.35-4.35" />
@@ -181,12 +188,12 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
 
                     {/* Quick-suggest pills */}
                     <div className="search-suggestions">
-                        {['React developer', 'Java Spring Boot', 'ML engineer', 'DevOps AWS', 'Full stack Node.js'].map((s) => (
+                        {['React developer', 'Java Spring Boot', 'Machine learning', 'Cloud & AWS', 'Full stack Node.js'].map((s) => (
                             <button
                                 key={s}
                                 className="suggestion-pill"
                                 type="button"
-                                onClick={() => setQuery(s)}
+                                onClick={() => { didAutoSearch.current = true; setQuery(s); }}
                             >
                                 {s}
                             </button>
@@ -197,10 +204,8 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                 {/* ── Results Area ─────────────────────────────────────── */}
                 <div className="search-results-area">
 
-                    {/* Loading */}
                     {loading && <SearchSpinner />}
 
-                    {/* Error */}
                     {!loading && error && (
                         <div className="search-error-state">
                             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -214,19 +219,19 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                         </div>
                     )}
 
-                    {/* Empty state */}
                     {!loading && !error && searched && results.length === 0 && (
                         <EmptyState query={query} />
                     )}
 
-                    {/* Results grid */}
                     {!loading && !error && results.length > 0 && (
                         <>
                             <div className="search-results-meta">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                                 </svg>
-                                <span><strong>{results.length}</strong> candidate{results.length !== 1 ? 's' : ''} matched · ranked by semantic similarity</span>
+                                <span>
+                                    <strong>{results.length}</strong> candidate{results.length !== 1 ? 's' : ''} matched · ranked by best fit
+                                </span>
                             </div>
 
                             <div className="candidate-grid">
@@ -248,7 +253,6 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                         </>
                     )}
 
-                    {/* Idle / pre-search state */}
                     {!loading && !error && !searched && (
                         <div className="search-idle-state">
                             <div className="search-idle-icon">
@@ -264,7 +268,7 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                                 </svg>
                             </div>
                             <h3>Find your ideal candidate</h3>
-                            <p>Type a skill, role, or description above — the AI will surface the best matches from your talent pool.</p>
+                            <p>Type a skill, role, or any description — we'll instantly surface the best people from your talent pool.</p>
                         </div>
                     )}
                 </div>

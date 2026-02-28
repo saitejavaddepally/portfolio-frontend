@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../services/apiClient';
 import UserCard from '../components/UserCard';
@@ -12,16 +12,36 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
     const [professionals, setProfessionals] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
+    const debounceRef = useRef(null);
+
+    const navigateToSearch = useCallback((q) => {
+        if (q.trim()) {
+            navigate(`/recruiter/search?q=${encodeURIComponent(q.trim())}`);
+        }
+    }, [navigate]);
+
+    const handleSearchInput = (e) => {
+        const q = e.target.value;
+        setSearchQuery(q);
+        clearTimeout(debounceRef.current);
+        if (q.trim()) {
+            debounceRef.current = setTimeout(() => navigateToSearch(q), 400);
+        }
+    };
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        clearTimeout(debounceRef.current);
+        navigateToSearch(searchQuery);
+    };
 
     useEffect(() => {
         const fetchProfessionals = async () => {
             try {
                 const response = await apiClient.get('/recruiter/professionals');
                 const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
-
-                console.log("RecruiterDashboard: Fetched professionals:", data);
-                // New API returns lightweight summary — no filtering needed, backend controls visibility
                 setProfessionals(data);
             } catch (err) {
                 console.error("Failed to fetch professionals:", err);
@@ -59,28 +79,65 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
     return (
         <SharedLayout showUserInfo={true} theme={theme} toggleTheme={toggleTheme}>
             <div className="dashboard-container">
-                <header className="dashboard-header">
+                <header className="dashboard-header recruiter-dashboard-header">
                     <div className="dashboard-header-content">
-                        <h1 className="dashboard-title">
-                            Recruiter Dashboard
-                        </h1>
+                        <h1 className="dashboard-title">Recruiter Dashboard</h1>
                         <p className="dashboard-subtitle">
                             Discover top talent for your open roles.
                         </p>
-                        <button
-                            className="recruiter-search-nav-btn"
-                            onClick={() => navigate('/recruiter/search')}
-                            style={{ marginTop: '1rem' }}
-                        >
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="11" cy="11" r="8" />
-                                <path d="M21 21l-4.35-4.35" />
-                            </svg>
-                            Semantic Search
-                        </button>
+
+                        {/* Inline Candidate Search */}
+                        <form className="dashboard-search-form" onSubmit={handleSearchSubmit}>
+                            <div className="dashboard-search-wrapper">
+                                <svg
+                                    className="dashboard-search-icon"
+                                    width="18" height="18"
+                                    viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" strokeWidth="2.2"
+                                    strokeLinecap="round" strokeLinejoin="round"
+                                >
+                                    <circle cx="11" cy="11" r="8" />
+                                    <path d="M21 21l-4.35-4.35" />
+                                </svg>
+                                <input
+                                    id="dashboard-candidate-search"
+                                    type="text"
+                                    className="dashboard-search-input"
+                                    placeholder="Find candidates — e.g. React developer, Java expert…"
+                                    value={searchQuery}
+                                    onChange={handleSearchInput}
+                                    autoComplete="off"
+                                    spellCheck="false"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        type="button"
+                                        className="dashboard-search-clear"
+                                        onClick={() => setSearchQuery('')}
+                                        aria-label="Clear"
+                                    >
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M18 6 6 18M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                )}
+                            </div>
+                            <button
+                                type="submit"
+                                className="dashboard-search-btn"
+                                disabled={!searchQuery.trim()}
+                            >
+                                Search
+                            </button>
+                        </form>
                     </div>
                     <div className="dashboard-header-image-container">
-                        <img src={portfolioSvg} alt="Recruiting" className="dashboard-header-image" style={{ maxHeight: '200px', width: 'auto' }} />
+                        <img
+                            src={portfolioSvg}
+                            alt="Recruiting"
+                            className="dashboard-header-image"
+                            style={{ maxHeight: '200px', width: 'auto' }}
+                        />
                     </div>
                 </header>
 
@@ -99,11 +156,7 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                                 >
                                     <UserCard
                                         user={user}
-                                        onClick={() => {
-                                            // Always navigate to detail route — page fetches
-                                            // full portfolio via GET /recruiter/professionals/{id}
-                                            navigate(`/recruiter/user/${user._id || user.id}`);
-                                        }}
+                                        onClick={() => navigate(`/recruiter/user/${user._id || user.id}`)}
                                     />
                                 </div>
                             ))}

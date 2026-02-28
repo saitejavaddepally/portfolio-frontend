@@ -58,11 +58,11 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
             try {
                 setDeployingId(templateId);
                 await onDeployTemplate(templateId);
-                addToast(`Successfully deployed ${templateId} template live!`, 'success');
+                addToast(`"${templateId}" look is now live!`, 'success');
             } catch (error) {
                 console.error("Deploy error:", error);
                 const msg = error.response?.data?.message || error.message || "Unknown error";
-                addToast(`Failed to deploy template: ${msg}`, 'error');
+                addToast(`Could not publish your portfolio: ${msg}`, 'error');
             } finally {
                 setDeployingId(null);
             }
@@ -92,7 +92,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                 <div className="dashboard-header-content">
                     <h1 className="dashboard-title">Dashboard</h1>
                     <p className="dashboard-subtitle">
-                        Select a professional template and deploy your portfolio in seconds.
+                        Pick a style and share your portfolio with the world.
                     </p>
 
                     {/* Global Publish Status/Action */}
@@ -252,7 +252,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                                             }}
                                             className="deploy-btn active"
                                         >
-                                            View Live Site ↗
+                                            View My Page ↗
                                         </button>
                                     ) : (
                                         <button
@@ -263,7 +263,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                                             disabled={isDeploying}
                                             className="deploy-btn inactive"
                                         >
-                                            {isDeploying ? 'Deploying...' : 'Deploy Live'}
+                                            {isDeploying ? 'Publishing…' : 'Publish & Go Live'}
                                         </button>
                                     )}
                                 </div>
