@@ -10,6 +10,7 @@ const scoreTheme = (pct) => {
 };
 
 const CandidateCard = ({ userEmail, score, onViewProfile, rank }) => {
+    const handleCardClick = () => onViewProfile?.();
     const pct = Math.round((score || 0) * 100);
     const theme = scoreTheme(pct);
     const [barWidth, setBarWidth] = useState(0);
@@ -27,7 +28,7 @@ const CandidateCard = ({ userEmail, score, onViewProfile, rank }) => {
     }, [pct]);
 
     return (
-        <div className="candidate-card">
+        <div className="candidate-card" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
             {/* Rank badge */}
             {rank !== undefined && (
                 <div className="candidate-rank">#{rank + 1}</div>
@@ -79,16 +80,6 @@ const CandidateCard = ({ userEmail, score, onViewProfile, rank }) => {
                 </div>
             </div>
 
-            {/* Footer */}
-            <div className="candidate-card-footer">
-                <button className="view-profile-btn" onClick={onViewProfile}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                    </svg>
-                    View Profile
-                </button>
-            </div>
         </div>
     );
 };

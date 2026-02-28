@@ -232,7 +232,7 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                             <div className="candidate-grid">
                                 {results.map((r, idx) => (
                                     <div
-                                        key={r.userEmail}
+                                        key={r.userEmail || r.userId}
                                         className="animate-slide-up"
                                         style={{ animationDelay: `${idx * 0.07}s` }}
                                     >
@@ -240,10 +240,7 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                                             userEmail={r.userEmail}
                                             score={r.score}
                                             rank={idx}
-                                            onViewProfile={() => {
-                                                // Navigate to recruiter user preview; encode email as query param
-                                                navigate(`/recruiter/dashboard?highlight=${encodeURIComponent(r.userEmail)}`);
-                                            }}
+                                            onViewProfile={() => navigate(`/recruiter/user/${r.userId}`)}
                                         />
                                     </div>
                                 ))}
