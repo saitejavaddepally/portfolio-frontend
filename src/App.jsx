@@ -21,6 +21,9 @@ import Loader from './components/Loader';
 import RecruiterDashboardPage from './pages/RecruiterDashboardPage';
 import RecruiterUserPreviewPage from './pages/RecruiterUserPreviewPage';
 import RecruiterSearch from './pages/RecruiterSearch';
+import RecruiterJobsPage from './pages/RecruiterJobsPage';
+import PostJobPage from './pages/PostJobPage';
+import PublicJobsPage from './pages/PublicJobsPage';
 import EditBubble from './components/EditBubble';
 import {
 	validateExperience,
@@ -440,6 +443,28 @@ const AppContent = () => {
 							<RecruiterSearch theme={theme} toggleTheme={toggleTheme} />
 						</PrivateRoute>
 					}
+				/>
+
+				{/* Jobs Platform Routes */}
+				<Route
+					path="/recruiter/jobs"
+					element={
+						<PrivateRoute>
+							<RecruiterJobsPage theme={theme} toggleTheme={toggleTheme} />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/recruiter/post-job"
+					element={
+						<PrivateRoute>
+							<PostJobPage theme={theme} toggleTheme={toggleTheme} />
+						</PrivateRoute>
+					}
+				/>
+				<Route
+					path="/jobs"
+					element={<PublicJobsPage theme={theme} toggleTheme={toggleTheme} />}
 				/>
 
 				{/* Public Portfolio Route */}

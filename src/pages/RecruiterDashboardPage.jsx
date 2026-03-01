@@ -85,6 +85,20 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                         <p className="dashboard-subtitle">
                             Discover top talent for your open roles.
                         </p>
+                        {/* Quick access to Jobs Platform */}
+                        <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                            <button
+                                id="go-to-jobs-btn"
+                                onClick={() => navigate('/recruiter/jobs')}
+                                className="recruiter-search-nav-btn"
+                            >
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="2" y="7" width="20" height="14" rx="2" />
+                                    <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+                                </svg>
+                                My Job Postings
+                            </button>
+                        </div>
 
                         {/* Inline Candidate Search */}
                         <form className="dashboard-search-form" onSubmit={handleSearchSubmit}>
