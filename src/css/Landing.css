@@ -49,24 +49,41 @@
     box-shadow: 0 6px 18px rgba(56, 189, 248, 0.45);
 }
 
-/* ── Click animations ──────────────────────────────── */
+/* ── Page transition animations ─────────────────────── */
 
-/* Page-level exit: content glides up + fades — translateY+opacity = GPU-composited, no jitter */
+/* ENTER: landing page slides in from right → left on mount */
+@keyframes pageEnterAnim {
+    0% {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* EXIT: page slides LEFT off-screen when navigating away */
 @keyframes pageExitAnim {
     0% {
         opacity: 1;
-        transform: translateY(0px);
+        transform: translateX(0);
     }
 
     100% {
         opacity: 0;
-        transform: translateY(-28px);
+        transform: translateX(-60px);
     }
+}
+
+.landing-root {
+    animation: pageEnterAnim 0.32s cubic-bezier(0.0, 0.0, 0.2, 1) both;
 }
 
 .landing-root.page-exit {
     will-change: opacity, transform;
-    animation: pageExitAnim 0.28s cubic-bezier(0.4, 0, 1, 1) forwards;
+    animation: pageExitAnim 0.2s cubic-bezier(0.4, 0, 1, 1) forwards !important;
     pointer-events: none;
 }
 

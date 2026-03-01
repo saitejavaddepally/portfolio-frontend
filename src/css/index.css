@@ -152,25 +152,65 @@ a:hover {
   opacity: 0.8;
 }
 
-/* Dark Mode Overrides - Strong Specificity to override :root */
+/* Dark Mode — Gradient aurora (minimal, clean, attractive ✨) */
 html[data-theme='dark'] {
-  --bg-primary: #000000;
-  /* Pure Black */
-  --bg-secondary: #121212;
-  /* Neutral dark gray */
-  --text-primary: #e5e5e5;
-  /* Neutral 200 */
-  --text-secondary: #a3a3a3;
-  /* Neutral 400 */
-  --accent-color: #818cf8;
-  /* Indigo 400 */
-  --border-color: #262626;
-  /* Neutral 800 */
-  --card-bg: #121212;
-  /* Should match secondary or close to it */
-  --input-bg: #1e1e1e;
-  /* Slightly lighter than pure black */
+  /* Body backdrop: subtle aurora glow at top fading to near-black */
+  background:
+    radial-gradient(ellipse 120% 40% at 50% -2%, rgba(56, 130, 248, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 30% at 82% 8%, rgba(129, 92, 248, 0.09) 0%, transparent 60%),
+    #080d14;
+
+  /* Surface tokens — deep blue-slate (not grey-black) */
+  --bg-primary: transparent;
+  /* shows body gradient through */
+  --bg-secondary: #0f172a;
+  /* deep blue-slate panel */
+  --card-bg: #111827;
+  /* card surface, slightly brighter */
+  --input-bg: #0f172a;
+  /* matches secondary */
+  --bg-hover: #1e293b;
+  /* hover state */
+
+  /* Typography */
+  --text-primary: #f0f6fc;
+  /* bright near-white */
+  --text-secondary: #8b99b0;
+  /* cool muted slate */
+
+  /* Borders: indigo-hinted, delicate */
+  --border-color: rgba(99, 120, 200, 0.18);
+
+  /* Accent */
+  --accent-color: #38bdf8;
+  /* vivid sky blue */
 }
+
+/* Glass header in dark mode */
+html[data-theme='dark'] .shared-header {
+  background: rgba(8, 13, 20, 0.80);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom-color: rgba(99, 120, 200, 0.14);
+}
+
+/* Cards get depth glow */
+html[data-theme='dark'] .template-card,
+html[data-theme='dark'] .modal-content {
+  background: #111827;
+  border-color: rgba(99, 120, 200, 0.25);
+  box-shadow: 0 0 0 1px rgba(99, 120, 200, 0.1), 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* AI-Powered Pill in dark mode needs high contrast */
+html[data-theme='dark'] .landing-hero-eyebrow,
+html[data-theme='dark'] .header-spacer span {
+  background: rgba(56, 189, 248, 0.15) !important;
+  color: #38bdf8 !important;
+  border-color: rgba(56, 189, 248, 0.3) !important;
+}
+
+
 
 /* Dashboard Grid */
 .dashboard-grid {

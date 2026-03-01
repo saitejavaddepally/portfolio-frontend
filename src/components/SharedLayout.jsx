@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../css/Components.css';
@@ -67,8 +68,8 @@ const SharedLayout = ({ children, showUserInfo = false, theme, toggleTheme }) =>
                 </div>
             </header>
 
-            {/* Logout Confirmation Modal */}
-            {showLogoutConfirm && (
+            {/* Logout Confirmation Modal - Portaled to avoid transform context */}
+            {showLogoutConfirm && createPortal(
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <h3>Confirm Logout</h3>
@@ -91,7 +92,8 @@ const SharedLayout = ({ children, showUserInfo = false, theme, toggleTheme }) =>
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Main Content */}

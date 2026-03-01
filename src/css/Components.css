@@ -1,4 +1,16 @@
 /* SharedLayout Styles */
+@keyframes pageEnterAnim {
+    0% {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 .shared-layout {
     min-height: 100vh;
     display: flex;
@@ -6,7 +18,9 @@
     background: var(--bg-secondary);
     color: var(--text-primary);
     font-family: "Source Serif Pro", serif;
+    animation: pageEnterAnim 0.3s cubic-bezier(0.0, 0.0, 0.2, 1) both;
 }
+
 
 .shared-header {
     background: var(--bg-primary);
@@ -501,24 +515,23 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2000;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .modal-content {
-    background: var(--bg-primary);
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    width: calc(100% - 3rem);
-    /* Ensure explicit margin-like spacing on mobile */
+    background-color: var(--card-bg);
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    width: 100%;
     max-width: 400px;
-    margin: 1.5rem;
-    /* Explicit margin requested by user */
+    margin: 0 1.5rem;
     text-align: center;
     border: 1px solid var(--border-color);
 }

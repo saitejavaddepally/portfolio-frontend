@@ -21,8 +21,9 @@ const LandingPage = ({ theme, toggleTheme }) => {
     const handleNavClick = (to) => {
         if (isExiting) return; // prevent double-clicks
         setIsExiting(true);
-        setTimeout(() => navigate(to), 320);
+        setTimeout(() => navigate(to), 240);
     };
+
 
     return (
         <div className={`landing-root${isExiting ? ' page-exit' : ''}`}>

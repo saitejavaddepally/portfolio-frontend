@@ -236,7 +236,7 @@
 
 .preview-area {
     height: 200px;
-    background: #f1f5f9;
+    background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
@@ -361,12 +361,14 @@
 }
 
 .deploy-btn.inactive {
-    background: var(--text-primary);
-    color: var(--bg-primary);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1.5px solid var(--border-color);
 }
 
 .deploy-btn.inactive:hover {
-    background: var(--text-secondary);
+    background: var(--bg-hover);
+    border-color: var(--text-secondary);
 }
 
 .deploy-btn:disabled {
