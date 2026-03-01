@@ -65,12 +65,12 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
             ...userData,
             personalInfo: {
                 ...(userData?.personalInfo || {}),
-                ...parsedData.personalInfo,
-                location: parsedData.personalInfo.location || userData?.personalInfo?.location || ''
+                ...(parsedData.personalInfo || {}),
+                location: parsedData.personalInfo?.location || userData?.personalInfo?.location || ''
             },
             hero: {
                 ...(userData?.hero || {}),
-                name: parsedData.personalInfo.fullName || userData?.hero?.name || ''
+                name: parsedData.personalInfo?.fullName || userData?.hero?.name || ''
             },
             skills: mergedSkills,
             experience: parsedData.experience?.length > 0 ? parsedData.experience : (userData?.experience || []),
@@ -82,21 +82,21 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
 
         if (!updatedData.hero.contacts) updatedData.hero.contacts = [];
         const emails = updatedData.hero.contacts.filter(c => c.type === 'email').map(c => c.value);
-        if (parsedData.personalInfo.email && !emails.includes(parsedData.personalInfo.email)) {
+        if (parsedData.personalInfo?.email && !emails.includes(parsedData.personalInfo.email)) {
             updatedData.hero.contacts.push({ type: 'email', value: parsedData.personalInfo.email, label: 'Email' });
         }
         const phones = updatedData.hero.contacts.filter(c => c.type === 'phone').map(c => c.value);
-        if (parsedData.personalInfo.phone && !phones.includes(parsedData.personalInfo.phone)) {
+        if (parsedData.personalInfo?.phone && !phones.includes(parsedData.personalInfo.phone)) {
             updatedData.hero.contacts.push({ type: 'phone', value: parsedData.personalInfo.phone, label: 'Phone' });
         }
 
         const existingSocials = [...(updatedData.socials || [])];
-        if (parsedData.personalInfo.linkedin) {
+        if (parsedData.personalInfo?.linkedin) {
             const li = existingSocials.find(s => s.name.toLowerCase() === 'linkedin');
             if (li) li.url = parsedData.personalInfo.linkedin;
             else existingSocials.push({ name: 'LinkedIn', icon: 'fab fa-linkedin', url: parsedData.personalInfo.linkedin });
         }
-        if (parsedData.personalInfo.github) {
+        if (parsedData.personalInfo?.github) {
             const gh = existingSocials.find(s => s.name.toLowerCase() === 'github');
             if (gh) gh.url = parsedData.personalInfo.github;
             else existingSocials.push({ name: 'GitHub', icon: 'fab fa-github', url: parsedData.personalInfo.github });
