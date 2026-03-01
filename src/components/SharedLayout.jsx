@@ -12,8 +12,26 @@ const SharedLayout = ({ children, showUserInfo = false, theme, toggleTheme }) =>
             {/* Common Header */}
             <header className="shared-header">
 
-                {/* Left Spacer for centering balance */}
-                <div className="header-spacer"></div>
+                {/* Left spacer with "AI-Powered" eyebrow pill */}
+                <div className="header-spacer">
+                    <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        fontSize: '0.62rem',
+                        fontWeight: 800,
+                        letterSpacing: '0.08em',
+                        textTransform: 'uppercase',
+                        padding: '4px 12px',
+                        borderRadius: '100px',
+                        background: 'rgba(56, 189, 248, 0.1)',
+                        color: '#38bdf8',
+                        border: '1px solid rgba(56, 189, 248, 0.25)',
+                        whiteSpace: 'nowrap',
+                    }}>
+                        ✦ AI-Powered
+                    </span>
+                </div>
 
                 <Link to="/" className="header-logo-container">
                     <div className="header-logo-text">

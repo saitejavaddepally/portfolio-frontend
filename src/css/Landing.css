@@ -97,6 +97,23 @@
     align-items: center;
 }
 
+/* Override shared-header's fixed 150px width — landing page has 3 action items */
+.landing-root .header-actions {
+    width: auto;
+    gap: 0.75rem;
+}
+
+/* Keep spacer same width as actions area for logo centering */
+.landing-root .header-spacer {
+    width: auto;
+    min-width: 180px;
+}
+
+/* PortHire logo must match the dashboard — "Source Serif Pro" */
+.landing-root .header-logo-text {
+    font-family: "Source Serif Pro", serif;
+}
+
 /* ── Root wrapper ───────────────────────────────────── */
 .landing-root {
     min-height: 100vh;
