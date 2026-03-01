@@ -57,14 +57,56 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
             return;
         }
 
-        // The backend returns the correct JSON structure for the UI
-        // We preserve properties like activeTemplate, slug, etc., while accepting new structure
+        // Transform data if needed to match internal schema
+        const transformedData = { ...parsedData };
+
+        // 1. Education: institution -> school, and ensure desc is an array
+        if (transformedData.education && Array.isArray(transformedData.education)) {
+            transformedData.education = transformedData.education.map(edu => {
+                let desc = Array.isArray(edu.desc) ? [...edu.desc] : (edu.description ? (Array.isArray(edu.description) ? [...edu.description] : [edu.description]) : []);
+
+                // Add degree and location to desc if they exist and aren't already included
+                if (edu.degree && !desc.some(d => d.includes(edu.degree))) {
+                    desc.unshift(edu.degree);
+                }
+                if (edu.location && !desc.some(d => d.includes(edu.location))) {
+                    desc.push(edu.location);
+                }
+
+                if (desc.length === 0) desc = [""];
+
+                return {
+                    ...edu,
+                    school: edu.school || edu.institution || "",
+                    desc: desc
+                };
+            });
+        }
+
+        // 2. Experience: Ensure description is an array
+        if (transformedData.experience && Array.isArray(transformedData.experience)) {
+            transformedData.experience = transformedData.experience.map(exp => ({
+                ...exp,
+                description: Array.isArray(exp.description) ? exp.description : (exp.desc ? (Array.isArray(exp.desc) ? exp.desc : [exp.desc]) : [""])
+            }));
+        }
+
+        // 3. Hero: Ensure intro exists
+        if (transformedData.hero && !transformedData.hero.intro) {
+            transformedData.hero.intro = {
+                text: transformedData.hero.title || transformedData.hero.roles?.[0] || "",
+                highlight: "",
+                suffix: transformedData.hero.description || ""
+            };
+        }
+
         setUserData((prevUserData) => ({
             ...prevUserData,
-            ...parsedData
+            ...transformedData
         }));
+
         setShowResumeModal(false);
-        addToast("Redirecting to editor to review parsed data...", "info", 3000);
+        addToast("Resume parsed! Reviewing details in editor...", "info", 3000);
         setTimeout(() => navigate(`/?portfolioStyle=medium&edit=true`), 800);
     };
 
