@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import '../css/Components.css';
 import '../css/Dashboard.css';
+import { parseResume } from '../utils/ResumeParser';
 import { useToast } from '../context/ToastContext';
 import ResumeAutoFill from './resume/ResumeAutoFill';
 
@@ -58,17 +59,8 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
         }
 
         const newSkills = parsedData.skills || [];
-        let existingCategories = userData?.skills?.categories || [];
-
-        if (newSkills.length > 0) {
-            const coreIndex = existingCategories.findIndex(c => c.title === 'Core Skills');
-            if (coreIndex >= 0) {
-                const mergedItems = Array.from(new Set([...existingCategories[coreIndex].items, ...newSkills]));
-                existingCategories[coreIndex] = { ...existingCategories[coreIndex], items: mergedItems };
-            } else {
-                existingCategories = [{ title: 'Core Skills', items: newSkills }, ...existingCategories];
-            }
-        }
+        const existingSkills = Array.isArray(userData?.skills) ? userData.skills : [];
+        const mergedSkills = Array.from(new Set([...existingSkills, ...newSkills]));
 
         const updatedData = {
             ...userData,
@@ -81,13 +73,12 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                 ...(userData?.hero || {}),
                 name: parsedData.personalInfo.fullName || userData?.hero?.name || ''
             },
-            skills: {
-                ...(userData?.skills || {}),
-                categories: existingCategories
-            },
+            skills: mergedSkills,
             experience: parsedData.experience?.length > 0 ? parsedData.experience : (userData?.experience || []),
             education: parsedData.education?.length > 0 ? parsedData.education : (userData?.education || []),
-            projects: parsedData.projects?.length > 0 ? parsedData.projects : (userData?.projects || [])
+            projects: parsedData.projects?.length > 0 ? parsedData.projects : (userData?.projects || []),
+            achievements: parsedData.achievements || userData?.achievements,
+            codingProfiles: parsedData.codingProfiles?.length > 0 ? parsedData.codingProfiles : (userData?.codingProfiles || [])
         };
 
         if (!updatedData.hero.contacts) updatedData.hero.contacts = [];
@@ -100,10 +91,23 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
             updatedData.hero.contacts.push({ type: 'phone', value: parsedData.personalInfo.phone, label: 'Phone' });
         }
 
+        const existingSocials = [...(updatedData.socials || [])];
+        if (parsedData.personalInfo.linkedin) {
+            const li = existingSocials.find(s => s.name.toLowerCase() === 'linkedin');
+            if (li) li.url = parsedData.personalInfo.linkedin;
+            else existingSocials.push({ name: 'LinkedIn', icon: 'fab fa-linkedin', url: parsedData.personalInfo.linkedin });
+        }
+        if (parsedData.personalInfo.github) {
+            const gh = existingSocials.find(s => s.name.toLowerCase() === 'github');
+            if (gh) gh.url = parsedData.personalInfo.github;
+            else existingSocials.push({ name: 'GitHub', icon: 'fab fa-github', url: parsedData.personalInfo.github });
+        }
+        updatedData.socials = existingSocials;
+
         setUserData(updatedData);
         setShowResumeModal(false);
         addToast("Redirecting to editor to review parsed data...", "info", 3000);
-        setTimeout(() => navigate(`/?portfolioStyle=medium&edit=true`), 800);
+        setTimeout(() => navigate(`/? portfolioStyle = medium & edit=true`), 800);
     };
 
     // Derived data for previews
@@ -120,7 +124,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
             } catch (error) {
                 console.error("Deploy error:", error);
                 const msg = error.response?.data?.message || error.message || "Unknown error";
-                addToast(`Could not publish your portfolio: ${msg}`, 'error');
+                addToast(`Could not publish your portfolio: ${msg} `, 'error');
             } finally {
                 setDeployingId(null);
             }
@@ -132,7 +136,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
     const copyToClipboard = () => {
         if (!publicUrl) return;
 
-        const fullUrl = publicUrl.startsWith('http') ? publicUrl : `${window.location.origin}${publicUrl}`;
+        const fullUrl = publicUrl.startsWith('http') ? publicUrl : `${window.location.origin}${publicUrl} `;
 
         navigator.clipboard.writeText(fullUrl).then(() => {
             setCopySuccess('Copied!');
@@ -176,7 +180,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                                     <input
                                         type="text"
                                         readOnly
-                                        value={publicUrl.startsWith('http') ? publicUrl : `${window.location.origin}${publicUrl}`}
+                                        value={publicUrl.startsWith('http') ? publicUrl : `${window.location.origin}${publicUrl} `}
                                         className="public-link-input"
                                     />
                                     <button onClick={copyToClipboard} className="copy-btn">
@@ -184,7 +188,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                                     </button>
                                 </div>
                                 <a
-                                    href={publicUrl.startsWith('http') ? publicUrl : `${window.location.origin}${publicUrl}`}
+                                    href={publicUrl.startsWith('http') ? publicUrl : `${window.location.origin}${publicUrl} `}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="open-link-icon"
@@ -237,10 +241,10 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                     return (
                         <div
                             key={template.id}
-                            className={`template-card ${isDeployed ? 'deployed' : 'not-deployed'}`}
+                            className={`template - card ${isDeployed ? 'deployed' : 'not-deployed'} `}
                             onClick={() => {
                                 // Card click → preview
-                                navigate(`/?portfolioStyle=${template.id}`);
+                                navigate(`/? portfolioStyle = ${template.id} `);
                             }}
                             style={{ cursor: 'pointer' }}
                         >

@@ -285,7 +285,7 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                                             <p>{project.desc}</p>
                                         )}
                                         <div className="card-tags">
-                                            {project.tags.map(t => <span key={t}>#{t}</span>)}
+                                            {(project.tags || []).map(t => <span key={t}>#{t}</span>)}
                                         </div>
                                     </div>
                                 ))}

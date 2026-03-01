@@ -173,12 +173,12 @@ const Projects = ({ data, isEditing, setUserData, validationTrigger }) => {
                         <div className="project-tags">
                             {isEditing ? (
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
-                                    {project.tags.map((tag, tIndex) => (
+                                    {(project.tags || []).map((tag, tIndex) => (
                                         <div key={tIndex} style={{ display: 'flex', alignItems: 'center', background: 'var(--bg-secondary)', padding: '2px 5px', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
                                             <input
                                                 value={tag}
                                                 onChange={(e) => {
-                                                    const newTags = [...project.tags];
+                                                    const newTags = [...(project.tags || [])];
                                                     newTags[tIndex] = e.target.value;
                                                     handleUpdate(index, 'tags', newTags);
                                                 }}
@@ -187,7 +187,7 @@ const Projects = ({ data, isEditing, setUserData, validationTrigger }) => {
                                             />
                                             <button
                                                 onClick={() => {
-                                                    const newTags = project.tags.filter((_, i) => i !== tIndex);
+                                                    const newTags = (project.tags || []).filter((_, i) => i !== tIndex);
                                                     handleUpdate(index, 'tags', newTags);
                                                 }}
                                                 style={{ marginLeft: '5px', background: 'none', border: 'none', color: '#ff4444', cursor: 'pointer', fontWeight: 'bold' }}
@@ -197,14 +197,14 @@ const Projects = ({ data, isEditing, setUserData, validationTrigger }) => {
                                         </div>
                                     ))}
                                     <button
-                                        onClick={() => handleUpdate(index, 'tags', [...project.tags, ""])}
+                                        onClick={() => handleUpdate(index, 'tags', [...(project.tags || []), ""])}
                                         style={{ fontSize: '0.8rem', padding: '2px 8px', borderRadius: '4px', border: '1px dashed var(--border-color)', background: 'transparent', cursor: 'pointer', color: 'var(--text-secondary)' }}
                                     >
                                         + Add Tag
                                     </button>
                                 </div>
                             ) : (
-                                project.tags.map((tag, tIndex) => (
+                                (project.tags || []).map((tag, tIndex) => (
                                     <span key={tIndex} className="tag">{tag}</span>
                                 ))
                             )}

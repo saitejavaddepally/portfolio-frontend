@@ -1,7 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { useToast } from '../../context/ToastContext';
-import { parseResume } from '../../utils/resumeParser';
+import axios from 'axios';
+import * as pdfjsLib from "pdfjs-dist";
+import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
+import mammoth from "mammoth";
 import '../../css/Resume.css';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 const ResumeAutoFill = ({ onParsed }) => {
     const { addToast } = useToast();
@@ -67,8 +72,28 @@ const ResumeAutoFill = ({ onParsed }) => {
             const file = files[0];
             await processFile(file);
         }
-        // reset input so same file can be selected again if needed
         if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const extractPdfText = async (file) => {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+        let extractedText = "";
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(" ");
+            extractedText += pageText + "\n";
+        }
+
+        return extractedText;
+    };
+
+    const extractDocxText = async (file) => {
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        return result.value;
     };
 
     const processFile = async (file) => {
@@ -78,11 +103,33 @@ const ResumeAutoFill = ({ onParsed }) => {
         setError(null);
 
         try {
-            // Artificial delay to make loading state visible
             await new Promise(resolve => setTimeout(resolve, 800));
 
-            const parsedData = await parseResume(file);
-            console.log("Parsed Data:", parsedData);
+            let extractedText = "";
+
+            if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+                extractedText = await extractPdfText(file);
+            } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.docx')) {
+                extractedText = await extractDocxText(file);
+            } else {
+                throw new Error("Unsupported file type.");
+            }
+
+            if (!extractedText || extractedText.trim() === "") {
+                throw new Error("Extracted text is empty. Could not read the file.");
+            }
+
+            console.log("Extracted Text:", extractedText);
+
+            // Send extracted text to backend AI parser
+            const response = await axios.post("/api/ai/parse-resume", extractedText, {
+                headers: {
+                    "Content-Type": "text/plain"
+                }
+            });
+
+            const parsedData = response.data;
+            console.log("Parsed Data from Backend:", parsedData);
 
             addToast('Resume parsed successfully!', 'success');
 
