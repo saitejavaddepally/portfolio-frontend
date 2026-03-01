@@ -8,7 +8,7 @@ const Loader = ({ size = 'medium', color = 'var(--accent-color)', fullScreen = f
     return (
         <div className={containerClass}>
             <div
-                className={`spinner spinner-${size}`}
+                className={`loading-spinner spinner-${size}`}
                 style={{
                     borderTopColor: color,
                     borderRightColor: color,
