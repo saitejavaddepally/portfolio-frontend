@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import '../css/Components.css';
 import '../css/Dashboard.css';
-import { parseResume } from '../utils/ResumeParser';
 import { useToast } from '../context/ToastContext';
 import ResumeAutoFill from './resume/ResumeAutoFill';
 
