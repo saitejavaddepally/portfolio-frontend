@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import SharedLayout from '../components/SharedLayout';
 import HiringNavbar from '../components/hiring/HiringNavbar';
 import JobCard from '../components/hiring/JobCard';
@@ -6,35 +7,38 @@ import { mockJobs } from '../data/mockJobs';
 import '../css/Jobs.css';
 
 // Success modal component
-const ApplicationModal = ({ job, onClose }) => (
-    <div className="modal-overlay" onClick={onClose}>
-        <div
-            className="modal-box"
-            onClick={e => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-title"
-        >
-            <div className="modal-icon-circle">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                </svg>
-            </div>
-            <h3 id="modal-title">Application Submitted!</h3>
-            <p>
-                Your application for <strong>{job.role}</strong> has been submitted successfully.
-                The recruiter will reach out to you soon.
-            </p>
-            <button
-                id="modal-close-btn"
-                className="modal-close-btn"
-                onClick={onClose}
+const ApplicationModal = ({ job, onClose }) => {
+    return createPortal(
+        <div className="modal-overlay" onClick={onClose}>
+            <div
+                className="modal-box"
+                onClick={e => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modal-title"
             >
-                Done
-            </button>
-        </div>
-    </div>
-);
+                <div className="modal-icon-circle">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                </div>
+                <h3 id="modal-title">Application Submitted!</h3>
+                <p>
+                    Your application for <strong>{job.role}</strong> has been submitted successfully.
+                    The recruiter will reach out to you soon.
+                </p>
+                <button
+                    id="modal-close-btn"
+                    className="modal-close-btn"
+                    onClick={onClose}
+                >
+                    Done
+                </button>
+            </div>
+        </div>,
+        document.body
+    );
+};
 
 const PublicJobsPage = ({ theme, toggleTheme }) => {
     const [selectedJob, setSelectedJob] = useState(null);
