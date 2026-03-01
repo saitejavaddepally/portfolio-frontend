@@ -27,17 +27,13 @@ const ProfileHeader = ({ userData, theme, toggleTheme }) => {
         <div className="ig-profile-block">
             {/* ── Top row: Avatar + Username/Buttons ── */}
             <div className="ig-top-row">
-                <div className="ig-avatar-wrap">
-                    <div className="ig-avatar-inner">
-                        {hasImage ? (
+                {hasImage && (
+                    <div className="ig-avatar-wrap">
+                        <div className="ig-avatar-inner">
                             <img src={hero.image} alt={hero?.name} className="ig-avatar" />
-                        ) : (
-                            <div className="ig-avatar-initial">
-                                {hero?.name?.charAt(0) || '?'}
-                            </div>
-                        )}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className="ig-top-info">
                     <div className="ig-username-row">

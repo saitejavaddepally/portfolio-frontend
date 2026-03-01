@@ -23,13 +23,11 @@ const KnowledgePanel = ({ userData }) => {
     return (
         <div className="knowledge-panel">
             {/* Hero — full photo, not cropped */}
-            <div className="panel-hero">
-                {hasImage ? (
+            {hasImage && (
+                <div className="panel-hero">
                     <img src={hero.image} alt={hero.name} />
-                ) : (
-                    <div className="panel-hero-initials">{initial}</div>
-                )}
-            </div>
+                </div>
+            )}
 
             <div className="panel-content">
                 <h2 className="panel-title">{hero?.name || 'Portfolio'}</h2>

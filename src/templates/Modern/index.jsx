@@ -55,7 +55,7 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
             </nav>
 
             <header className="modern-hero" id="about">
-                <div className="modern-container hero-grid">
+                <div className="modern-container hero-grid" style={{ gridTemplateColumns: (data.hero.image || isEditing) ? '1fr 1fr' : '1fr' }}>
                     <div className="hero-content animate-slide-up">
                         <h1 className="glitch-text">
                             {isEditing ? "Hello, I'm" : "Hello, I'm"} <br />
@@ -70,9 +70,11 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                             ))}
                         </div>
                     </div>
-                    <div className="hero-img-wrapper">
-                        <img src={data.hero.image} alt="Profile" className="modern-profile-img" />
-                    </div>
+                    {(data.hero.image || isEditing) && (
+                        <div className="hero-img-wrapper">
+                            <img src={data.hero.image || "https://via.placeholder.com/250"} alt="Profile" className="modern-profile-img" />
+                        </div>
+                    )}
                 </div>
             </header>
 

@@ -57,9 +57,9 @@ const Hero = ({ data, isEditing, onUpdate, onArrayUpdate, validationTrigger }) =
                     textAlign: 'center',
                 } : {
                     display: 'grid',
-                    gridTemplateColumns: '1fr 200px',
+                    gridTemplateColumns: (data.image || isEditing) ? '1fr 200px' : '1fr',
                     alignItems: 'center',
-                    gap: '3rem',
+                    gap: data.image || isEditing ? '3rem' : '0',
                 }}
             >
                 <div className="hero-text" style={isMobile ? { order: 2, width: '100%', textAlign: 'center' } : { gridColumn: 1 }}>
@@ -199,45 +199,47 @@ const Hero = ({ data, isEditing, onUpdate, onArrayUpdate, validationTrigger }) =
                     </div>
                 </div>
 
-                <div
-                    className="hero-image-container"
-                    style={isMobile ? {
-                        order: 1,
-                        width: '150px',
-                        height: '150px',
-                        margin: '0 auto',
-                    } : {
-                        gridColumn: 2,
-                    }}
-                >
-                    <div className="hero-image">
-                        <img src={data.image || "https://via.placeholder.com/250"} alt={data.name} />
+                {(data.image || isEditing) && (
+                    <div
+                        className="hero-image-container"
+                        style={isMobile ? {
+                            order: 1,
+                            width: '150px',
+                            height: '150px',
+                            margin: '0 auto',
+                        } : {
+                            gridColumn: 2,
+                        }}
+                    >
+                        <div className="hero-image">
+                            <img src={data.image || "https://via.placeholder.com/250"} alt={data.name} />
 
-                        {isEditing && (
-                            <label className="image-upload-overlay">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    style={{ display: 'none' }}
-                                    onChange={(e) => {
-                                        const file = e.target.files[0];
-                                        if (file) {
-                                            const reader = new FileReader();
-                                            reader.onloadend = () => {
-                                                onUpdate('image', reader.result);
-                                            };
-                                            reader.readAsDataURL(file);
-                                        }
-                                    }}
-                                />
-                                <div className="upload-btn">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                                    Change Photo
-                                </div>
-                            </label>
-                        )}
+                            {isEditing && (
+                                <label className="image-upload-overlay">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        style={{ display: 'none' }}
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onloadend = () => {
+                                                    onUpdate('image', reader.result);
+                                                };
+                                                reader.readAsDataURL(file);
+                                            }
+                                        }}
+                                    />
+                                    <div className="upload-btn">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                                        Change Photo
+                                    </div>
+                                </label>
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </section>
     );
