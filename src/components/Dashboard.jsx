@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import '../css/Components.css';
 import '../css/Dashboard.css';
 import { useToast } from '../context/ToastContext';
+import ResumeAutoFill from './resume/ResumeAutoFill';
 
 const templates = [
     {
@@ -42,11 +44,67 @@ const templates = [
     }
 ];
 
-const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, onPublishUpdate, onPublish, onDeployTemplate, userData }) => {
+const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, onPublishUpdate, onPublish, onDeployTemplate, userData, setUserData }) => {
     const navigate = useNavigate();
     const { addToast } = useToast();
     const [deployingId, setDeployingId] = useState(null);
     const [copySuccess, setCopySuccess] = useState('');
+    const [showResumeModal, setShowResumeModal] = useState(false);
+
+    const handleResumeParsed = (parsedData) => {
+        if (!setUserData) {
+            console.error("setUserData not provided");
+            return;
+        }
+
+        const newSkills = parsedData.skills || [];
+        let existingCategories = userData?.skills?.categories || [];
+
+        if (newSkills.length > 0) {
+            const coreIndex = existingCategories.findIndex(c => c.title === 'Core Skills');
+            if (coreIndex >= 0) {
+                const mergedItems = Array.from(new Set([...existingCategories[coreIndex].items, ...newSkills]));
+                existingCategories[coreIndex] = { ...existingCategories[coreIndex], items: mergedItems };
+            } else {
+                existingCategories = [{ title: 'Core Skills', items: newSkills }, ...existingCategories];
+            }
+        }
+
+        const updatedData = {
+            ...userData,
+            personalInfo: {
+                ...(userData?.personalInfo || {}),
+                ...parsedData.personalInfo,
+                location: parsedData.personalInfo.location || userData?.personalInfo?.location || ''
+            },
+            hero: {
+                ...(userData?.hero || {}),
+                name: parsedData.personalInfo.fullName || userData?.hero?.name || ''
+            },
+            skills: {
+                ...(userData?.skills || {}),
+                categories: existingCategories
+            },
+            experience: parsedData.experience?.length > 0 ? parsedData.experience : (userData?.experience || []),
+            education: parsedData.education?.length > 0 ? parsedData.education : (userData?.education || []),
+            projects: parsedData.projects?.length > 0 ? parsedData.projects : (userData?.projects || [])
+        };
+
+        if (!updatedData.hero.contacts) updatedData.hero.contacts = [];
+        const emails = updatedData.hero.contacts.filter(c => c.type === 'email').map(c => c.value);
+        if (parsedData.personalInfo.email && !emails.includes(parsedData.personalInfo.email)) {
+            updatedData.hero.contacts.push({ type: 'email', value: parsedData.personalInfo.email, label: 'Email' });
+        }
+        const phones = updatedData.hero.contacts.filter(c => c.type === 'phone').map(c => c.value);
+        if (parsedData.personalInfo.phone && !phones.includes(parsedData.personalInfo.phone)) {
+            updatedData.hero.contacts.push({ type: 'phone', value: parsedData.personalInfo.phone, label: 'Phone' });
+        }
+
+        setUserData(updatedData);
+        setShowResumeModal(false);
+        addToast("Redirecting to editor to review parsed data...", "info", 3000);
+        setTimeout(() => navigate(`/?portfolioStyle=medium&edit=true`), 800);
+    };
 
     // Derived data for previews
     const userName = userData?.hero?.name || userData?.header?.name || 'Your Name';
@@ -96,7 +154,20 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                     </p>
 
                     {/* Global Publish Status/Action */}
-                    <div className="publish-actions">
+                    <div className="publish-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1rem' }}>
+                        <button
+                            className="dashboard-primary-btn"
+                            style={{ padding: '0.6rem 1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--accent-color)', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
+                            onClick={() => setShowResumeModal(true)}
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Auto-fill with Resume
+                        </button>
+
                         {publicUrl && (
                             <div className="public-link-container">
                                 <span className="status-dot live"></span>
@@ -134,6 +205,29 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                     />
                 </div>
             </header>
+
+            {showResumeModal && createPortal(
+                <div className="modal-overlay" onClick={() => setShowResumeModal(false)}>
+                    <div
+                        className="modal-box"
+                        style={{ padding: 0, maxWidth: '650px', background: 'transparent', border: 'none', boxShadow: 'none' }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div style={{ position: 'relative' }}>
+                            <button
+                                onClick={() => setShowResumeModal(false)}
+                                style={{ position: 'absolute', top: '2rem', right: '2.5rem', background: 'rgba(255, 255, 255, 0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', zIndex: 10, cursor: 'pointer', transition: 'all 0.2s', backdropFilter: 'blur(4px)' }}
+                                onMouseOver={(e) => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; }}
+                                onMouseOut={(e) => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; }}
+                            >
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                            <ResumeAutoFill onParsed={handleResumeParsed} />
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            )}
 
             <div className="dashboard-grid">
                 {templates.map(template => {

@@ -28,6 +28,7 @@ const DashboardPage = ({ theme, toggleTheme, userData, setUserData, setActiveTem
         <SharedLayout showUserInfo={true} theme={theme} toggleTheme={toggleTheme}>
             <Dashboard
                 userData={userData}
+                setUserData={setUserData}
                 activeTemplate={userData?.activeTemplate || 'medium'}
                 onSelectTemplate={setActiveTemplate}
                 isPublished={!!userData?.slug}
