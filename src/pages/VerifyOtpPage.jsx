@@ -46,7 +46,7 @@ const VerifyOtpPage = ({ theme, toggleTheme }) => {
         try {
             await verifyOtp(email, otp);
             // Success! Token is stored by AuthContext, redirect to dashboard
-            navigate('/dashboard', { replace: true });
+            navigate('/professional/dashboard', { replace: true });
         } catch (err) {
             console.error("OTP Verification failed", err);
             if (err.response?.data) {

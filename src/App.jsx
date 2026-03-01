@@ -21,6 +21,7 @@ import Loader from './components/Loader';
 import RecruiterDashboardPage from './pages/RecruiterDashboardPage';
 import RecruiterUserPreviewPage from './pages/RecruiterUserPreviewPage';
 import RecruiterSearch from './pages/RecruiterSearch';
+import LandingPage from './pages/LandingPage';
 import RecruiterJobsPage from './pages/RecruiterJobsPage';
 import PostJobPage from './pages/PostJobPage';
 import PublicJobsPage from './pages/PublicJobsPage';
@@ -260,7 +261,7 @@ const AppContent = () => {
 			url.searchParams.delete('edit');
 			window.history.pushState({}, '', url);
 			setIsEditing(false);
-			navigate('/dashboard');
+			navigate('/professional/dashboard');
 		} catch (error) {
 			console.error("Error saving portfolio:", error);
 			const msg = error.response?.data?.errorMessage || error.message || "Failed to save portfolio.";
@@ -403,9 +404,9 @@ const AppContent = () => {
 				<Route path="/register" element={<RegisterPage theme={theme} toggleTheme={toggleTheme} />} />
 				<Route path="/verify-otp" element={<VerifyOtpPage theme={theme} toggleTheme={toggleTheme} />} />
 
-				{/* Protected Dashboard */}
+				{/* Protected Professional Dashboard */}
 				<Route
-					path="/dashboard"
+					path="/professional/dashboard"
 					element={
 						<PrivateRoute>
 							<DashboardPage
@@ -418,6 +419,8 @@ const AppContent = () => {
 						</PrivateRoute>
 					}
 				/>
+				{/* Legacy redirect — keep /dashboard working */}
+				<Route path="/dashboard" element={<Navigate to="/professional/dashboard" replace />} />
 
 				{/* Recruiter Routes */}
 				<Route
@@ -470,9 +473,11 @@ const AppContent = () => {
 				{/* Public Portfolio Route */}
 				<Route path="/p/:slug" element={<PublicPortfolioPage />} />
 
-				{/* Portfolio View (Authenticated Preview) */}
+				{/* Home: Landing for guests, portfolio for logged-in users */}
 				<Route path="/" element={
-					userData ? (
+					!user ? (
+						<LandingPage theme={theme} toggleTheme={toggleTheme} />
+					) : userData ? (
 						<>
 							<Template
 								data={userData}
@@ -489,11 +494,7 @@ const AppContent = () => {
 							)}
 						</>
 					) : (
-						user ? (
-							<Navigate to="/dashboard" replace />
-						) : (
-							<Navigate to="/login" replace />
-						)
+						<Navigate to="/professional/dashboard" replace />
 					)
 				} />
 

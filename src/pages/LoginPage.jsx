@@ -18,7 +18,7 @@ const LoginPage = ({ theme, toggleTheme }) => {
     const location = useLocation();
 
     // Redirect to where they came from, or dashboard
-    const from = location.state?.from?.pathname || '/dashboard';
+    const from = location.state?.from?.pathname || '/professional/dashboard';
 
     const handleSubmit = async (e) => {
         e.preventDefault();
