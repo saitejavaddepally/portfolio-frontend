@@ -49,46 +49,35 @@
     box-shadow: 0 6px 18px rgba(56, 189, 248, 0.45);
 }
 
-/* ── Click ripple animation ─────────────────────────── */
-@keyframes rippleBurst {
-    0% {
-        transform: scale(0);
-        opacity: 0.6;
-    }
+/* ── Click animations ──────────────────────────────── */
 
-    60% {
-        transform: scale(2.5);
-        opacity: 0.25;
+/* Page-level exit: content glides up + fades — translateY+opacity = GPU-composited, no jitter */
+@keyframes pageExitAnim {
+    0% {
+        opacity: 1;
+        transform: translateY(0px);
     }
 
     100% {
-        transform: scale(4);
         opacity: 0;
+        transform: translateY(-28px);
     }
 }
 
-.btn-ripple::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: rgba(255, 255, 255, 0.45);
-    animation: rippleBurst 0.32s ease-out forwards;
+.landing-root.page-exit {
+    will-change: opacity, transform;
+    animation: pageExitAnim 0.28s cubic-bezier(0.4, 0, 1, 1) forwards;
     pointer-events: none;
 }
 
-/* Scale-down click feedback for secondary button */
-.landing-btn-primary.btn-ripple,
-.landing-topbar-cta.btn-ripple {
-    transform: scale(0.96);
-    transition: transform 0.12s ease;
-}
 
-.landing-btn-secondary.btn-ripple,
-.landing-topbar-link.btn-ripple {
-    transform: scale(0.96);
-    opacity: 0.7;
-    transition: transform 0.12s ease, opacity 0.12s ease;
+/* Tactile press feedback on all nav buttons */
+.landing-pressable:active,
+.landing-topbar-cta:active,
+.landing-topbar-link:active {
+    transform: scale(0.93) !important;
+    opacity: 0.75;
+    transition: transform 0.08s ease, opacity 0.08s ease;
 }
 
 /* Decorative eyebrow hint in header left spacer */
@@ -96,6 +85,7 @@
     display: flex;
     align-items: center;
 }
+
 
 /* Override shared-header's fixed 150px width — landing page has 3 action items */
 .landing-root .header-actions {

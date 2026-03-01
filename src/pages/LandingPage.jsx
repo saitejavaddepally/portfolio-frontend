@@ -11,25 +11,28 @@ import featureImg3 from '../assets/undraw_portfolio-update_6bro.svg';
 
 const LandingPage = ({ theme, toggleTheme }) => {
     const navigate = useNavigate();
-    const [clickedBtn, setClickedBtn] = useState(null); // 'login' | 'signup'
+    const [isExiting, setIsExiting] = useState(false);
 
-    const handleNavClick = (to, btn) => {
-        setClickedBtn(btn);
-        // Let the ripple animation play (250ms) then navigate
-        setTimeout(() => navigate(to), 280);
+    /**
+     * All nav buttons call this.
+     * 1) Kicks off the page-level exit animation (.page-exit on root)
+     * 2) After 320ms the animation has played → navigate
+     */
+    const handleNavClick = (to) => {
+        if (isExiting) return; // prevent double-clicks
+        setIsExiting(true);
+        setTimeout(() => navigate(to), 320);
     };
 
     return (
-        <div className="landing-root">
+        <div className={`landing-root${isExiting ? ' page-exit' : ''}`}>
 
             {/* ── Header — reuses exact same shared-header classes ─── */}
             <header className="shared-header" style={{ position: 'sticky', top: 0, zIndex: 100 }}>
-                {/* Left spacer keeps logo centered on desktop */}
+                {/* Left spacer with eyebrow pill */}
                 <div className="header-spacer landing-header-left">
-                    <span
-                        className="landing-hero-eyebrow"
-                        style={{ fontSize: '0.62rem', padding: '4px 12px', margin: 0 }}
-                    >
+                    <span className="landing-hero-eyebrow"
+                        style={{ fontSize: '0.62rem', padding: '4px 12px', margin: 0 }}>
                         ✦ AI-Powered
                     </span>
                 </div>
@@ -55,16 +58,16 @@ const LandingPage = ({ theme, toggleTheme }) => {
 
                     <button
                         id="topbar-login"
-                        className={`landing-topbar-link${clickedBtn === 'login' ? ' btn-ripple' : ''}`}
-                        onClick={() => handleNavClick('/login', 'login')}
+                        className="landing-topbar-link"
+                        onClick={() => handleNavClick('/login')}
                     >
                         Sign In
                     </button>
 
                     <button
                         id="topbar-signup"
-                        className={`landing-topbar-cta${clickedBtn === 'signup' ? ' btn-ripple' : ''}`}
-                        onClick={() => handleNavClick('/register', 'signup')}
+                        className="landing-topbar-cta"
+                        onClick={() => handleNavClick('/register')}
                     >
                         Get Started Free
                     </button>
@@ -90,16 +93,20 @@ const LandingPage = ({ theme, toggleTheme }) => {
                     <div className="landing-hero-btns">
                         <button
                             id="hero-cta-signup"
-                            className={`landing-btn-primary${clickedBtn === 'hero-signup' ? ' btn-ripple' : ''}`}
-                            onClick={() => handleNavClick('/register', 'hero-signup')}
+                            className="landing-btn-primary landing-pressable"
+                            onClick={() => handleNavClick('/register')}
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><line x1="19" y1="8" x2="19" y2="14" /><line x1="22" y1="11" x2="16" y2="11" /></svg>
                             Start for Free
                         </button>
-                        <Link to="/jobs" className="landing-btn-secondary" id="hero-cta-jobs">
+                        <button
+                            id="hero-cta-jobs"
+                            className="landing-btn-secondary landing-pressable"
+                            onClick={() => handleNavClick('/jobs')}
+                        >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" /></svg>
                             Browse Jobs
-                        </Link>
+                        </button>
                     </div>
                 </div>
 
@@ -203,15 +210,15 @@ const LandingPage = ({ theme, toggleTheme }) => {
                     <div className="landing-cta-btns">
                         <button
                             id="cta-signup"
-                            className={`landing-btn-primary${clickedBtn === 'cta-signup' ? ' btn-ripple' : ''}`}
-                            onClick={() => handleNavClick('/register', 'cta-signup')}
+                            className="landing-btn-primary landing-pressable"
+                            onClick={() => handleNavClick('/register')}
                         >
                             Create Free Account
                         </button>
                         <button
                             id="cta-login"
-                            className={`landing-btn-secondary${clickedBtn === 'cta-login' ? ' btn-ripple' : ''}`}
-                            onClick={() => handleNavClick('/login', 'cta-login')}
+                            className="landing-btn-secondary landing-pressable"
+                            onClick={() => handleNavClick('/login')}
                         >
                             Sign In
                         </button>
