@@ -86,8 +86,21 @@ const LoginPage = ({ theme, toggleTheme }) => {
                                 type="submit"
                                 disabled={loading}
                                 className="auth-button"
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '10px'
+                                }}
                             >
-                                {loading ? <Loader size="small" color="#ffffff" /> : 'Sign In'}
+                                {loading ? (
+                                    <>
+                                        <Loader size="small" color="#ffffff" inline />
+                                        <span>Signing In...</span>
+                                    </>
+                                ) : (
+                                    'Sign In'
+                                )}
                             </button>
                         </form>
 

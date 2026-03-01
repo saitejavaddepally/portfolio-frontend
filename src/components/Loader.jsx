@@ -1,8 +1,9 @@
 import React from 'react';
 import '../css/Loader.css';
 
-const Loader = ({ size = 'medium', color = 'var(--accent-color)', fullScreen = false }) => {
-    const containerClass = fullScreen ? 'spinner-container fullscreen' : 'spinner-container';
+const Loader = ({ size = 'medium', color = 'var(--accent-color)', fullScreen = false, inline = false }) => {
+    let containerClass = fullScreen ? 'spinner-container fullscreen' : 'spinner-container';
+    if (inline) containerClass += ' inline';
 
     return (
         <div className={containerClass}>

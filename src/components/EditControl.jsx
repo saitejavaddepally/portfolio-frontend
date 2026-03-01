@@ -26,15 +26,24 @@ const EditControl = ({ onSave, onExport, toggleTheme, theme, onExitEdit, isSavin
                         style={{
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '6px',
-                            opacity: saveDisabled ? 0.6 : 1,
-                            cursor: saveDisabled ? 'not-allowed' : 'pointer',
-                            background: saveDisabled ? '#ccc' : undefined
+                            justifyContent: 'center',
+                            gap: '8px',
+                            opacity: (saveDisabled || isSaving) ? 0.7 : 1,
+                            cursor: (saveDisabled || isSaving) ? 'not-allowed' : 'pointer',
+                            minWidth: '100px',
+                            height: '40px',
+                            transition: 'all 0.2s ease'
                         }}
                         title={saveDisabled ? "Please fix validation errors to save" : "Save changes"}
                     >
-                        {isSaving && <Loader size="small" color="#fff" />}
-                        {isSaving ? 'Saving...' : 'Save'}
+                        {isSaving ? (
+                            <>
+                                <Loader size="small" color="#fff" inline />
+                                <span>Saving...</span>
+                            </>
+                        ) : (
+                            <span>Save</span>
+                        )}
                     </button>
 
 

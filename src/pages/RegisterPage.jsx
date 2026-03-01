@@ -97,8 +97,21 @@ const RegisterPage = ({ theme, toggleTheme }) => {
                                 type="submit"
                                 disabled={loading}
                                 className="auth-button"
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '10px'
+                                }}
                             >
-                                {loading ? <Loader size="small" color="#ffffff" /> : 'Get Started'}
+                                {loading ? (
+                                    <>
+                                        <Loader size="small" color="#ffffff" inline />
+                                        <span>Creating Account...</span>
+                                    </>
+                                ) : (
+                                    'Get Started'
+                                )}
                             </button>
                         </form>
 

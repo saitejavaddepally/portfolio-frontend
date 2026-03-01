@@ -3,7 +3,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.spinner-container:not(.inline):not(.fullscreen) {
     width: 100%;
+}
+
+.spinner-container.inline {
+    display: inline-flex;
+    width: auto;
 }
 
 .spinner-container.fullscreen {
@@ -26,8 +34,8 @@
     position: relative;
     border-radius: 50%;
     border-style: solid;
-    border-color: transparent;
-    animation: spin 1s cubic-bezier(0.17, 0.67, 0.83, 0.67) infinite;
+    border-color: rgba(255, 255, 255, 0.2);
+    animation: spin 0.8s linear infinite;
 }
 
 /* Size Variants */
