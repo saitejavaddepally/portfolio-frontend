@@ -106,7 +106,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
         setUserData(updatedData);
         setShowResumeModal(false);
         addToast("Redirecting to editor to review parsed data...", "info", 3000);
-        setTimeout(() => navigate(`/? portfolioStyle = medium & edit=true`), 800);
+        setTimeout(() => navigate(`/?portfolioStyle=medium&edit=true`), 800);
     };
 
     // Derived data for previews

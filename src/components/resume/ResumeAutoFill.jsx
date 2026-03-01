@@ -196,7 +196,7 @@ const ResumeAutoFill = ({ onParsed }) => {
             ) : (
                 <div className="loading-state">
                     <div className="spinner"></div>
-                    <h3 className="loading-text">Parsing Resume...</h3>
+                    <h3 className="loading-text">We are writing your portfolio for you...</h3>
                     <p className="loading-subtext">Extracting skills, experience, and details.</p>
                     <p className="loading-warning" style={{ color: 'var(--accent-color)', fontSize: '0.85rem', marginTop: '1rem', fontWeight: 500 }}>
                         Powered by AI ✨ This may take a few moments.<br />Please do not close this window.
