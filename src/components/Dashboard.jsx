@@ -244,12 +244,12 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                             className={`template - card ${isDeployed ? 'deployed' : 'not-deployed'} `}
                             onClick={() => {
                                 // Card click → preview
-                                navigate(`/? portfolioStyle = ${template.id} `);
+                                navigate(`/?portfolioStyle=${template.id}`);
                             }}
                             style={{ cursor: 'pointer' }}
                         >
                             {/* Deployed Badge */}
-                            {/* {isDeployed && (
+                            {/* {isDeployed && 
                                 <div className="deployed-badge">
                                     Live
                                 </div>
