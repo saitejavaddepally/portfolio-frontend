@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useToast } from '../../context/ToastContext';
-import axios from 'axios';
+import apiClient from '../../services/apiClient';
 import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
 import mammoth from "mammoth";
@@ -122,7 +122,7 @@ const ResumeAutoFill = ({ onParsed }) => {
             console.log("Extracted Text:", extractedText);
 
             // Send extracted text to backend AI parser
-            const response = await axios.post("/api/ai/parse-resume", extractedText, {
+            const response = await apiClient.post("/api/ai/parse-resume", extractedText, {
                 headers: {
                     "Content-Type": "text/plain"
                 }
