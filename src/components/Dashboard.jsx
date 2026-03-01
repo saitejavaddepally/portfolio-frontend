@@ -207,11 +207,11 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                             style={{ cursor: 'pointer' }}
                         >
                             {/* Deployed Badge */}
-                            {isDeployed && (
+                            {/* {isDeployed && (
                                 <div className="deployed-badge">
                                     Live
                                 </div>
-                            )}
+                            )} */}
 
                             {/* Preview Area */}
                             <div className="preview-area">

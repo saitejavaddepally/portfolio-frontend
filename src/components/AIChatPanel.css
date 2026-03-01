@@ -56,17 +56,6 @@
     gap: 8px;
 }
 
-/* Live green pulse dot */
-.chat-header h3::before {
-    content: '';
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background: #10b981;
-    border-radius: 50%;
-    animation: pulse-dot 2s infinite;
-    flex-shrink: 0;
-}
 
 @keyframes pulse-dot {
 
