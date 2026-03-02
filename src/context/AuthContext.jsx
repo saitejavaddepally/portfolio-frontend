@@ -43,9 +43,8 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
-        }
+        // Let React Router's PrivateRoute handle the redirect to /login
+        // instead of a hard page reload (window.location.href) to prevent animation glitches.
     };
 
     // Initial load: Check for tokens
