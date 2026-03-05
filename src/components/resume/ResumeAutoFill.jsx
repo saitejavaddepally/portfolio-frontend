@@ -4,6 +4,7 @@ import apiClient from '../../services/apiClient';
 import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
 import mammoth from "mammoth";
+import Loader from '../Loader';
 import '../../css/Resume.css';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
@@ -195,8 +196,8 @@ const ResumeAutoFill = ({ onParsed }) => {
                 </>
             ) : (
                 <div className="loading-state">
-                    <div className="spinner"></div>
-                    <h3 className="loading-text">We are writing your portfolio for you...</h3>
+                    <Loader size="large" />
+                    <h3 className="loading-text" style={{ marginTop: '1.75rem' }}>We are writing your portfolio for you...</h3>
                     <p className="loading-subtext">Extracting skills, experience, and details.</p>
                     <p className="loading-warning" style={{ color: 'var(--accent-color)', fontSize: '0.85rem', marginTop: '1rem', fontWeight: 500, lineHeight: '1.4' }}>
                         Powered by AI ✨ This may take a few moments.<br />

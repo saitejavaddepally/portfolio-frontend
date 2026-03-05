@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={value}>
-            {!loading ? children : <div style={{ display: 'flex', justifyContent: 'center', height: '100vh', alignItems: 'center' }}><Loader fullScreen={true} size="large" /></div>}
+            {!loading ? children : <Loader fullScreen={true} size="large" />}
         </AuthContext.Provider>
     );
 };

@@ -155,126 +155,128 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                     </div>
                 </header>
 
-                <main className="recruiter-content" style={{ padding: 0 }}>
-                    {professionals.length === 0 ? (
-                        <div className="current-empty-state" style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-secondary)' }}>
-                            <p>No professionals found at the moment.</p>
-                        </div>
-                    ) : (
-                        /* ── List View ────────────────────────────────── */
-                        <div className="jobs-list-wrapper" style={{ margin: '1.5rem 0 2rem' }}>
-                            {/* Table Header */}
-                            <div className="jobs-list-header" style={{ gridTemplateColumns: '2.5fr 2.5fr 2fr 1.5fr' }}>
-                                <div className="jl-col">Professional</div>
-                                <div className="jl-col">Skills</div>
-                                <div className="jl-col">Contact</div>
-                                <div className="jl-col">Action</div>
+                <main className="recruiter-content">
+                    <div className="jobs-container" style={{ paddingTop: '1.5rem' }}>
+                        {professionals.length === 0 ? (
+                            <div className="current-empty-state" style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-secondary)' }}>
+                                <p>No professionals found at the moment.</p>
                             </div>
+                        ) : (
+                            /* ── List View ────────────────────────────────── */
+                            <div className="jobs-list-wrapper" style={{ margin: '0 0 2rem' }}>
+                                {/* Table Header */}
+                                <div className="jobs-list-header" style={{ gridTemplateColumns: '2.5fr 2.5fr 2fr 1.5fr' }}>
+                                    <div className="jl-col">Professional</div>
+                                    <div className="jl-col">Skills</div>
+                                    <div className="jl-col">Contact</div>
+                                    <div className="jl-col">Action</div>
+                                </div>
 
-                            {/* Rows */}
-                            <div className="jobs-list-body">
-                                {professionals.map((user, idx) => {
-                                    const nameFromEmail = user.email
-                                        ? user.email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-                                        : 'Professional';
-                                    const displayName = user.name || nameFromEmail;
-                                    const initial = displayName.charAt(0).toUpperCase();
-                                    const skills = Array.isArray(user.skills) ? user.skills : [];
-                                    const topSkills = skills.slice(0, 4);
-                                    const remaining = skills.length - topSkills.length;
-                                    const matchScore = typeof user.matchScore === 'number' ? user.matchScore : null;
+                                {/* Rows */}
+                                <div className="jobs-list-body">
+                                    {professionals.map((user, idx) => {
+                                        const nameFromEmail = user.email
+                                            ? user.email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+                                            : 'Professional';
+                                        const displayName = user.name || nameFromEmail;
+                                        const initial = displayName.charAt(0).toUpperCase();
+                                        const skills = Array.isArray(user.skills) ? user.skills : [];
+                                        const topSkills = skills.slice(0, 4);
+                                        const remaining = skills.length - topSkills.length;
+                                        const matchScore = typeof user.matchScore === 'number' ? user.matchScore : null;
 
-                                    const scoreColor = matchScore >= 80
-                                        ? { bg: 'rgba(34,197,94,0.12)', color: '#16a34a', dot: '#22c55e' }
-                                        : matchScore >= 60
-                                            ? { bg: 'rgba(249,115,22,0.12)', color: '#ea580c', dot: '#f97316' }
-                                            : { bg: 'rgba(148,163,184,0.12)', color: '#64748b', dot: '#94a3b8' };
+                                        const scoreColor = matchScore >= 80
+                                            ? { bg: 'rgba(34,197,94,0.12)', color: '#16a34a', dot: '#22c55e' }
+                                            : matchScore >= 60
+                                                ? { bg: 'rgba(249,115,22,0.12)', color: '#ea580c', dot: '#f97316' }
+                                                : { bg: 'rgba(148,163,184,0.12)', color: '#64748b', dot: '#94a3b8' };
 
-                                    return (
-                                        <div
-                                            key={user._id || user.id}
-                                            className="jobs-list-row animate-slide-up"
-                                            style={{
-                                                gridTemplateColumns: '2.5fr 2.5fr 2fr 1.5fr',
-                                                animationDelay: `${idx * 0.06}s`,
-                                            }}
-                                        >
-                                            {/* Professional name + avatar */}
-                                            <div className="jl-col jl-col-role">
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                                    <div style={{
-                                                        width: 40, height: 40, borderRadius: '50%',
-                                                        background: 'linear-gradient(135deg, #38bdf8, #818cf8)',
-                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                        color: '#fff', fontWeight: 800, fontSize: '1rem', flexShrink: 0,
-                                                    }}>
-                                                        {initial}
+                                        return (
+                                            <div
+                                                key={user._id || user.id}
+                                                className="jobs-list-row animate-slide-up"
+                                                style={{
+                                                    gridTemplateColumns: '2.5fr 2.5fr 2fr 1.5fr',
+                                                    animationDelay: `${idx * 0.06}s`,
+                                                }}
+                                            >
+                                                {/* Professional name + avatar */}
+                                                <div className="jl-col jl-col-role">
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                        <div style={{
+                                                            width: 40, height: 40, borderRadius: '50%',
+                                                            background: 'linear-gradient(135deg, #38bdf8, #818cf8)',
+                                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                            color: '#fff', fontWeight: 800, fontSize: '1rem', flexShrink: 0,
+                                                        }}>
+                                                            {initial}
+                                                        </div>
+                                                        <div>
+                                                            <div className="jl-role-name">{displayName}</div>
+                                                            {matchScore !== null && (
+                                                                <span style={{
+                                                                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                                                                    fontSize: '0.7rem', fontWeight: 700,
+                                                                    padding: '2px 8px', borderRadius: 100,
+                                                                    background: scoreColor.bg, color: scoreColor.color, marginTop: 2,
+                                                                }}>
+                                                                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: scoreColor.dot, display: 'inline-block' }} />
+                                                                    {matchScore}% match
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <div className="jl-role-name">{displayName}</div>
-                                                        {matchScore !== null && (
-                                                            <span style={{
-                                                                display: 'inline-flex', alignItems: 'center', gap: 5,
-                                                                fontSize: '0.7rem', fontWeight: 700,
-                                                                padding: '2px 8px', borderRadius: 100,
-                                                                background: scoreColor.bg, color: scoreColor.color, marginTop: 2,
-                                                            }}>
-                                                                <span style={{ width: 6, height: 6, borderRadius: '50%', background: scoreColor.dot, display: 'inline-block' }} />
-                                                                {matchScore}% match
-                                                            </span>
+                                                </div>
+
+                                                {/* Skills */}
+                                                <div className="jl-col">
+                                                    <div className="jl-skills-wrap">
+                                                        {topSkills.map((s, i) => (
+                                                            <span key={i} className="skill-badge">{s}</span>
+                                                        ))}
+                                                        {remaining > 0 && (
+                                                            <span className="jl-skills-more">+{remaining}</span>
+                                                        )}
+                                                        {skills.length === 0 && (
+                                                            <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>No skills listed</span>
                                                         )}
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            {/* Skills */}
-                                            <div className="jl-col">
-                                                <div className="jl-skills-wrap">
-                                                    {topSkills.map((s, i) => (
-                                                        <span key={i} className="skill-badge">{s}</span>
-                                                    ))}
-                                                    {remaining > 0 && (
-                                                        <span className="jl-skills-more">+{remaining}</span>
-                                                    )}
-                                                    {skills.length === 0 && (
-                                                        <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>No skills listed</span>
-                                                    )}
+                                                {/* Contact / email */}
+                                                <div className="jl-col">
+                                                    <div className="jl-meta-item">
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                                            <polyline points="22,6 12,13 2,6" />
+                                                        </svg>
+                                                        <span style={{ fontSize: '0.8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                            {user.email || '—'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Action */}
+                                                <div className="jl-col jl-col-actions">
+                                                    <button
+                                                        id={`view-portfolio-${user._id || user.id}`}
+                                                        className="btn-primary jl-action-btn"
+                                                        onClick={() => navigate(`/recruiter/user/${user._id || user.id}`)}
+                                                    >
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                            <circle cx="12" cy="12" r="3" />
+                                                        </svg>
+                                                        View Portfolio
+                                                    </button>
                                                 </div>
                                             </div>
-
-                                            {/* Contact / email */}
-                                            <div className="jl-col">
-                                                <div className="jl-meta-item">
-                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                                        <polyline points="22,6 12,13 2,6" />
-                                                    </svg>
-                                                    <span style={{ fontSize: '0.8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                                        {user.email || '—'}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            {/* Action */}
-                                            <div className="jl-col jl-col-actions">
-                                                <button
-                                                    id={`view-portfolio-${user._id || user.id}`}
-                                                    className="btn-primary jl-action-btn"
-                                                    onClick={() => navigate(`/recruiter/user/${user._id || user.id}`)}
-                                                >
-                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                                        <circle cx="12" cy="12" r="3" />
-                                                    </svg>
-                                                    View Portfolio
-                                                </button>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </main>
             </div>
         </SharedLayout>
