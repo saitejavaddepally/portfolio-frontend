@@ -53,25 +53,25 @@ html[data-theme='light'] .loader-inline {
 ═══════════════════════════════════════════════════════════ */
 
 .loader-standalone {
-    width: 64px;
-    height: 64px;
+    width: 44px;
+    height: 44px;
     position: relative;
     flex-shrink: 0;
 }
 
 .loader-standalone.size-small {
-    width: 40px;
-    height: 40px;
+    width: 28px;
+    height: 28px;
 }
 
 .loader-standalone.size-medium {
-    width: 64px;
-    height: 64px;
+    width: 44px;
+    height: 44px;
 }
 
 .loader-standalone.size-large {
-    width: 90px;
-    height: 90px;
+    width: 60px;
+    height: 60px;
 }
 
 .loader-standalone::before,
@@ -103,129 +103,129 @@ html[data-theme='light'] .loader-standalone::after {
 }
 
 /* ── Size-specific keyframes ─────────────────────────── */
-/* small: 40px → half ≈ 22px */
+/* small: 28px → half = 15px */
 .loader-standalone.size-small::before,
 .loader-standalone.size-small::after {
     animation-name: morph-sm;
 }
 
-/* large: 90px → half ≈ 49px */
+/* large: 60px → half = 33px */
 .loader-standalone.size-large::before,
 .loader-standalone.size-large::after {
     animation-name: morph-lg;
 }
 
-/* medium (default): 64px → half = 35px */
+/* medium (default): 44px → half = 24px */
 @keyframes morph-loader {
     0% {
-        inset: 0 35px 35px 0
+        inset: 0 24px 24px 0
     }
 
     12.5% {
-        inset: 0 35px 0 0
+        inset: 0 24px 0 0
     }
 
     25% {
-        inset: 35px 35px 0 0
+        inset: 24px 24px 0 0
     }
 
     37.5% {
-        inset: 35px 0 0 0
+        inset: 24px 0 0 0
     }
 
     50% {
-        inset: 35px 0 0 35px
+        inset: 24px 0 0 24px
     }
 
     62.5% {
-        inset: 0 0 0 35px
+        inset: 0 0 0 24px
     }
 
     75% {
-        inset: 0 0 35px 35px
+        inset: 0 0 24px 24px
     }
 
     87.5% {
-        inset: 0 0 35px 0
+        inset: 0 0 24px 0
     }
 
     100% {
-        inset: 0 35px 35px 0
+        inset: 0 24px 24px 0
     }
 }
 
 @keyframes morph-sm {
     0% {
-        inset: 0 22px 22px 0
+        inset: 0 15px 15px 0
     }
 
     12.5% {
-        inset: 0 22px 0 0
+        inset: 0 15px 0 0
     }
 
     25% {
-        inset: 22px 22px 0 0
+        inset: 15px 15px 0 0
     }
 
     37.5% {
-        inset: 22px 0 0 0
+        inset: 15px 0 0 0
     }
 
     50% {
-        inset: 22px 0 0 22px
+        inset: 15px 0 0 15px
     }
 
     62.5% {
-        inset: 0 0 0 22px
+        inset: 0 0 0 15px
     }
 
     75% {
-        inset: 0 0 22px 22px
+        inset: 0 0 15px 15px
     }
 
     87.5% {
-        inset: 0 0 22px 0
+        inset: 0 0 15px 0
     }
 
     100% {
-        inset: 0 22px 22px 0
+        inset: 0 15px 15px 0
     }
 }
 
 @keyframes morph-lg {
     0% {
-        inset: 0 49px 49px 0
+        inset: 0 33px 33px 0
     }
 
     12.5% {
-        inset: 0 49px 0 0
+        inset: 0 33px 0 0
     }
 
     25% {
-        inset: 49px 49px 0 0
+        inset: 33px 33px 0 0
     }
 
     37.5% {
-        inset: 49px 0 0 0
+        inset: 33px 0 0 0
     }
 
     50% {
-        inset: 49px 0 0 49px
+        inset: 33px 0 0 33px
     }
 
     62.5% {
-        inset: 0 0 0 49px
+        inset: 0 0 0 33px
     }
 
     75% {
-        inset: 0 0 49px 49px
+        inset: 0 0 33px 33px
     }
 
     87.5% {
-        inset: 0 0 49px 0
+        inset: 0 0 33px 0
     }
 
     100% {
-        inset: 0 49px 49px 0
+        inset: 0 33px 33px 0
     }
 }
