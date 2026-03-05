@@ -17,8 +17,9 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   GALAXY AI LOADER — Samsung Galaxy AI "Circle to Search" style
-   A sweeping comet-arc with gradient glow.
+   PROFESSIONAL GRADIENT RING LOADER
+   A smooth conic-gradient ring with a faded tail — 
+   clean and minimal, matching the app's sky-blue/indigo accent palette.
 ═══════════════════════════════════════════════════════════ */
 
 .galaxy-loader {
@@ -27,154 +28,42 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-}
-
-/* ── Outer sweeping arc ─────────────────────────────────── */
-/* Uses a pseudo element as the sweeping conic-gradient arc  */
-.galaxy-loader::before {
-    content: '';
-    position: absolute;
-    inset: 0;
     border-radius: 50%;
+    animation: ring-spin 1s linear infinite;
+
+    /* The gradient ring via conic + mask */
     background: conic-gradient(from 0deg,
-            transparent 0%,
-            transparent 60%,
-            rgba(129, 140, 248, 0.15) 65%,
-            rgba(99, 102, 241, 0.5) 72%,
-            rgba(56, 189, 248, 0.8) 80%,
-            rgba(167, 243, 208, 1) 88%,
-            #ffffff 92%,
-            rgba(167, 243, 208, 0.6) 95%,
-            transparent 100%);
-    animation: galaxy-sweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-    filter: blur(0.5px);
+            rgba(56, 189, 248, 0) 0%,
+            rgba(56, 189, 248, 0.15) 20%,
+            rgba(99, 102, 241, 0.6) 55%,
+            #38bdf8 80%,
+            #a5f3fc 95%,
+            rgba(56, 189, 248, 0) 100%);
+
+    /* Mask to create the ring shape (hollow center) */
+    -webkit-mask:
+        radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+    mask:
+        radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
 }
 
-/* ── Inner arc mask (makes it look like a ring, not a disc) */
-.galaxy-loader::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    background: var(--bg-primary, #080d14);
-    /* 80% of the parent size, centered */
-    inset: 10%;
-    z-index: 1;
-}
-
-/* ── Center glow core ──────────────────────────────────── */
-.galaxy-core {
-    position: absolute;
-    width: 22%;
-    height: 22%;
-    border-radius: 50%;
-    background: radial-gradient(circle, #e0f2fe 0%, #38bdf8 60%, #6366f1 100%);
-    box-shadow:
-        0 0 8px 3px rgba(56, 189, 248, 0.8),
-        0 0 20px 8px rgba(99, 102, 241, 0.5),
-        0 0 40px 14px rgba(56, 189, 248, 0.2);
-    animation: galaxy-core-pulse 1.6s ease-in-out infinite;
-    z-index: 2;
-}
-
-@keyframes galaxy-core-pulse {
-
-    0%,
-    100% {
-        transform: scale(1);
-        box-shadow:
-            0 0 8px 3px rgba(56, 189, 248, 0.8),
-            0 0 20px 8px rgba(99, 102, 241, 0.5),
-            0 0 40px 14px rgba(56, 189, 248, 0.2);
-    }
-
-    50% {
-        transform: scale(1.2);
-        box-shadow:
-            0 0 12px 5px rgba(56, 189, 248, 1),
-            0 0 30px 12px rgba(99, 102, 241, 0.7),
-            0 0 55px 20px rgba(56, 189, 248, 0.3);
-    }
-}
-
-/* ── Comet head — the bright spot that leads the sweep ── */
-.galaxy-ring {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    z-index: 2;
-    animation: galaxy-sweep 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-/* Comet head dot */
-.galaxy-ring-1 {
-    inset: 0;
-}
-
-.galaxy-ring-1::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 14%;
-    height: 14%;
-    border-radius: 50%;
-    background: radial-gradient(circle, #ffffff 0%, #a7f3d0 40%, rgba(56, 189, 248, 0.6) 100%);
-    box-shadow:
-        0 0 8px 4px rgba(167, 243, 208, 0.9),
-        0 0 20px 8px rgba(56, 189, 248, 0.5);
-    animation: none;
-}
-
-/* Hide the other "ring" divs — only ring-1 needed for this style */
-.galaxy-ring-2,
-.galaxy-ring-3,
+/* Hide the extra children — all done with background + mask */
+.galaxy-core,
+.galaxy-ring,
 .galaxy-sparkle-container {
     display: none;
 }
 
-/* ── Main sweep keyframe ────────────────────────────────── */
-@keyframes galaxy-sweep {
-    from {
-        transform: rotate(0deg);
-    }
-
+@keyframes ring-spin {
     to {
         transform: rotate(360deg);
     }
 }
 
-/* ── Outer glow halo around the whole loader ────────────── */
-.galaxy-loader {
-    filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.3));
-}
-
-/* ── Inline / Small override ─────────────────────────────
-   On small sizes simplify — hide core, just show the arc.
-────────────────────────────────────────────────────────── */
-.galaxy-loader.inline::before {
-    background: conic-gradient(from 0deg,
-            transparent 0%,
-            transparent 55%,
-            rgba(56, 189, 248, 0.5) 70%,
-            rgba(255, 255, 255, 0.9) 88%,
-            transparent 100%);
-    filter: none;
-}
-
-.galaxy-loader.inline::after {
-    inset: 12%;
-}
-
-.galaxy-loader.inline .galaxy-core {
-    width: 28%;
-    height: 28%;
-    box-shadow:
-        0 0 4px 2px rgba(56, 189, 248, 0.8),
-        0 0 10px 4px rgba(99, 102, 241, 0.4);
-}
-
-.galaxy-loader.inline .galaxy-ring-1::after {
-    width: 18%;
-    height: 18%;
+/* ── Inline: slightly thinner ring ───────────────────── */
+.galaxy-loader.inline {
+    -webkit-mask:
+        radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px));
+    mask:
+        radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px));
 }
