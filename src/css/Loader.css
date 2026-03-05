@@ -17,53 +17,73 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   PROFESSIONAL GRADIENT RING LOADER
-   A smooth conic-gradient ring with a faded tail — 
-   clean and minimal, matching the app's sky-blue/indigo accent palette.
+   PROFESSIONAL LOADER
+   Morphing rounded-square / circle animation.
+   Base size: 65px. Scaled up/down via transform for each size.
 ═══════════════════════════════════════════════════════════ */
 
 .galaxy-loader {
+    width: 65px;
+    height: 65px;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     flex-shrink: 0;
-    border-radius: 50%;
-    animation: ring-spin 1s linear infinite;
-
-    /* The gradient ring via conic + mask */
-    background: conic-gradient(from 0deg,
-            rgba(56, 189, 248, 0) 0%,
-            rgba(56, 189, 248, 0.15) 20%,
-            rgba(99, 102, 241, 0.6) 55%,
-            #38bdf8 80%,
-            #a5f3fc 95%,
-            rgba(56, 189, 248, 0) 100%);
-
-    /* Mask to create the ring shape (hollow center) */
-    -webkit-mask:
-        radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
-    mask:
-        radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 3px));
+    /* Children will hide since this loader uses pseudo-elements */
 }
 
-/* Hide the extra children — all done with background + mask */
-.galaxy-core,
-.galaxy-ring,
-.galaxy-sparkle-container {
+/* Hide child divs — not used by this style */
+.galaxy-loader>* {
     display: none;
 }
 
-@keyframes ring-spin {
-    to {
-        transform: rotate(360deg);
-    }
+.galaxy-loader::before,
+.galaxy-loader::after {
+    content: "";
+    position: absolute;
+    border-radius: 50px;
+    box-shadow: 0 0 0 3px inset #38bdf8;
+    animation: galaxy-morph 2.5s infinite;
 }
 
-/* ── Inline: slightly thinner ring ───────────────────── */
-.galaxy-loader.inline {
-    -webkit-mask:
-        radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px));
-    mask:
-        radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px));
+.galaxy-loader::after {
+    animation-delay: -1.25s;
+    border-radius: 0;
+    box-shadow: 0 0 0 3px inset #818cf8;
+}
+
+@keyframes galaxy-morph {
+    0% {
+        inset: 0 35px 35px 0
+    }
+
+    12.5% {
+        inset: 0 35px 0 0
+    }
+
+    25% {
+        inset: 35px 35px 0 0
+    }
+
+    37.5% {
+        inset: 35px 0 0 0
+    }
+
+    50% {
+        inset: 35px 0 0 35px
+    }
+
+    62.5% {
+        inset: 0 0 0 35px
+    }
+
+    75% {
+        inset: 0 0 35px 35px
+    }
+
+    87.5% {
+        inset: 0 0 35px 0
+    }
+
+    100% {
+        inset: 0 35px 35px 0
+    }
 }
