@@ -14,43 +14,109 @@
 
 .spinner-container.inline {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 /* ═══════════════════════════════════════════════════════════
-   PROFESSIONAL LOADER
-   Morphing rounded-square / circle animation.
-   Base size: 65px. Scaled up/down via transform for each size.
+   INLINE BUTTON LOADER
+   Simple 18px spinning ring — fits perfectly inside buttons,
+   visible on both dark (white ring) and light (dark ring via currentColor).
 ═══════════════════════════════════════════════════════════ */
 
-.galaxy-loader {
-    width: 65px;
-    height: 65px;
+.loader-inline {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+    animation: inline-spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+/* Light mode — dark ring on light buttons */
+html[data-theme='light'] .loader-inline {
+    border-color: rgba(15, 23, 42, 0.2);
+    border-top-color: #0f172a;
+}
+
+@keyframes inline-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PAGE / FEATURE LOADER — Morphing animation
+   Fixed 64px base. Visible in both dark and light themes.
+═══════════════════════════════════════════════════════════ */
+
+.loader-standalone {
+    width: 64px;
+    height: 64px;
     position: relative;
     flex-shrink: 0;
-    /* Children will hide since this loader uses pseudo-elements */
 }
 
-/* Hide child divs — not used by this style */
-.galaxy-loader>* {
-    display: none;
+.loader-standalone.size-small {
+    width: 40px;
+    height: 40px;
 }
 
-.galaxy-loader::before,
-.galaxy-loader::after {
+.loader-standalone.size-medium {
+    width: 64px;
+    height: 64px;
+}
+
+.loader-standalone.size-large {
+    width: 90px;
+    height: 90px;
+}
+
+.loader-standalone::before,
+.loader-standalone::after {
     content: "";
     position: absolute;
     border-radius: 50px;
-    box-shadow: 0 0 0 3px inset #38bdf8;
-    animation: galaxy-morph 2.5s infinite;
+    animation: morph-loader 2.5s infinite;
 }
 
-.galaxy-loader::after {
+/* Dark mode (default) */
+.loader-standalone::before {
+    box-shadow: 0 0 0 3px inset #38bdf8;
+}
+
+.loader-standalone::after {
+    box-shadow: 0 0 0 3px inset #818cf8;
     animation-delay: -1.25s;
     border-radius: 0;
-    box-shadow: 0 0 0 3px inset #818cf8;
 }
 
-@keyframes galaxy-morph {
+/* Light mode — slightly stronger contrast */
+html[data-theme='light'] .loader-standalone::before {
+    box-shadow: 0 0 0 3px inset #0284c7;
+}
+
+html[data-theme='light'] .loader-standalone::after {
+    box-shadow: 0 0 0 3px inset #4f46e5;
+}
+
+/* ── Size-specific keyframes ─────────────────────────── */
+/* small: 40px → half ≈ 22px */
+.loader-standalone.size-small::before,
+.loader-standalone.size-small::after {
+    animation-name: morph-sm;
+}
+
+/* large: 90px → half ≈ 49px */
+.loader-standalone.size-large::before,
+.loader-standalone.size-large::after {
+    animation-name: morph-lg;
+}
+
+/* medium (default): 64px → half = 35px */
+@keyframes morph-loader {
     0% {
         inset: 0 35px 35px 0
     }
@@ -85,5 +151,81 @@
 
     100% {
         inset: 0 35px 35px 0
+    }
+}
+
+@keyframes morph-sm {
+    0% {
+        inset: 0 22px 22px 0
+    }
+
+    12.5% {
+        inset: 0 22px 0 0
+    }
+
+    25% {
+        inset: 22px 22px 0 0
+    }
+
+    37.5% {
+        inset: 22px 0 0 0
+    }
+
+    50% {
+        inset: 22px 0 0 22px
+    }
+
+    62.5% {
+        inset: 0 0 0 22px
+    }
+
+    75% {
+        inset: 0 0 22px 22px
+    }
+
+    87.5% {
+        inset: 0 0 22px 0
+    }
+
+    100% {
+        inset: 0 22px 22px 0
+    }
+}
+
+@keyframes morph-lg {
+    0% {
+        inset: 0 49px 49px 0
+    }
+
+    12.5% {
+        inset: 0 49px 0 0
+    }
+
+    25% {
+        inset: 49px 49px 0 0
+    }
+
+    37.5% {
+        inset: 49px 0 0 0
+    }
+
+    50% {
+        inset: 49px 0 0 49px
+    }
+
+    62.5% {
+        inset: 0 0 0 49px
+    }
+
+    75% {
+        inset: 0 0 49px 49px
+    }
+
+    87.5% {
+        inset: 0 0 49px 0
+    }
+
+    100% {
+        inset: 0 49px 49px 0
     }
 }
