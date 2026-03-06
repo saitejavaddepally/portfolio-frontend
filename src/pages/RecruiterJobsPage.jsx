@@ -13,7 +13,9 @@ const RecruiterJobsPage = ({ theme, toggleTheme }) => {
     const openCount = jobs.filter(j => j.status === 'Open').length;
 
     const handleFindCandidates = (job) => {
-        const q = job.requiredSkills.join(' ');
+        // Format: Role | Skills | Experience | Location
+        const skillsString = job.requiredSkills.join(', ');
+        const q = `${job.role} | ${skillsString} | ${job.experienceRequired} | ${job.location}`;
         navigate(`/recruiter/search?q=${encodeURIComponent(q)}`);
     };
 
@@ -81,13 +83,23 @@ const RecruiterJobsPage = ({ theme, toggleTheme }) => {
                                     >
                                         {/* Role + Status */}
                                         <div className="jl-col jl-col-role">
+                                            {job.companyName && (
+                                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.1rem', fontWeight: 600 }}>{job.companyName}</div>
+                                            )}
                                             <div className="jl-role-name">{job.role}</div>
-                                            <span className={`job-status-badge ${job.status.toLowerCase()}`}>
-                                                {job.status}
-                                            </span>
+                                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.3rem' }}>
+                                                <span className={`job-status-badge ${job.status.toLowerCase()}`}>
+                                                    {job.status}
+                                                </span>
+                                                {job.jobType && (
+                                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', background: 'var(--bg-tertiary)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
+                                                        {job.jobType}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
 
-                                        {/* Experience */}
+                                        {/* Experience & Salary */}
                                         <div className="jl-col jl-col-exp">
                                             <div className="jl-meta-item">
                                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -96,6 +108,15 @@ const RecruiterJobsPage = ({ theme, toggleTheme }) => {
                                                 </svg>
                                                 {job.experienceRequired}
                                             </div>
+                                            {job.salaryRange && (
+                                                <div className="jl-meta-item" style={{ marginTop: '0.4rem' }}>
+                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <line x1="12" y1="1" x2="12" y2="23" />
+                                                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                                                    </svg>
+                                                    {job.salaryRange}
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Location */}
