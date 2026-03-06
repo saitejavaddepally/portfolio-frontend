@@ -248,7 +248,7 @@
 
 .template-card {
     background: var(--bg-primary);
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 12px;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);

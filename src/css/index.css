@@ -196,8 +196,8 @@ html[data-theme='dark'] .shared-header {
 html[data-theme='dark'] .template-card,
 html[data-theme='dark'] .modal-content {
   background: #111827;
-  border-color: rgba(99, 120, 200, 0.25);
-  box-shadow: 0 0 0 1px rgba(99, 120, 200, 0.1), 0 20px 40px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 20px 40px rgba(0, 0, 0, 0.6);
 }
 
 /* AI-Powered Pill in dark mode needs high contrast */

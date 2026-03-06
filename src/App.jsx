@@ -138,7 +138,7 @@ const AppContent = () => {
 					}
 				} catch (err) {
 					console.error("Global fetch failed", err);
-					if (err.response?.status === 404) {
+					if (err.response?.status === 404 || err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
 						setUserData(defaultTemplate);
 					} else {
 						setFetchError(err); // Stop further retries

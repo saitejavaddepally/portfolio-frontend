@@ -241,7 +241,7 @@ const Dashboard = ({ activeTemplate, onSelectTemplate, isPublished, publicUrl, o
                     return (
                         <div
                             key={template.id}
-                            className={`template - card ${isDeployed ? 'deployed' : 'not-deployed'} `}
+                            className={`template-card ${isDeployed ? 'deployed' : 'not-deployed'}`}
                             onClick={() => {
                                 // Card click → preview
                                 navigate(`/?portfolioStyle=${template.id}`);
