@@ -49,12 +49,47 @@ const normalizePortfolioData = (data) => {
 	// New format is an array of achievement objects
 	if (normalized.achievements && !Array.isArray(normalized.achievements)) {
 		const ach = normalized.achievements;
-		// Only convert if it has actual content (title or items)
 		if (ach.title || (ach.items && ach.items.length > 0)) {
 			normalized.achievements = [ach];
 		} else {
 			normalized.achievements = [];
 		}
+	}
+
+	// Normalize experience description: old backend may store as string or under 'desc' key
+	if (Array.isArray(normalized.experience)) {
+		normalized.experience = normalized.experience.map(job => {
+			let desc = job.description;
+			if (!Array.isArray(desc)) {
+				if (typeof desc === 'string' && desc.trim() !== '') {
+					desc = [desc]; // wrap string in array
+				} else if (Array.isArray(job.desc)) {
+					desc = job.desc;
+				} else if (typeof job.desc === 'string' && job.desc.trim() !== '') {
+					desc = [job.desc];
+				} else {
+					desc = ['']; // empty default so Experience.jsx doesn't crash
+				}
+			}
+			return { ...job, description: desc };
+		});
+	}
+
+	// Normalize project desc: ensure it's always an array
+	if (Array.isArray(normalized.projects)) {
+		normalized.projects = normalized.projects.map(proj => {
+			let desc = proj.desc;
+			if (!Array.isArray(desc)) {
+				if (typeof desc === 'string' && desc.trim() !== '') {
+					desc = [desc];
+				} else if (Array.isArray(proj.description)) {
+					desc = proj.description;
+				} else {
+					desc = [''];
+				}
+			}
+			return { ...proj, desc };
+		});
 	}
 
 	return normalized;
@@ -183,12 +218,8 @@ const AppContent = () => {
 		if (!data) return [];
 		const errors = [];
 
-		// Hero roles: only validate if user has a name (started filling data) AND there are empty roles
-		// alongside non-empty ones (meaning they added a role input but left it blank)
-		if (data.hero) {
-			const heroErrs = validateHero(data.hero);
-			heroErrs.forEach(e => errors.push(`Hero: ${e.message}`));
-		}
+		// Hero: roles are validated inline only (red borders in the Hero component).
+		// We do NOT block saving for empty roles — users may intentionally have no roles.
 
 		// Experience: only validate entries that exist
 		if (data.experience && data.experience.length > 0) {
@@ -260,9 +291,12 @@ const AppContent = () => {
 	const saveToSource = async () => {
 		if (!userData) return;
 
-		const errors = getValidationErrors(userData);
+		// Normalize in-memory data before validating (handles old format data loaded before this fix)
+		const normalizedData = normalizePortfolioData(userData);
+		const errors = getValidationErrors(normalizedData);
+		console.log('[Validation] errors:', errors); // DEBUG — remove after fix confirmed
 		if (errors.length > 0) {
-			addToast(`Please fix validaton errors before saving.`, 'error');
+			addToast(`⚠ ${errors[0]}`, 'error');
 			setValidationTrigger(prev => prev + 1);
 			// Scroll to the first error bubble
 			setTimeout(() => {
@@ -298,9 +332,10 @@ const AppContent = () => {
 		setIsDeploying(true);
 
 		// Block deploy if there are validation errors (same guard as saveToSource)
-		const errors = getValidationErrors(userData);
+		const normalizedData = normalizePortfolioData(userData);
+		const errors = getValidationErrors(normalizedData);
 		if (errors.length > 0) {
-			addToast('Please fix validation errors before deploying.', 'error');
+			addToast(`⚠ ${errors[0]}`, 'error');
 			setValidationTrigger(prev => prev + 1);
 			setTimeout(() => {
 				const firstError = document.querySelector('.error-bubble') || document.querySelector('.input-error');
