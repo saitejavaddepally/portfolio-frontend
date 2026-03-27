@@ -19,25 +19,28 @@ import { useEffect, useRef } from 'react';
 const useScrollReveal = (
     selector = '.reveal',
     visibleClass = 'reveal-visible',
-    options = { threshold: 0.08, rootMargin: '0px 0px -60px 0px' },
+    options = { threshold: 0, rootMargin: '0px 0px -40px 0px' },
     deps = []
 ) => {
     const observerRef = useRef(null);
 
     useEffect(() => {
-        // Disconnect previous observer before creating a new one
+        // Disconnect previous observer
         if (observerRef.current) {
             observerRef.current.disconnect();
             observerRef.current = null;
         }
 
-        // Wait one paint cycle so React has flushed the DOM
-        const timer = requestAnimationFrame(() => {
+        // Use a slight timeout to ensure React has painted all DOM nodes and
+        // CSS has applied initial styles (like opacity: 0).
+        const timer = setTimeout(() => {
             const elements = document.querySelectorAll(selector);
             if (!elements.length) return;
 
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
+                    // entry.isIntersecting is reliably computed by the browser
+                    // even after images load and pushing things around.
                     if (entry.isIntersecting) {
                         entry.target.classList.add(visibleClass);
                         observer.unobserve(entry.target);
@@ -46,23 +49,17 @@ const useScrollReveal = (
             }, options);
 
             elements.forEach(el => {
-                // Already in viewport? Reveal immediately without re-animating
-                const rect = el.getBoundingClientRect();
-                const inView = rect.top < window.innerHeight - 20 && rect.bottom > 0;
-                if (inView) {
-                    el.classList.add(visibleClass);
-                } else {
-                    // Remove stale visible class so it can re-animate (e.g. after edit mode)
-                    el.classList.remove(visibleClass);
-                    observer.observe(el);
-                }
+                // By removing the class first, we ensure re-animation is possible when toggling edit mode.
+                el.classList.remove(visibleClass);
+                // ALWAYS observe. The observer will immediately fire for elements already in view.
+                observer.observe(el);
             });
 
             observerRef.current = observer;
-        });
+        }, 100);
 
         return () => {
-            cancelAnimationFrame(timer);
+            clearTimeout(timer);
             if (observerRef.current) {
                 observerRef.current.disconnect();
                 observerRef.current = null;

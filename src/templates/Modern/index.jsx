@@ -7,7 +7,7 @@ import useScrollReveal from '../../hooks/useScrollReveal';
 // A completely different layout to prove the concept
 const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData, theme, toggleTheme }) => {
     // Using the new shared reveal settings for smoother animation timing
-    useScrollReveal('.reveal', 'reveal-visible', { threshold: 0.08, rootMargin: '0px 0px -60px 0px' }, [isEditing]);
+    useScrollReveal('.reveal', 'reveal-visible', undefined, [isEditing]);
     return (
         <div className="modern-template animate-fade-in">
             <nav className="modern-nav">

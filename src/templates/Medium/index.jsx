@@ -15,12 +15,7 @@ import useScrollReveal from '../../hooks/useScrollReveal';
 
 const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData, theme, toggleTheme, validationTrigger }) => {
     // Re-run whenever editing mode changes so newly revealed sections get observed
-    useScrollReveal(
-        '.reveal',
-        'reveal-visible',
-        { threshold: 0.08, rootMargin: '0px 0px -60px 0px' },
-        [isEditing]
-    );
+    useScrollReveal('.reveal', 'reveal-visible', undefined, [isEditing]);
 
     const shouldShow = (sectionData) => {
         if (isEditing) return true;
