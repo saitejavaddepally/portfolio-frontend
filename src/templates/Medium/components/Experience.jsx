@@ -115,7 +115,11 @@ const Experience = ({ data, isEditing, setUserData, validationTrigger }) => {
             )}
 
             {data.map((job, index) => (
-                <article className="job-item" key={index} style={{ position: 'relative' }}>
+                <article
+                    className={`job-item${!isEditing ? ` reveal reveal-delay-${Math.min(index + 1, 4)}` : ''}`}
+                    key={index}
+                    style={{ position: 'relative' }}
+                >
                     {isEditing && (
                         <button
                             onClick={() => removeJob(index)}

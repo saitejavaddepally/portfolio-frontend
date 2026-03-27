@@ -14,21 +14,30 @@ import useScrollReveal from '../../hooks/useScrollReveal';
 
 
 const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData, theme, toggleTheme, validationTrigger }) => {
-    // Re-run scroll observer whenever isEditing toggles, so sections that
-    // were missing their `.reveal` class (edit mode removes it) get re-observed.
-    useScrollReveal('.reveal', 'reveal-visible', { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }, [isEditing]);
+    // Re-run whenever editing mode changes so newly revealed sections get observed
+    useScrollReveal(
+        '.reveal',
+        'reveal-visible',
+        { threshold: 0.08, rootMargin: '0px 0px -60px 0px' },
+        [isEditing]
+    );
 
-    // Helper to check if a section should be visible
     const shouldShow = (sectionData) => {
         if (isEditing) return true;
         return sectionData && sectionData.length > 0;
     };
 
+    // Wrap a section's heading in reveal-fade, body in reveal with sequential delays
+    const revealClass = (variant = '', delay = 0) => {
+        if (isEditing) return '';
+        const base = variant ? `reveal ${variant}` : 'reveal';
+        return delay ? `${base} reveal-delay-${delay}` : base;
+    };
+
     return (
         <div className="medium-template animate-fade-in">
-            {/* ... Header ... */}
             <Header
-                data={data.header || { name: data.hero.name }} // Fallback
+                data={data.header || { name: data.hero.name }}
                 isEditing={isEditing}
                 updateData={updateData}
                 theme={theme}
@@ -36,6 +45,7 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
             />
 
             <main className="container">
+                {/* Hero — no reveal, it's above the fold */}
                 <Hero
                     data={data.hero}
                     isEditing={isEditing}
@@ -48,8 +58,9 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                     validationTrigger={validationTrigger}
                 />
 
+                {/* Experience — each job card self-animates (see Experience.jsx) */}
                 {shouldShow(data.experience) && (
-                    <div className={!isEditing ? "reveal" : ""}>
+                    <div>
                         <Experience
                             data={data.experience}
                             isEditing={isEditing}
@@ -59,8 +70,9 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                     </div>
                 )}
 
+                {/* Education — slightly delayed so it cascades after experience */}
                 {shouldShow(data.education) && (
-                    <div className={!isEditing ? "reveal reveal-delay-1" : ""}>
+                    <div className={revealClass('', 0)}>
                         <Education
                             data={data.education || []}
                             isEditing={isEditing}
@@ -70,8 +82,9 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                     </div>
                 )}
 
+                {/* Projects — each project card self-animates (see Projects.jsx) */}
                 {shouldShow(data.projects) && (
-                    <div className={!isEditing ? "reveal reveal-delay-2" : ""}>
+                    <div>
                         <Projects
                             data={data.projects}
                             isEditing={isEditing}
@@ -81,8 +94,9 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                     </div>
                 )}
 
+                {/* Achievements — scale in for visual variety */}
                 {shouldShow(data.achievements) && (
-                    <div className={!isEditing ? "reveal reveal-scale" : ""}>
+                    <div className={revealClass('reveal-scale', 0)}>
                         <Achievements
                             data={data.achievements}
                             isEditing={isEditing}
@@ -92,8 +106,9 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                     </div>
                 )}
 
+                {/* Skills — fade in (flat grid doesn't need vertical motion) */}
                 {shouldShow(data.skills) && (
-                    <div className={!isEditing ? "reveal reveal-delay-1" : ""}>
+                    <div className={revealClass('reveal-fade', 0)}>
                         <Skills
                             data={data.skills}
                             isEditing={isEditing}
@@ -102,8 +117,9 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                     </div>
                 )}
 
+                {/* Coding Profiles */}
                 {(isEditing || (data.codingProfiles && data.codingProfiles.length > 0)) && (
-                    <div className={!isEditing ? "reveal reveal-delay-2" : ""}>
+                    <div className={revealClass('', 0)}>
                         <CodingProfiles
                             data={data.codingProfiles || []}
                             isEditing={isEditing}
@@ -124,4 +140,3 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
 };
 
 export default MediumTemplate;
-

@@ -1,59 +1,71 @@
 import { useEffect, useRef } from 'react';
 
 /**
- * useScrollReveal - attaches an IntersectionObserver to all `.reveal` elements
- * and adds `reveal-visible` when they scroll into view.
+ * useScrollReveal
  *
- * Fixed issues:
- * 1. Re-runs whenever `deps` change (e.g. isEditing toggle, data changes) so
- *    newly rendered sections are always observed.
- * 2. Elements already in view on mount are revealed immediately.
- * 3. Cleans up the old observer before creating a new one.
+ * Attaches an IntersectionObserver to all elements matching `selector`
+ * and adds `visibleClass` the moment they scroll into view.
+ *
+ * Key behaviours:
+ * - Triggers slightly BEFORE the element reaches the viewport edge
+ *   (rootMargin: '-60px' bottom) so the animation completes as you arrive,
+ *   not after you've already scrolled past.
+ * - Re-runs whenever `deps` change (e.g. isEditing toggle) so newly
+ *   mounted elements are always observed.
+ * - Elements already in the viewport on mount are revealed immediately
+ *   (no animation delay for above-the-fold content).
+ * - Each element is unobserved after it animates (fire once).
  */
 const useScrollReveal = (
     selector = '.reveal',
     visibleClass = 'reveal-visible',
-    options = { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
+    options = { threshold: 0.08, rootMargin: '0px 0px -60px 0px' },
     deps = []
 ) => {
     const observerRef = useRef(null);
 
     useEffect(() => {
-        // Disconnect any previous observer
+        // Disconnect previous observer before creating a new one
         if (observerRef.current) {
             observerRef.current.disconnect();
+            observerRef.current = null;
         }
 
-        // Small delay so React finishes rendering the DOM before we query
-        const timer = setTimeout(() => {
+        // Wait one paint cycle so React has flushed the DOM
+        const timer = requestAnimationFrame(() => {
             const elements = document.querySelectorAll(selector);
+            if (!elements.length) return;
 
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add(visibleClass);
-                        observer.unobserve(entry.target); // animate once
+                        observer.unobserve(entry.target);
                     }
                 });
             }, options);
 
             elements.forEach(el => {
-                // If already fully visible in viewport, reveal immediately
+                // Already in viewport? Reveal immediately without re-animating
                 const rect = el.getBoundingClientRect();
-                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                const inView = rect.top < window.innerHeight - 20 && rect.bottom > 0;
+                if (inView) {
                     el.classList.add(visibleClass);
                 } else {
+                    // Remove stale visible class so it can re-animate (e.g. after edit mode)
+                    el.classList.remove(visibleClass);
                     observer.observe(el);
                 }
             });
 
             observerRef.current = observer;
-        }, 50); // 50ms is enough for a React paint cycle
+        });
 
         return () => {
-            clearTimeout(timer);
+            cancelAnimationFrame(timer);
             if (observerRef.current) {
                 observerRef.current.disconnect();
+                observerRef.current = null;
             }
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps

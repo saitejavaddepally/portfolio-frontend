@@ -55,7 +55,11 @@ const Projects = ({ data, isEditing, setUserData, validationTrigger }) => {
             </div>
 
             {data.map((project, index) => (
-                <article className="project-item" key={index} style={{ position: 'relative' }}>
+                <article
+                    className={`project-item${!isEditing ? ` reveal reveal-delay-${Math.min(index + 1, 4)}` : ''}`}
+                    key={index}
+                    style={{ position: 'relative' }}
+                >
                     {isEditing && (
                         <button
                             onClick={() => removeProject(index)}
