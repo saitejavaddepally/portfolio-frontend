@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import SharedLayout from '../components/SharedLayout';
 import AuthSidePanel from '../components/AuthSidePanel';
@@ -15,10 +15,6 @@ const LoginPage = ({ theme, toggleTheme }) => {
 
     const { login } = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
-
-    // Redirect to where they came from, or dashboard
-    const from = location.state?.from?.pathname || '/professional/dashboard';
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,18 +22,24 @@ const LoginPage = ({ theme, toggleTheme }) => {
         setLoading(true);
 
         try {
-            await login(email, password);
-            // Immediate redirect on success
-            navigate(from, { replace: true });
+            const data = await login(email, password);
+            const role = data.role || '';
+
+            // Always redirect based on the actual role of the user who just logged in.
+            // Never trust location.state.from — it may be from a different role's session.
+            if (role.toLowerCase().includes('recruiter')) {
+                navigate('/recruiter/dashboard', { replace: true });
+            } else {
+                navigate('/professional/dashboard', { replace: true });
+            }
         } catch (err) {
-            console.error("Login failed", err);
-            // Handle structured backend error: { errorCode, errorMessage, statusCode }
+            console.error('Login failed', err);
             if (err.response?.data) {
                 setError(err.response.data);
             } else if (err.message) {
                 setError(err.message);
             } else {
-                setError("Failed to login. Please check your credentials.");
+                setError('Failed to login. Please check your credentials.');
             }
         } finally {
             setLoading(false);

@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 import apiClient from '../services/apiClient';
 import Loader from '../components/Loader';
 
@@ -9,8 +10,9 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [accessToken, setAccessToken] = useState(null);
+    const navigate = useNavigate();
 
-    const handleTokenUpdate = (newAccessToken, newRefreshToken, role) => {
+    const handleTokenUpdate = useCallback((newAccessToken, newRefreshToken, role) => {
         setAccessToken(newAccessToken);
         localStorage.setItem('accessToken', newAccessToken);
 
@@ -18,36 +20,44 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('refreshToken', newRefreshToken);
         }
 
-        // Decode user from token OR use the role returned from backend if available
         try {
             const decoded = jwtDecode(newAccessToken);
             const userRole = role || decoded.role || decoded.authorities?.[0] || 'USER';
-
             setUser({
                 email: decoded.sub,
                 role: userRole
             });
         } catch (e) {
-            console.error("Failed to decode token", e);
+            console.error('Failed to decode token', e);
             if (role) {
-                setUser({
-                    email: "User",
-                    role: role
-                });
+                setUser({ email: 'User', role });
             }
         }
-    };
+    }, []);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         setAccessToken(null);
         setUser(null);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        // Let React Router's PrivateRoute handle the redirect to /login
-        // instead of a hard page reload (window.location.href) to prevent animation glitches.
-    };
+        navigate('/login', { replace: true });
+    }, [navigate]);
 
-    // Initial load: Check for tokens
+    // Listen for session expiry events dispatched by apiClient interceptor
+    useEffect(() => {
+        const handleSessionExpired = () => {
+            console.warn('[AuthContext] Session expired — logging out.');
+            setAccessToken(null);
+            setUser(null);
+            // Tokens already cleared by apiClient before dispatching
+            navigate('/login', { replace: true });
+        };
+
+        window.addEventListener('auth:session-expired', handleSessionExpired);
+        return () => window.removeEventListener('auth:session-expired', handleSessionExpired);
+    }, [navigate]);
+
+    // Initial load: restore auth state from localStorage
     useEffect(() => {
         const initAuth = async () => {
             const storedAccessToken = localStorage.getItem('accessToken');
@@ -55,31 +65,41 @@ export const AuthProvider = ({ children }) => {
 
             if (storedAccessToken) {
                 try {
-                    // Start with existing token
-                    handleTokenUpdate(storedAccessToken, null, null);
+                    // Check if token is still valid (not expired)
+                    const decoded = jwtDecode(storedAccessToken);
+                    const now = Date.now() / 1000;
+                    if (decoded.exp && decoded.exp > now) {
+                        handleTokenUpdate(storedAccessToken, null, null);
+                    } else {
+                        // Token expired — try refresh
+                        localStorage.removeItem('accessToken');
+                        throw new Error('Token expired');
+                    }
                 } catch (e) {
-                    console.error("Invalid stored access token", e);
-                    // If access token invalid, try refresh logic below
-                    localStorage.removeItem('accessToken');
+                    // Access token invalid/expired — try refresh token
+                    if (storedRefreshToken) {
+                        try {
+                            const response = await apiClient.post('/auth/refresh', { refreshToken: storedRefreshToken });
+                            const { accessToken: newAccess, refreshToken: newRefresh, role } = response.data;
+                            handleTokenUpdate(newAccess, newRefresh, role);
+                        } catch (refreshError) {
+                            console.error('Session restore failed', refreshError);
+                            localStorage.removeItem('accessToken');
+                            localStorage.removeItem('refreshToken');
+                            setUser(null);
+                        }
+                    } else {
+                        localStorage.removeItem('accessToken');
+                        setUser(null);
+                    }
                 }
             }
 
-            // If no access token (or invalid) but we have refresh token, try to refresh
-            if (!localStorage.getItem('accessToken') && storedRefreshToken) {
-                try {
-                    const response = await apiClient.post('/auth/refresh', { refreshToken: storedRefreshToken });
-                    const { accessToken: newAccess, refreshToken: newRefresh, role } = response.data;
-                    handleTokenUpdate(newAccess, newRefresh, role);
-                } catch (error) {
-                    console.error("Session restore failed", error);
-                    logout();
-                }
-            }
             setLoading(false);
         };
 
         initAuth();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const login = async (email, password) => {
         const response = await apiClient.post('/auth/login', { email, password });
@@ -89,13 +109,11 @@ export const AuthProvider = ({ children }) => {
     };
 
     const register = async (email, password, role) => {
-        // Step 1: Register and send OTP
         const response = await apiClient.post('/auth/register', { email, password, role });
         return response.data;
     };
 
     const verifyOtp = async (email, otp) => {
-        // Step 2: Verify OTP and get tokens
         const response = await apiClient.post('/auth/register/verify-otp', { email, otp });
         const { accessToken, refreshToken, role } = response.data;
         handleTokenUpdate(accessToken, refreshToken, role);
@@ -110,7 +128,7 @@ export const AuthProvider = ({ children }) => {
         register,
         verifyOtp,
         logout
-    }), [user, accessToken, loading]);
+    }), [user, accessToken, loading, logout]); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <AuthContext.Provider value={value}>
@@ -122,7 +140,7 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
-        throw new Error("useAuth must be used within an AuthProvider");
+        throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
 };

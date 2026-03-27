@@ -465,7 +465,7 @@ const AppContent = () => {
 				<Route
 					path="/professional/dashboard"
 					element={
-						<PrivateRoute>
+						<PrivateRoute requiredRole="professional">
 							<DashboardPage
 								theme={theme}
 								toggleTheme={toggleTheme}
@@ -483,7 +483,7 @@ const AppContent = () => {
 				<Route
 					path="/recruiter/dashboard"
 					element={
-						<PrivateRoute>
+						<PrivateRoute requiredRole="recruiter">
 							<RecruiterDashboardPage theme={theme} toggleTheme={toggleTheme} />
 						</PrivateRoute>
 					}
@@ -491,7 +491,7 @@ const AppContent = () => {
 				<Route
 					path="/recruiter/user/:id"
 					element={
-						<PrivateRoute>
+						<PrivateRoute requiredRole="recruiter">
 							<RecruiterUserPreviewPage theme={theme} toggleTheme={toggleTheme} />
 						</PrivateRoute>
 					}
@@ -499,7 +499,7 @@ const AppContent = () => {
 				<Route
 					path="/recruiter/search"
 					element={
-						<PrivateRoute>
+						<PrivateRoute requiredRole="recruiter">
 							<RecruiterSearch theme={theme} toggleTheme={toggleTheme} />
 						</PrivateRoute>
 					}
@@ -509,7 +509,7 @@ const AppContent = () => {
 				<Route
 					path="/recruiter/jobs"
 					element={
-						<PrivateRoute>
+						<PrivateRoute requiredRole="recruiter">
 							<RecruiterJobsPage theme={theme} toggleTheme={toggleTheme} />
 						</PrivateRoute>
 					}
@@ -517,8 +517,8 @@ const AppContent = () => {
 				<Route
 					path="/recruiter/post-job"
 					element={
-						<PrivateRoute>
-							<PostJobPage theme={theme} toggleTheme={toggleTheme} />
+						<PrivateRoute requiredRole="recruiter">
+						<PostJobPage theme={theme} toggleTheme={toggleTheme} />
 						</PrivateRoute>
 					}
 				/>

@@ -11,7 +11,7 @@ const apiClient = axios.create({
 // Request Interceptor: Attach Token
 apiClient.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('accessToken'); // Assuming 'accessToken' is the key
+        const token = localStorage.getItem('accessToken');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
@@ -20,7 +20,7 @@ apiClient.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Queue to hold requests while refreshing
+// Queue to hold requests while a token refresh is in progress
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -32,33 +32,44 @@ const processQueue = (error, token = null) => {
             prom.resolve(token);
         }
     });
-
     failedQueue = [];
 };
 
-// Response Interceptor: Handle 401
+/**
+ * Clears all auth state and navigates to /login using React Router.
+ * Uses a CustomEvent so AuthContext can react without a hard page reload.
+ */
+const forceLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    // Dispatch a custom event — AuthContext listens and calls logout() + navigate
+    window.dispatchEvent(new CustomEvent('auth:session-expired'));
+};
+
+// Response Interceptor: Handle 401 / 403 — attempt token refresh, or force logout
 apiClient.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
+        const status = error.response?.status;
 
-        if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
+        // Skip refresh logic for auth endpoints (login, register, refresh itself)
+        const isAuthEndpoint = (
+            originalRequest.url.includes('/auth/login') ||
+            originalRequest.url.includes('/auth/register') ||
+            originalRequest.url.includes('/auth/refresh')
+        );
 
-            // Skip refresh logic for login/register endpoints to allow actual 401s to reach the component
-            const isAuthRequest = originalRequest.url.includes('/auth/login') || originalRequest.url.includes('/auth/register');
-            if (isAuthRequest) {
-                return Promise.reject(error);
-            }
+        if ((status === 401 || status === 403) && !originalRequest._retry && !isAuthEndpoint) {
 
             if (isRefreshing) {
-                return new Promise(function (resolve, reject) {
+                // Queue this request until the refresh completes
+                return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
                 }).then(token => {
                     originalRequest.headers['Authorization'] = 'Bearer ' + token;
                     return apiClient(originalRequest);
-                }).catch(err => {
-                    return Promise.reject(err);
-                });
+                }).catch(err => Promise.reject(err));
             }
 
             originalRequest._retry = true;
@@ -66,27 +77,17 @@ apiClient.interceptors.response.use(
 
             try {
                 const refreshToken = localStorage.getItem('refreshToken');
-                if (!refreshToken) throw new Error("No refresh token");
+                if (!refreshToken) throw new Error('No refresh token available');
 
-                // We need to use a separate instance or fetch to avoid infinite loops if this fails
-                // But typically refresh calls are to a specific endpoint that might be public or valid with refresh token
-                // Here we essentially assume a straightforward refresh endpoint.
-
-                // NOTE: Using a direct axios call to avoid interceptors on the refresh call itself if possible,
-                // or just be careful. 
-                const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-                    refreshToken: refreshToken
-                });
-
+                // Use a bare axios instance to bypass our own interceptors on refresh
+                const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
                 const { accessToken, refreshToken: newRefreshToken } = response.data;
 
-                // Update Local Storage
                 localStorage.setItem('accessToken', accessToken);
                 if (newRefreshToken) {
                     localStorage.setItem('refreshToken', newRefreshToken);
                 }
 
-                // Update header
                 apiClient.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
                 originalRequest.headers['Authorization'] = 'Bearer ' + accessToken;
 
@@ -95,18 +96,14 @@ apiClient.interceptors.response.use(
 
             } catch (refreshError) {
                 processQueue(refreshError, null);
-                console.error("Session expired:", refreshError);
-                // Clear tokens and redirect
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
-                if (window.location.pathname !== '/login') {
-                    window.location.href = '/login';
-                }
+                console.warn('[apiClient] Refresh failed — session expired, logging out.', refreshError);
+                forceLogout();
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
             }
         }
+
         return Promise.reject(error);
     }
 );
