@@ -40,7 +40,6 @@
     color: var(--text-primary);
     font-family: 'Inter', sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
     transition: background-color 0.3s, color 0.3s;
     animation: modernFadeIn 0.5s ease both;
 }

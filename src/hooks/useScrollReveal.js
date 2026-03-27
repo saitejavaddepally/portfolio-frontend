@@ -19,7 +19,7 @@ import { useEffect, useRef } from 'react';
 const useScrollReveal = (
     selector = '.reveal',
     visibleClass = 'reveal-visible',
-    options = { threshold: 0, rootMargin: '0px 0px -40px 0px' },
+    options = { threshold: 0, rootMargin: '0px' },
     deps = []
 ) => {
     const observerRef = useRef(null);
