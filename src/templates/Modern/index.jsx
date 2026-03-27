@@ -6,7 +6,7 @@ import useScrollReveal from '../../hooks/useScrollReveal';
 
 // A completely different layout to prove the concept
 const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData, theme, toggleTheme }) => {
-    useScrollReveal();
+    useScrollReveal('.reveal', 'reveal-visible', { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }, [isEditing]);
     return (
         <div className="modern-template animate-fade-in">
             <nav className="modern-nav">
@@ -299,22 +299,25 @@ const ModernTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
 
             {/* Achievements Section */}
             {
-                (!isEditing && (!data.achievements || !data.achievements.items || data.achievements.items.length === 0)) ? null : (
+                (!isEditing && (!Array.isArray(data.achievements) || data.achievements.length === 0)) ? null : (
                     <section className="modern-section" id="achievements" style={{ background: 'var(--bg-secondary)' }}>
                         <div className="modern-container">
                             <h2 className="section-title">Achievements</h2>
-                            <div className="modern-card" style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-                                <span className="project-type-badge">{data.achievements.type}</span>
-                                <h3 style={{ fontSize: '2rem', margin: '1rem 0' }}>{data.achievements.title}</h3>
-                                <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginBottom: '1rem' }}>{data.achievements.org}</p>
-                                <p style={{ fontSize: '1.1rem', marginBottom: '2rem' }}>{data.achievements.description}</p>
-
-                                <ul className="modern-job-desc" style={{ textAlign: 'left', display: 'inline-block' }}>
-                                    {data.achievements?.items?.map((item, i) => (
-                                        <li key={i}>{item}</li>
-                                    ))}
-                                </ul>
-                            </div>
+                            {(Array.isArray(data.achievements) ? data.achievements : []).map((ach, index) => (
+                                <div key={index} className="modern-card" style={{ maxWidth: '800px', margin: '0 auto 1.5rem auto', textAlign: 'center' }}>
+                                    {ach.type && <span className="project-type-badge">{ach.type}</span>}
+                                    <h3 style={{ fontSize: '1.8rem', margin: '0.75rem 0' }}>{ach.title}</h3>
+                                    {ach.org && <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', marginBottom: '0.75rem' }}>{ach.org}</p>}
+                                    {ach.description && <p style={{ fontSize: '1rem', marginBottom: '1rem' }}>{ach.description}</p>}
+                                    {ach.items && ach.items.length > 0 && (
+                                        <ul className="modern-job-desc" style={{ textAlign: 'left', display: 'inline-block' }}>
+                                            {ach.items.map((item, i) => (
+                                                <li key={i}>{item}</li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            ))}
                         </div>
                     </section>
                 )

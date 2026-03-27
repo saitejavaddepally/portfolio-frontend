@@ -242,28 +242,32 @@ const InstagramTemplate = ({ data, theme, toggleTheme }) => {
                 {/* ── CREDITS (Achievements + Coding Profiles) ── */}
                 {activeTab === 'credits' && (
                     <div className="ig-feed">
-                        {/* Achievements card */}
-                        {data.achievements?.items && data.achievements.items.length > 0 && (
+                        {/* Achievements cards — one per entry */}
+                        {Array.isArray(data.achievements) && data.achievements.length > 0 && (
                             <>
                                 <div className="ig-feed-section-title">Achievements</div>
-                                <div className="ig-cred-card">
-                                    <div className="ig-cred-header">
-                                        <div className="ig-cred-icon" style={{ background: 'linear-gradient(135deg,#fbbc05,#f09433)' }}>
-                                            <span style={{ fontSize: '1.3rem' }}>🏆</span>
+                                {data.achievements.map((ach, index) => (
+                                    <div key={index} className="ig-cred-card">
+                                        <div className="ig-cred-header">
+                                            <div className="ig-cred-icon" style={{ background: 'linear-gradient(135deg,#fbbc05,#f09433)' }}>
+                                                <span style={{ fontSize: '1.3rem' }}>🏆</span>
+                                            </div>
+                                            <div>
+                                                <div className="ig-cred-title">{ach.title}</div>
+                                                {ach.org && <div className="ig-cred-sub">{ach.org}</div>}
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div className="ig-cred-title">{data.achievements.title || 'Achievements'}</div>
-                                            <div className="ig-cred-sub">{data.achievements.items.length} highlights</div>
-                                        </div>
+                                        {ach.items && ach.items.length > 0 && (
+                                            <div className="ig-cred-body">
+                                                <ul className="ig-cred-list">
+                                                    {ach.items.map((item, i) => (
+                                                        <li key={i}>{item}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="ig-cred-body">
-                                        <ul className="ig-cred-list">
-                                            {data.achievements.items.map((item, i) => (
-                                                <li key={i}>{item}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </div>
+                                ))}
                             </>
                         )}
 
@@ -295,7 +299,7 @@ const InstagramTemplate = ({ data, theme, toggleTheme }) => {
                             </>
                         )}
 
-                        {(!data.achievements?.items?.length && !data.codingProfiles?.length) && (
+                        {(!Array.isArray(data.achievements) || !data.achievements.length) && !data.codingProfiles?.length && (
                             <div className="ig-empty-grid">No credentials added yet.</div>
                         )}
                     </div>

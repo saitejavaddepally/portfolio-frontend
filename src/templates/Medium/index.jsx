@@ -14,7 +14,9 @@ import useScrollReveal from '../../hooks/useScrollReveal';
 
 
 const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserData, theme, toggleTheme, validationTrigger }) => {
-    useScrollReveal();
+    // Re-run scroll observer whenever isEditing toggles, so sections that
+    // were missing their `.reveal` class (edit mode removes it) get re-observed.
+    useScrollReveal('.reveal', 'reveal-visible', { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }, [isEditing]);
 
     // Helper to check if a section should be visible
     const shouldShow = (sectionData) => {
@@ -79,12 +81,13 @@ const MediumTemplate = ({ data, isEditing, updateData, onArrayUpdate, setUserDat
                     </div>
                 )}
 
-                {shouldShow(data.achievements?.items) && (
+                {shouldShow(data.achievements) && (
                     <div className={!isEditing ? "reveal reveal-scale" : ""}>
                         <Achievements
                             data={data.achievements}
                             isEditing={isEditing}
                             setUserData={setUserData}
+                            validationTrigger={validationTrigger}
                         />
                     </div>
                 )}

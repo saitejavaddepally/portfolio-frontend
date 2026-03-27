@@ -8,7 +8,13 @@ export const validateExperience = (job) => {
     if (!job.company || typeof job.company !== 'string' || job.company.trim() === '') errors.push('Company name is required.');
     if (!job.role || typeof job.role !== 'string' || job.role.trim() === '') errors.push('Job title / role is required.');
     if (!job.dates || typeof job.dates !== 'string' || job.dates.trim() === '') errors.push('Dates are required (e.g. Jan 2023 – Present).');
-    if (!job.description || job.description.every(d => typeof d !== 'string' || d.trim() === ''))
+    // Accept description as array OR desc as array/string
+    const desc = Array.isArray(job.description) ? job.description
+        : Array.isArray(job.desc) ? job.desc
+        : job.description ? [job.description]
+        : job.desc ? [job.desc]
+        : [];
+    if (desc.length === 0 || desc.every(d => typeof d !== 'string' || d.trim() === ''))
         errors.push('Add at least one description bullet point.');
     return errors;
 };
@@ -22,8 +28,10 @@ export const validateProject = (project) => {
         desc = project.description;
     } else if (Array.isArray(project.desc)) {
         desc = project.desc;
-    } else if (project.desc) {
+    } else if (project.desc && typeof project.desc === 'string' && project.desc.trim() !== '') {
         desc = [project.desc];
+    } else if (project.description && typeof project.description === 'string' && project.description.trim() !== '') {
+        desc = [project.description];
     } else {
         desc = [];
     }
@@ -46,27 +54,40 @@ export const validateCodingProfile = (profile) => {
     return errors;
 };
 
-export const validateAchievements = (achievements) => {
+/**
+ * Validates a single achievement entry (achievements is now an array of these).
+ * Title is the mandatory field.
+ */
+export const validateAchievement = (achievement) => {
     const errors = [];
-    if (!achievements.title || typeof achievements.title !== 'string' || achievements.title.trim() === '') errors.push('Achievement title is required.');
-    // items can be empty if user just wants a title or forgot to add items? 
-    // Actually, if title is present, items are optional now.
+    if (!achievement.title || typeof achievement.title !== 'string' || achievement.title.trim() === '')
+        errors.push('Achievement title is required.');
     return errors;
 };
 
+// Keep old export name as alias for backward compat (other templates may still use it)
+export const validateAchievements = validateAchievement;
+
 export const validateSkills = (skills) => {
-    // Skills can be empty
+    // Skills can be empty — no required validation
     return [];
 };
 
 export const validateHero = (hero) => {
     const errors = [];
     if (!hero) return errors;
-    // Flag any empty role entries (user clicked + Add but didn't type)
+    // Only flag empty role inputs if there is more than one role, or if the single role has been explicitly
+    // added (i.e. we only flag empty roles when the user has interacted — detected by having > 1 role
+    // or a non-empty role exists alongside empty ones).
     if (Array.isArray(hero.roles)) {
+        const nonEmptyCount = hero.roles.filter(r => r && r.trim() !== '').length;
         hero.roles.forEach((role, i) => {
             if (!role || role.trim() === '') {
-                errors.push({ field: `role_${i}`, message: 'Role cannot be empty. Fill it in or remove it.' });
+                // Only flag if there are other non-empty roles (meaning user added this intentionally)
+                // OR if the hero has a name (meaning they've started filling in data)
+                if (nonEmptyCount > 0 || (hero.name && hero.name.trim() !== '')) {
+                    errors.push({ field: `role_${i}`, message: 'Role cannot be empty. Fill it in or remove it.' });
+                }
             }
         });
     }

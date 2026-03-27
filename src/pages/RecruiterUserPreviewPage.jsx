@@ -45,7 +45,11 @@ const RecruiterUserPreviewPage = ({ theme, toggleTheme }) => {
             education: fetchedData.education || [],
             projects: fetchedData.projects || [],
             skills: fetchedData.skills || [],
-            achievements: { ...initialData.achievements, ...(fetchedData.achievements || {}) },
+            achievements: Array.isArray(fetchedData.achievements)
+                ? fetchedData.achievements
+                : (fetchedData.achievements && typeof fetchedData.achievements === 'object' && fetchedData.achievements.title)
+                    ? [fetchedData.achievements]  // Migrate old single-object format
+                    : [],
             socials: fetchedData.socials || initialData.socials,
             footer: { ...initialData.footer, ...(fetchedData.footer || {}) },
             email: rawUserObject.email || rawUserObject.userData?.email || '',

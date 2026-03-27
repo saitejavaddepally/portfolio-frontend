@@ -23,14 +23,7 @@ export const initialData = {
   ],
   "experience": [],
   "projects": [],
-  "achievements": {
-    "type": "Featured",
-    "title": "",
-    "org": "",
-    "image": "",
-    "description": "",
-    "items": []
-  },
+  "achievements": [],
   "education": [],
   "skills": [],
   "footer": {

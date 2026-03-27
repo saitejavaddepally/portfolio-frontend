@@ -114,13 +114,19 @@ const TerminalTemplate = ({ data, isEditing, setUserData, theme, toggleTheme }) 
             cmd: 'cat achievements.txt',
             output: (
                 <div className="term-text">
-                    {data.achievements?.title && <div style={{ color: '#e3b341', marginBottom: '0.5rem', fontWeight: 'bold' }}>{data.achievements.title}:</div>}
-                    {data.achievements?.items && data.achievements.items.length > 0
-                        ? <ul style={{ paddingLeft: '1.2rem', margin: 0 }}>
-                            {data.achievements.items.map((item, i) => (
-                                <li key={i}>{item}</li>
-                            ))}
-                        </ul>
+                    {Array.isArray(data.achievements) && data.achievements.length > 0
+                        ? data.achievements.map((ach, i) => (
+                            <div key={i} style={{ marginBottom: '0.75rem' }}>
+                                <div style={{ color: '#e3b341', marginBottom: '0.25rem', fontWeight: 'bold' }}>{ach.title}{ach.org ? ` — ${ach.org}` : ''}</div>
+                                {ach.items && ach.items.length > 0 && (
+                                    <ul style={{ paddingLeft: '1.2rem', margin: 0 }}>
+                                        {ach.items.map((item, j) => (
+                                            <li key={j}>{item}</li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                        ))
                         : <span style={{ color: '#8b949e' }}>(no achievements added)</span>
                     }
                 </div>

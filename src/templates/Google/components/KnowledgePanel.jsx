@@ -47,12 +47,12 @@ const KnowledgePanel = ({ userData }) => {
                 )}
 
                 {/* Achievements */}
-                {achievements?.items && achievements.items.length > 0 && (
+                {Array.isArray(achievements) && achievements.length > 0 && (
                     <div className="panel-row">
                         <span className="panel-row-icon" style={{ color: '#fbbc05' }}>{Icons.award}</span>
                         <div>
-                            <span className="panel-row-label">{achievements.title || 'Achievements'}</span>
-                            <div className="panel-row-value">{achievements.items.length} recognition{achievements.items.length !== 1 ? 's' : ''}</div>
+                            <span className="panel-row-label">Achievements</span>
+                            <div className="panel-row-value">{achievements.length} recognition{achievements.length !== 1 ? 's' : ''}</div>
                         </div>
                     </div>
                 )}

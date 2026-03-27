@@ -29,7 +29,7 @@ const GoogleTemplate = ({ data, theme, toggleTheme }) => {
         Work: data.experience?.length || 0,
         Projects: data.projects?.length || 0,
         Education: data.education?.length || 0,
-        Achievements: data.achievements?.items?.length || 0,
+        Achievements: Array.isArray(data.achievements) ? data.achievements.length : 0,
         Profiles: data.codingProfiles?.length || 0,
     }), [data]);
 
@@ -132,17 +132,17 @@ const GoogleTemplate = ({ data, theme, toggleTheme }) => {
 
     const renderAchievements = () => (
         <>
-            {data.achievements?.items && data.achievements.items.length > 0 ? (
+            {Array.isArray(data.achievements) && data.achievements.length > 0 ? (
                 <>
                     <SectionLabel iconKey="achievements" label="Achievements & Credentials" />
-                    {data.achievements.items.map((item, i) => (
+                    {data.achievements.map((ach, i) => (
                         <SearchResult
                             key={`ach-${i}`}
                             type="Achievement"
-                            title={item}
-                            company={data.achievements.org || data.achievements.title}
-                            subtitle={data.achievements.type || 'Recognition'}
-                            description={[]}
+                            title={ach.title}
+                            company={ach.org || ''}
+                            subtitle={ach.type || 'Recognition'}
+                            description={ach.description ? [ach.description] : (ach.items || [])}
                             url="#"
                         />
                     ))}

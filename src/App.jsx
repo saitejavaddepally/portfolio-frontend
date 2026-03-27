@@ -31,10 +31,34 @@ import {
 	validateProject,
 	validateEducation,
 	validateCodingProfile,
-	validateAchievements,
+	validateAchievement,
 	validateSkills,
 	validateHero
 } from './utils/validateSection';
+
+/**
+ * Normalizes portfolio data from the API to ensure all fields match the current schema.
+ * This handles backward compatibility (e.g., achievements used to be a single object,
+ * now it is an array).
+ */
+const normalizePortfolioData = (data) => {
+	if (!data) return data;
+	const normalized = { ...data };
+
+	// Migrate achievements: old format was a single object { title, items, ... }
+	// New format is an array of achievement objects
+	if (normalized.achievements && !Array.isArray(normalized.achievements)) {
+		const ach = normalized.achievements;
+		// Only convert if it has actual content (title or items)
+		if (ach.title || (ach.items && ach.items.length > 0)) {
+			normalized.achievements = [ach];
+		} else {
+			normalized.achievements = [];
+		}
+	}
+
+	return normalized;
+};
 
 // AppContent handles the main logic requiring AuthContext
 const AppContent = () => {
@@ -103,13 +127,13 @@ const AppContent = () => {
 						const isPublished = portfolio.published || !!portfolio.publicSlug || !!pData.slug;
 						const activeTemplate = portfolio.activeTemplate || pData.activeTemplate || 'medium';
 
-						setUserData({
+						setUserData(normalizePortfolioData({
 							...pData,
 							_id: dataToProcess.id || dataToProcess.userData?.id,
 							slug: slug,
 							isPublished: isPublished,
 							activeTemplate: activeTemplate
-						});
+						}));
 					}
 					else if (responseData && responseData.data === null) {
 						setUserData(defaultTemplate);
@@ -122,16 +146,16 @@ const AppContent = () => {
 						const isPublished = responseData.isPublished || responseData.published || !!slug;
 						const activeTemplate = responseData.activeTemplate || responseData.data.activeTemplate;
 
-						setUserData({
+						setUserData(normalizePortfolioData({
 							...responseData.data,
 							slug: slug,
 							_id: responseData._id,
 							activeTemplate: activeTemplate,
 							isPublished: isPublished
-						});
+						}));
 					}
 					else if (responseData && responseData.hero) {
-						setUserData(responseData);
+						setUserData(normalizePortfolioData(responseData));
 					}
 					else {
 						setUserData(defaultTemplate);
@@ -158,62 +182,60 @@ const AppContent = () => {
 	const getValidationErrors = (data) => {
 		if (!data) return [];
 		const errors = [];
-		// Hero roles
+
+		// Hero roles: only validate if user has a name (started filling data) AND there are empty roles
+		// alongside non-empty ones (meaning they added a role input but left it blank)
 		if (data.hero) {
 			const heroErrs = validateHero(data.hero);
 			heroErrs.forEach(e => errors.push(`Hero: ${e.message}`));
 		}
-		// Experience
-		if (data.experience) {
+
+		// Experience: only validate entries that exist
+		if (data.experience && data.experience.length > 0) {
 			data.experience.forEach((job, i) => {
 				const errs = validateExperience(job);
 				if (errs.length) errors.push(`Experience #${i + 1}: ${errs[0]}`);
 			});
 		}
-		// Projects
-		if (data.projects) {
+
+		// Projects: only validate entries that exist
+		if (data.projects && data.projects.length > 0) {
 			data.projects.forEach((proj, i) => {
 				const errs = validateProject(proj);
 				if (errs.length) errors.push(`Project #${i + 1}: ${errs[0]}`);
 			});
 		}
-		// Education
-		if (data.education) {
+
+		// Education: only validate entries that exist
+		if (data.education && data.education.length > 0) {
 			data.education.forEach((edu, i) => {
 				const errs = validateEducation(edu);
 				if (errs.length) errors.push(`Education #${i + 1}: ${errs[0]}`);
 			});
 		}
-		// Achievements
-		if (data.achievements?.items?.length > 0 || data.achievements?.title) {
-			// Only validate if section is active/being used? 
-			// Logic: if present, must be valid. But achievements is an object in initialData.
-			// If title is present, validate. Or if items present.
-			const errs = validateAchievements(data.achievements);
-			if (errs.length > 0 && (data.activeTemplate === 'medium' || data.achievements.items.length > 0)) {
-				// only force validation if it's being used? 
-				// Actually, validate achievements only if it has content presumably?
-				// But user asked for validation.
-				// If title is empty but items exist -> error.
-				// If items empty -> error.
-				// Let's rely on validateAchievements.
-				if (errs.length) errors.push(`Achievements: ${errs[0]}`);
-			}
+
+		// Achievements: iterate array, validate each entry that has been started
+		if (data.achievements && data.achievements.length > 0) {
+			data.achievements.forEach((ach, i) => {
+				const errs = validateAchievement(ach);
+				if (errs.length) errors.push(`Achievement #${i + 1}: ${errs[0]}`);
+			});
 		}
-		// Skills
+
+		// Skills: validateSkills always returns [] — kept for future use
 		if (data.skills && data.skills.length > 0) {
-			// If skills array exists, check if empty? initialData has empty array.
-			// validateSkills checks length > 0.
 			const errs = validateSkills(data.skills);
 			if (errs.length) errors.push(`Skills: ${errs[0]}`);
 		}
-		// Coding Profiles
-		if (data.codingProfiles) {
+
+		// Coding Profiles: only validate entries that exist
+		if (data.codingProfiles && data.codingProfiles.length > 0) {
 			data.codingProfiles.forEach((prof, i) => {
 				const errs = validateCodingProfile(prof);
 				if (errs.length) errors.push(`Coding Profile #${i + 1}: ${errs[0]}`);
 			});
 		}
+
 		return errors;
 	};
 

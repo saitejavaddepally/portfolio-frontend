@@ -235,7 +235,7 @@ const Projects = ({ data, isEditing, setUserData, validationTrigger }) => {
                             projects: [...prev.projects, {
                                 title: "",
                                 type: "",
-                                desc: "",
+                                desc: [""],
                                 tags: [""],
                                 link: ""
                             }]
