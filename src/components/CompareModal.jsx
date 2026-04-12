@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { compareCandidates } from '../services/recruiterApi';
 import { useToast } from '../context/ToastContext';
 import ComparisonResults from './ComparisonResults';
@@ -62,7 +63,7 @@ const CompareModal = ({ isOpen, selectedCandidates = [], jobDescription = '', on
         };
     });
 
-    return (
+    return createPortal(
         <div className="compare-modal-overlay" onClick={handleClose}>
             <div className="compare-modal" onClick={(e) => e.stopPropagation()}>
                 {/* Close Button */}
@@ -148,7 +149,8 @@ const CompareModal = ({ isOpen, selectedCandidates = [], jobDescription = '', on
                     </>
                 )}
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

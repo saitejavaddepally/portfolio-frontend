@@ -15,8 +15,6 @@
     padding: 20px;
     animation: fadeIn 0.2s ease-out;
     overflow-y: auto;
-    top: 0 !important;
-    left: 0 !important;
 }
 
 @keyframes fadeIn {
