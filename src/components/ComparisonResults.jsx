@@ -9,23 +9,87 @@ import '../css/CompareModal.css';
  * @param {Function} onClose - Callback to close modal
  */
 const ComparisonResults = ({ data, selectedCandidates, onNewComparison, onClose }) => {
-    // Extract data structure (adapt based on backend response format)
-    const ranking = data?.ranking || [];
+    const rankedCandidates = Array.isArray(data?.ranked_candidates) ? data.ranked_candidates : [];
+    const legacyRanking = Array.isArray(data?.ranking) ? data.ranking : [];
     const summary = data?.summary || data?.comparisonSummary || '';
-    const detailed = data?.detailed || data?.detailedComparison || [];
+    const detailed = Array.isArray(data?.detailed) ? data.detailed : (Array.isArray(data?.detailedComparison) ? data.detailedComparison : []);
 
-    // Helper to get candidate name
-    const getCandidateName = (email) => {
-        return email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    const deriveNameFromEmail = (email = '') => (
+        email
+            ? email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
+            : 'Candidate'
+    );
+
+    const selectedById = Object.fromEntries(
+        (selectedCandidates || [])
+            .filter((candidate) => candidate?.id)
+            .map((candidate) => [String(candidate.id), candidate])
+    );
+
+    const selectedByEmail = Object.fromEntries(
+        (selectedCandidates || [])
+            .filter((candidate) => candidate?.email || candidate?.userEmail)
+            .map((candidate) => [candidate.email || candidate.userEmail, candidate])
+    );
+
+    const formatScore = (score) => {
+        if (score === null || score === undefined || Number.isNaN(Number(score))) return null;
+
+        const numericScore = Number(score);
+        if (numericScore <= 10) {
+            return `${numericScore.toFixed(1)}/10`;
+        }
+
+        return `${Math.round(numericScore)}%`;
     };
 
-    // Helper to get color for score
     const getScoreColor = (score) => {
-        if (score >= 80) return '#22c55e';
-        if (score >= 60) return '#f97316';
-        if (score >= 40) return '#eab308';
+        if (score === null || score === undefined || Number.isNaN(Number(score))) return '#94a3b8';
+
+        const normalizedScore = Number(score) <= 10 ? Number(score) * 10 : Number(score);
+        if (normalizedScore >= 80) return '#22c55e';
+        if (normalizedScore >= 60) return '#f97316';
+        if (normalizedScore >= 40) return '#eab308';
         return '#94a3b8';
     };
+
+    const normalizedRankedCandidates = rankedCandidates.map((candidate, index) => {
+        const selectedMatch = selectedById[String(candidate.id)] || selectedByEmail[candidate.email];
+
+        return {
+            key: candidate.id || candidate.email || index,
+            id: candidate.id || selectedMatch?.id || '',
+            name: candidate.name || selectedMatch?.name || deriveNameFromEmail(candidate.email || selectedMatch?.email || selectedMatch?.userEmail || ''),
+            email: candidate.email || selectedMatch?.email || selectedMatch?.userEmail || '',
+            score: candidate.score,
+            reason: candidate.reason || '',
+        };
+    });
+
+    const normalizedLegacyRanking = legacyRanking.map((item, index) => {
+        if (typeof item === 'string') {
+            return {
+                key: `${item}-${index}`,
+                id: '',
+                name: deriveNameFromEmail(item),
+                email: item,
+                score: null,
+                reason: '',
+            };
+        }
+
+        return {
+            key: item.id || item.email || item.candidate || index,
+            id: item.id || '',
+            name: item.name || deriveNameFromEmail(item.email || item.candidate || ''),
+            email: item.email || item.candidate || '',
+            score: item.score ?? item.match_score ?? item.matchScore ?? null,
+            reason: item.reason || '',
+        };
+    });
+
+    const rankingItems = normalizedRankedCandidates.length > 0 ? normalizedRankedCandidates : normalizedLegacyRanking;
+    const hasRankedCandidatesResponse = normalizedRankedCandidates.length > 0;
 
     return (
         <div className="comparison-results">
@@ -36,7 +100,7 @@ const ComparisonResults = ({ data, selectedCandidates, onNewComparison, onClose 
             </div>
 
             {/* Ranking Section */}
-            {ranking && ranking.length > 0 && (
+            {rankingItems.length > 0 && (
                 <div className="compare-modal-section">
                     <h3 className="compare-section-title">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '8px', verticalAlign: 'middle' }}>
@@ -45,18 +109,22 @@ const ComparisonResults = ({ data, selectedCandidates, onNewComparison, onClose 
                         Ranking
                     </h3>
                     <div className="results-ranking">
-                        {ranking.map((item, idx) => {
-                            const candidateName = typeof item === 'string' ? getCandidateName(item) : getCandidateName(item.email || item.candidate || '');
-                            const score = typeof item === 'object' ? (item.score || item.match_score || item.matchScore || 0) : 0;
+                        {rankingItems.map((candidate, idx) => {
+                            const scoreLabel = formatScore(candidate.score);
                             return (
-                                <div key={idx} className="ranking-item">
+                                <div key={candidate.key} className="ranking-item">
                                     <div className="ranking-position">{idx + 1}</div>
                                     <div className="ranking-info">
-                                        <h4>{candidateName}</h4>
+                                        <div className="ranking-title-row">
+                                            <h4>{candidate.name}</h4>
+                                            {candidate.id && <span className="ranking-id-badge">ID: {candidate.id}</span>}
+                                        </div>
+                                        {candidate.email && <p className="ranking-email">{candidate.email}</p>}
+                                        {candidate.reason && <p className="ranking-reason">{candidate.reason}</p>}
                                     </div>
-                                    {score > 0 && (
-                                        <div className="ranking-score" style={{ color: getScoreColor(score) }}>
-                                            {Math.round(score)}%
+                                    {scoreLabel && (
+                                        <div className="ranking-score" style={{ color: getScoreColor(candidate.score) }}>
+                                            {scoreLabel}
                                         </div>
                                     )}
                                 </div>
@@ -67,7 +135,7 @@ const ComparisonResults = ({ data, selectedCandidates, onNewComparison, onClose 
             )}
 
             {/* Summary Section */}
-            {summary && (
+            {!hasRankedCandidatesResponse && summary && (
                 <div className="compare-modal-section">
                     <h3 className="compare-section-title">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '8px', verticalAlign: 'middle' }}>
@@ -82,7 +150,7 @@ const ComparisonResults = ({ data, selectedCandidates, onNewComparison, onClose 
             )}
 
             {/* Detailed Comparison */}
-            {detailed && detailed.length > 0 && (
+            {!hasRankedCandidatesResponse && detailed.length > 0 && (
                 <div className="compare-modal-section">
                     <h3 className="compare-section-title">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '8px', verticalAlign: 'middle' }}>
@@ -123,6 +191,14 @@ const ComparisonResults = ({ data, selectedCandidates, onNewComparison, onClose 
                                 </div>
                             </div>
                         ))}
+                    </div>
+                </div>
+            )}
+
+            {!hasRankedCandidatesResponse && !summary && detailed.length === 0 && rankingItems.length === 0 && (
+                <div className="compare-modal-section">
+                    <div className="results-summary">
+                        <p>No comparison data was returned.</p>
                     </div>
                 </div>
             )}
