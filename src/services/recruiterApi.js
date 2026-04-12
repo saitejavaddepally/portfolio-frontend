@@ -11,3 +11,17 @@ export const searchCandidates = async (query) => {
     });
     return Array.isArray(response.data) ? response.data : [];
 };
+
+/**
+ * Compare selected candidates against a job description.
+ * @param {string} jobDescription - Job description text
+ * @param {Array<{email: string}>} candidates - List of candidates with email
+ * @returns {Promise<Object>} Comparison results from backend
+ */
+export const compareCandidates = async (jobDescription, candidates) => {
+    const response = await apiClient.post('/recruiter/compare', {
+        jobDescription: jobDescription.trim(),
+        candidates: candidates.map(c => ({ email: c.userEmail || c.email })),
+    });
+    return response.data;
+};

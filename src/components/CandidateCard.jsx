@@ -9,8 +9,21 @@ const scoreTheme = (pct) => {
     return { accent: '#94a3b8', bg: 'rgba(148,163,184,0.12)', label: 'Low' };
 };
 
-const CandidateCard = ({ userEmail, score, onViewProfile, rank }) => {
-    const handleCardClick = () => onViewProfile?.();
+const CandidateCard = ({ userEmail, score, onViewProfile, rank, isSelected, onSelect }) => {
+    const handleCardClick = (e) => {
+        // If clicking on checkbox, don't also trigger profile view
+        if (e.target.closest('.candidate-card-checkbox')) {
+            e.stopPropagation();
+            return;
+        }
+        onViewProfile?.();
+    };
+
+    const handleCheckboxChange = (e) => {
+        e.stopPropagation();
+        onSelect?.(userEmail, !isSelected);
+    };
+
     const pct = Math.round((score || 0) * 100);
     const theme = scoreTheme(pct);
     const [barWidth, setBarWidth] = useState(0);
@@ -28,7 +41,21 @@ const CandidateCard = ({ userEmail, score, onViewProfile, rank }) => {
     }, [pct]);
 
     return (
-        <div className="candidate-card" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
+        <div 
+            className={`candidate-card ${isSelected ? 'selected' : ''}`}
+            onClick={handleCardClick}
+            style={{ cursor: 'pointer' }}
+        >
+            {/* Selection Checkbox */}
+            <div className="candidate-card-checkbox">
+                <input
+                    type="checkbox"
+                    checked={isSelected || false}
+                    onChange={handleCheckboxChange}
+                    aria-label={`Select ${nameFromEmail}`}
+                />
+            </div>
+
             {/* Rank badge */}
             {rank !== undefined && (
                 <div className="candidate-rank">#{rank + 1}</div>

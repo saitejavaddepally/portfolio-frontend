@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SharedLayout from '../components/SharedLayout';
 import CandidateCard from '../components/CandidateCard';
+import CompareModal from '../components/CompareModal';
 import { searchCandidates } from '../services/recruiterApi';
 import '../css/Recruiter.css';
 
@@ -38,6 +39,8 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [searched, setSearched] = useState(false);
+    const [selectedCandidates, setSelectedCandidates] = useState({});
+    const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
     const debounceRef = useRef(null);
     const inputRef = useRef(null);
     const didAutoSearch = useRef(false);
@@ -66,6 +69,31 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
             setLoading(false);
         }
     }, [navigate]);
+
+    /* Candidate selection handler */
+    const handleSelectCandidate = useCallback((userEmail, isSelected) => {
+        setSelectedCandidates(prev => {
+            const updated = { ...prev };
+            if (isSelected) {
+                updated[userEmail] = isSelected;
+            } else {
+                delete updated[userEmail];
+            }
+            return updated;
+        });
+    }, []);
+
+    /* Get selected candidates data for comparison */
+    const getSelectedCandidatesData = useCallback(() => {
+        return results.filter(r => selectedCandidates[r.userEmail]).map(r => ({
+            userEmail: r.userEmail,
+            score: r.score,
+            userId: r.userId,
+        }));
+    }, [results, selectedCandidates]);
+
+    const selectedCount = Object.keys(selectedCandidates).length;
+    const canCompare = selectedCount >= 2;
 
     /* Read ?q= param from URL and auto-search on mount */
     useEffect(() => {
@@ -233,7 +261,35 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                                     <span>
                                         <strong>{results.length}</strong> candidate{results.length !== 1 ? 's' : ''} matched · ranked by best fit
                                     </span>
+                                    {selectedCount > 0 && (
+                                        <span className="selection-indicator">
+                                            · {selectedCount} selected
+                                        </span>
+                                    )}
                                 </div>
+
+                                {canCompare && (
+                                    <div className="compare-banner">
+                                        <div className="compare-banner-content">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M9 3H5a2 2 0 0 0-2 2v4m0 0v10a2 2 0 0 0 2 2h4m0-16h6a2 2 0 0 1 2 2v4m0 0v10a2 2 0 0 1-2 2h-4m0-16v16" />
+                                            </svg>
+                                            <p>
+                                                <strong>{selectedCount}</strong> candidate{selectedCount !== 1 ? 's' : ''} selected — ready to compare
+                                            </p>
+                                        </div>
+                                        <button
+                                            className="compare-action-btn"
+                                            onClick={() => setIsCompareModalOpen(true)}
+                                        >
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '6px' }}>
+                                                <circle cx="11" cy="11" r="8" />
+                                                <path d="M21 21l-4.35-4.35" />
+                                            </svg>
+                                            Compare Candidates
+                                        </button>
+                                    </div>
+                                )}
 
                                 <div className="candidate-grid">
                                     {results.map((r, idx) => (
@@ -246,6 +302,8 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                                                 userEmail={r.userEmail}
                                                 score={r.score}
                                                 rank={idx}
+                                                isSelected={selectedCandidates[r.userEmail] || false}
+                                                onSelect={handleSelectCandidate}
                                                 onViewProfile={() => navigate(`/recruiter/user/${r.userId}`)}
                                             />
                                         </div>
@@ -276,6 +334,13 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
 
                 </div>
             </div>
+
+            <CompareModal
+                isOpen={isCompareModalOpen}
+                selectedCandidates={getSelectedCandidatesData()}
+                jobDescription={query}
+                onClose={() => setIsCompareModalOpen(false)}
+            />
         </SharedLayout>
     );
 };

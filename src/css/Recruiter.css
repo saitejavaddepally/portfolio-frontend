@@ -378,6 +378,76 @@
     margin-bottom: 1.25rem;
 }
 
+/* ── Compare Banner ───────────────────────────────────── */
+.compare-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(129, 140, 248, 0.1));
+    border: 1px solid #38bdf8;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    animation: slideDown 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.compare-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    color: #38bdf8;
+}
+
+.compare-banner-content svg {
+    flex-shrink: 0;
+    color: #38bdf8;
+}
+
+.compare-banner-content p {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.compare-action-btn {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.compare-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(56, 189, 248, 0.3);
+}
+
+.compare-action-btn:active {
+    transform: translateY(0);
+}
+
 .candidate-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -633,6 +703,38 @@
     opacity: 0.9;
     transform: translateY(-1px);
     box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+}
+
+/* ── Candidate Card Checkbox ────────────────────────────── */
+.candidate-card-checkbox {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+}
+
+.candidate-card-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #38bdf8;
+    transition: transform 0.15s;
+}
+
+.candidate-card-checkbox input[type="checkbox"]:hover {
+    transform: scale(1.15);
+}
+
+.candidate-card.selected {
+    border-color: #38bdf8 !important;
+    background: rgba(56, 189, 248, 0.05) !important;
+}
+
+/* ── Selection Indicator ────────────────────────────────── */
+.selection-indicator {
+    color: #38bdf8;
+    font-weight: 600;
+    margin-left: auto;
 }
 
 /* ── Recruiter Dashboard "search" nav button ────────────── */
