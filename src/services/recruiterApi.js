@@ -19,9 +19,16 @@ export const searchCandidates = async (query) => {
  * @returns {Promise<Object>} Comparison results from backend
  */
 export const compareCandidates = async (jobDescription, candidates) => {
-    const response = await apiClient.post('/recruiter/candidates/compare', {
+    const token = localStorage.getItem('accessToken');
+    const payload = {
         jobDescription: jobDescription.trim(),
         candidates: candidates.map(c => ({ email: c.userEmail || c.email })),
-    });
+    };
+
+    const response = await apiClient.post(
+        '/recruiter/candidates/compare',
+        payload,
+        token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+    );
     return response.data;
 };
