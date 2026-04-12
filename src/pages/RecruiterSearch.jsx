@@ -6,6 +6,18 @@ import CompareModal from '../components/CompareModal';
 import { searchCandidates } from '../services/recruiterApi';
 import '../css/Recruiter.css';
 
+const deriveCandidateName = (candidate = {}) => {
+    if (candidate.name?.trim()) return candidate.name.trim();
+    if (candidate.userName?.trim()) return candidate.userName.trim();
+
+    const email = candidate.userEmail || candidate.email || '';
+    return email
+        ? email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
+        : 'Candidate';
+};
+
+    const getCandidateEmail = (candidate = {}) => candidate.userEmail || candidate.email || '';
+
 /* ── Inline spinner ──────────────────────────────────────────── */
 const SearchSpinner = () => (
     <div className="search-spinner-wrapper">
@@ -71,13 +83,13 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
     }, [navigate]);
 
     /* Candidate selection handler */
-    const handleSelectCandidate = useCallback((userEmail, isSelected) => {
+    const handleSelectCandidate = useCallback((email, isSelected) => {
         setSelectedCandidates(prev => {
             const updated = { ...prev };
             if (isSelected) {
-                updated[userEmail] = isSelected;
+                updated[email] = isSelected;
             } else {
-                delete updated[userEmail];
+                delete updated[email];
             }
             return updated;
         });
@@ -85,10 +97,13 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
 
     /* Get selected candidates data for comparison */
     const getSelectedCandidatesData = useCallback(() => {
-        return results.filter(r => selectedCandidates[r.userEmail]).map(r => ({
-            userEmail: r.userEmail,
-            score: r.score,
-            userId: r.userId,
+        return results.filter((candidate) => selectedCandidates[getCandidateEmail(candidate)]).map((candidate) => ({
+            id: candidate.id || candidate.userId || '',
+            name: deriveCandidateName(candidate),
+            email: getCandidateEmail(candidate),
+            userEmail: getCandidateEmail(candidate),
+            score: candidate.score,
+            userId: candidate.userId,
         }));
     }, [results, selectedCandidates]);
 
@@ -299,10 +314,11 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                                             style={{ animationDelay: `${idx * 0.07}s` }}
                                         >
                                             <CandidateCard
-                                                userEmail={r.userEmail}
+                                                name={deriveCandidateName(r)}
+                                                userEmail={getCandidateEmail(r)}
                                                 score={r.score}
                                                 rank={idx}
-                                                isSelected={selectedCandidates[r.userEmail] || false}
+                                                isSelected={selectedCandidates[getCandidateEmail(r)] || false}
                                                 onSelect={handleSelectCandidate}
                                                 onViewProfile={() => navigate(`/recruiter/user/${r.userId}`)}
                                             />

@@ -48,7 +48,19 @@ const CompareModal = ({ isOpen, selectedCandidates = [], jobDescription = '', on
         onClose?.();
     };
 
-    const candidateEmails = selectedCandidates.map(c => c.userEmail || c.email);
+    const displayCandidates = selectedCandidates.map((candidate) => {
+        const email = candidate.userEmail || candidate.email || '';
+        const name = candidate.name?.trim()
+            || (email
+                ? email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
+                : 'Candidate');
+
+        return {
+            id: candidate.id || candidate.userId || '',
+            name,
+            email,
+        };
+    });
 
     return (
         <div className="compare-modal-overlay" onClick={handleClose}>
@@ -72,13 +84,13 @@ const CompareModal = ({ isOpen, selectedCandidates = [], jobDescription = '', on
                         <div className="compare-modal-section">
                             <h3 className="compare-section-title">Selected Candidates</h3>
                             <div className="compare-candidates-list">
-                                {candidateEmails.map((email, idx) => (
-                                    <div key={email} className="compare-candidate-item">
+                                {displayCandidates.map((candidate, idx) => (
+                                    <div key={candidate.email || candidate.id || idx} className="compare-candidate-item">
                                         <div className="compare-candidate-index">{idx + 1}</div>
                                         <h4 className="compare-candidate-name">
-                                            {email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                                            {candidate.name}
                                         </h4>
-                                        <p className="compare-candidate-email">{email}</p>
+                                        <p className="compare-candidate-email">{candidate.email}</p>
                                     </div>
                                 ))}
                             </div>

@@ -9,7 +9,7 @@ const scoreTheme = (pct) => {
     return { accent: '#94a3b8', bg: 'rgba(148,163,184,0.12)', label: 'Low' };
 };
 
-const CandidateCard = ({ userEmail, score, onViewProfile, rank, isSelected, onSelect }) => {
+const CandidateCard = ({ name, userEmail, score, onViewProfile, rank, isSelected, onSelect }) => {
     const handleCardClick = (e) => {
         // If clicking on checkbox, don't also trigger profile view
         if (e.target.closest('.candidate-card-checkbox')) {
@@ -29,10 +29,11 @@ const CandidateCard = ({ userEmail, score, onViewProfile, rank, isSelected, onSe
     const [barWidth, setBarWidth] = useState(0);
 
     // Derive display name from email
-    const nameFromEmail = userEmail
-        ? userEmail.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
-        : 'Candidate';
-    const initial = nameFromEmail.charAt(0).toUpperCase();
+    const displayName = name?.trim()
+        || (userEmail
+            ? userEmail.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+            : 'Candidate');
+    const initial = displayName.charAt(0).toUpperCase();
 
     // Animate progress bar on mount
     useEffect(() => {
@@ -52,7 +53,7 @@ const CandidateCard = ({ userEmail, score, onViewProfile, rank, isSelected, onSe
                     type="checkbox"
                     checked={isSelected || false}
                     onChange={handleCheckboxChange}
-                    aria-label={`Select ${nameFromEmail}`}
+                    aria-label={`Select ${displayName}`}
                 />
             </div>
 
@@ -70,7 +71,7 @@ const CandidateCard = ({ userEmail, score, onViewProfile, rank, isSelected, onSe
                     {initial}
                 </div>
                 <div className="candidate-info">
-                    <h3 className="candidate-name">{nameFromEmail}</h3>
+                    <h3 className="candidate-name">{displayName}</h3>
                     <p className="candidate-email">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4, verticalAlign: 'middle', flexShrink: 0 }}>
                             <rect x="2" y="4" width="20" height="16" rx="2" />

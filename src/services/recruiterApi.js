@@ -15,14 +15,25 @@ export const searchCandidates = async (query) => {
 /**
  * Compare selected candidates against a job description.
  * @param {string} jobDescription - Job description text
- * @param {Array<{email: string}>} candidates - List of candidates with email
+ * @param {Array<{id?: string, name?: string, email?: string, userId?: string, userEmail?: string}>} candidates - List of candidates
  * @returns {Promise<Object>} Comparison results from backend
  */
 export const compareCandidates = async (jobDescription, candidates) => {
     const token = localStorage.getItem('accessToken');
     const payload = {
         jobDescription: jobDescription.trim(),
-        candidates: candidates.map(c => ({ email: c.userEmail || c.email })),
+        candidates: candidates.map((candidate) => {
+            const email = candidate.userEmail || candidate.email || '';
+            const fallbackName = email
+                ? email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
+                : 'Candidate';
+
+            return {
+                id: candidate.id || candidate.userId || '',
+                name: candidate.name || candidate.userName || fallbackName,
+                email,
+            };
+        }),
     };
 
     const response = await apiClient.post(
