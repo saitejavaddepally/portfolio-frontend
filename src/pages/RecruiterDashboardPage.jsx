@@ -165,7 +165,7 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                             /* ── List View ────────────────────────────────── */
                             <div className="jobs-list-wrapper" style={{ margin: '0 0 2rem' }}>
                                 {/* Table Header */}
-                                <div className="jobs-list-header" style={{ gridTemplateColumns: '2.5fr 2.5fr 2fr 1.5fr' }}>
+                                <div className="jobs-list-header recruiter-pros-grid">
                                     <div className="jl-col">Professional</div>
                                     <div className="jl-col">Skills</div>
                                     <div className="jl-col">Contact</div>
@@ -194,9 +194,8 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                                         return (
                                             <div
                                                 key={user._id || user.id}
-                                                className="jobs-list-row animate-slide-up"
+                                                className="jobs-list-row recruiter-pros-grid animate-slide-up"
                                                 style={{
-                                                    gridTemplateColumns: '2.5fr 2.5fr 2fr 1.5fr',
                                                     animationDelay: `${idx * 0.06}s`,
                                                 }}
                                             >
