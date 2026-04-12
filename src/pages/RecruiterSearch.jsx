@@ -16,7 +16,24 @@ const deriveCandidateName = (candidate = {}) => {
         : 'Candidate';
 };
 
-    const getCandidateEmail = (candidate = {}) => candidate.userEmail || candidate.email || '';
+const getCandidateEmail = (candidate = {}) => candidate.userEmail || candidate.email || '';
+
+// Search cache to avoid redundant backend calls
+const searchCache = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+const getFromCache = (query) => {
+    const cached = searchCache.get(query);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        return cached.data;
+    }
+    searchCache.delete(query);
+    return null;
+};
+
+const setInCache = (query, data) => {
+    searchCache.set(query, { data, timestamp: Date.now() });
+};
 
 /* ── Inline spinner ──────────────────────────────────────────── */
 const SearchSpinner = () => (
@@ -64,9 +81,39 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
         setError(null);
         setSearched(false);
         try {
+            // Check cache first
+            const cachedData = getFromCache(q.trim());
+            if (cachedData) {
+                setResults(cachedData);
+                setSearched(true);
+                // Auto-select top 2 candidates by default to showcase compare feature
+                if (Array.isArray(cachedData) && cachedData.length >= 2) {
+                    const top2Emails = cachedData.slice(0, 2).map(candidate => getCandidateEmail(candidate));
+                    setSelectedCandidates(
+                        Object.fromEntries(top2Emails.map(email => [email, true]))
+                    );
+                } else {
+                    setSelectedCandidates({});
+                }
+                setLoading(false);
+                return;
+            }
+
+            // Call backend if not in cache
             const data = await searchCandidates(q);
             setResults(data);
             setSearched(true);
+            // Store in cache
+            setInCache(q.trim(), data);
+            // Auto-select top 2 candidates by default to showcase compare feature
+            if (Array.isArray(data) && data.length >= 2) {
+                const top2Emails = data.slice(0, 2).map(candidate => getCandidateEmail(candidate));
+                setSelectedCandidates(
+                    Object.fromEntries(top2Emails.map(email => [email, true]))
+                );
+            } else {
+                setSelectedCandidates({});
+            }
         } catch (err) {
             const status = err?.response?.status;
             if (status === 401) { navigate('/login'); return; }
@@ -76,6 +123,7 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                 setError(err?.response?.data?.message || 'Something went wrong. Please try again.');
             }
             setResults([]);
+            setSelectedCandidates({});
             setSearched(true);
         } finally {
             setLoading(false);
@@ -204,7 +252,7 @@ const RecruiterSearch = ({ theme, toggleTheme }) => {
                                     <button
                                         type="button"
                                         className="search-clear-btn"
-                                        onClick={() => { setQuery(''); setResults([]); setSearched(false); setError(null); inputRef.current?.focus(); }}
+                                        onClick={() => { setQuery(''); setResults([]); setSearched(false); setError(null); setSelectedCandidates({}); inputRef.current?.focus(); }}
                                         aria-label="Clear"
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

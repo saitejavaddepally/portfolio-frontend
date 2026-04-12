@@ -5,10 +5,7 @@
 /* Overlay */
 .compare-modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
     display: flex;
@@ -17,6 +14,7 @@
     z-index: 1000;
     padding: 20px;
     animation: fadeIn 0.2s ease-out;
+    overflow-y: auto;
 }
 
 @keyframes fadeIn {
@@ -36,11 +34,12 @@
     padding: 32px;
     max-width: 600px;
     width: 100%;
-    max-height: 90vh;
+    max-height: 85vh;
     overflow-y: auto;
     position: relative;
     animation: slideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.3);
+    margin: auto;
 }
 
 @keyframes slideUp {
