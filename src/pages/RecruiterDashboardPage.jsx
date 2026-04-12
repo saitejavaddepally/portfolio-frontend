@@ -201,16 +201,11 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                                             >
                                                 {/* Professional name + avatar */}
                                                 <div className="jl-col jl-col-role">
-                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                                        <div style={{
-                                                            width: 40, height: 40, borderRadius: '50%',
-                                                            background: 'linear-gradient(135deg, #38bdf8, #818cf8)',
-                                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                            color: '#fff', fontWeight: 800, fontSize: '1rem', flexShrink: 0,
-                                                        }}>
+                                                    <div className="recruiter-pros-name-group">
+                                                        <div className="recruiter-pros-avatar">
                                                             {initial}
                                                         </div>
-                                                        <div>
+                                                        <div style={{ minWidth: 0 }}>
                                                             <div className="jl-role-name">{displayName}</div>
                                                             {matchScore !== null && (
                                                                 <span style={{
@@ -249,7 +244,7 @@ const RecruiterDashboardPage = ({ theme, toggleTheme }) => {
                                                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                                                             <polyline points="22,6 12,13 2,6" />
                                                         </svg>
-                                                        <span style={{ fontSize: '0.8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                        <span className="recruiter-pros-email">
                                                             {user.email || '—'}
                                                         </span>
                                                     </div>
