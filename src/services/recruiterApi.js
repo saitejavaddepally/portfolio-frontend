@@ -19,7 +19,7 @@ export const searchCandidates = async (query) => {
  * @returns {Promise<Object>} Comparison results from backend
  */
 export const compareCandidates = async (jobDescription, candidates) => {
-    const response = await apiClient.post('/recruiter/compare', {
+    const response = await apiClient.post('/recruiter/candidates/compare', {
         jobDescription: jobDescription.trim(),
         candidates: candidates.map(c => ({ email: c.userEmail || c.email })),
     });
